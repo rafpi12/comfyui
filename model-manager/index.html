@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Model Manager Pro - Anti-Jump Edition</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { background: #0f172a; color: white; font-family: sans-serif; font-size: 1rem; }
+        .card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; }
+        select, input { 
+            background: #111827 !important; color: white !important; 
+            border: 1px solid #475569 !important; padding: 10px !important; 
+            border-radius: 8px; font-size: 0.9rem !important;
+        }
+        #models-ui { min-height: 400px; font-family: monospace; font-size: 1rem; scroll-behavior: auto; }
+        #log-console { 
+            height: 120px; overflow-y: auto; background: #000; 
+            color: #4ade80; font-family: monospace; font-size: 0.8rem; 
+            padding: 10px; border-radius: 8px; border: 1px solid #334155; 
+        }
+        .btn-action { transition: all 0.2s; font-weight: bold; padding: 12px; border-radius: 10px; text-transform: uppercase; letter-spacing: 1px; }
+        .file-highlight { background: rgba(251, 191, 36, 0.1) !important; border-left: 4px solid #fbbf24 !important; }
+    </style>
+</head>
+<body class="p-8">
+    <div class="max-w-6xl mx-auto">
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-2xl font-black text-blue-400 uppercase tracking-tighter">Model Manager Pro</h1>
+            <div class="flex gap-3">
+                <button onclick="fetch('/purge',{method:'POST'})" class="bg-slate-800 px-5 py-2 rounded-lg border border-slate-600 text-xs font-bold hover:bg-slate-700">NETTOYER PROGRESSION</button>
+                <button onclick="location.reload()" class="bg-slate-800 px-5 py-2 rounded-lg border border-slate-600 text-xs font-bold hover:bg-slate-700">ACTUALISER TOUT</button>
+            </div>
+        </div>
+
+        <div class="card p-8 mb-8 shadow-2xl border-t-4 border-blue-500">
+            <div class="flex gap-4 mb-6">
+                <select id="env-ui" class="w-1/4" onchange="loadModels()"></select>
+                <select id="type-ui" class="w-1/4" onchange="loadModels()">
+                    <option value="all">TOUTES CATÉGORIES</option>
+                    <option value="diffusion_models">DIFFUSION MODELS</option>
+                    <option value="loras">LORAS</option>
+                    <option value="vae">VAE</option>
+                    <option value="upscale_models">UPSCALERS</option>
+                    <option value="text_encoders">TEXT ENCODERS</option>
+                </select>
+                <input id="search-ui" type="text" placeholder="Filtrer par nom..." class="flex-1" onkeyup="loadModels()">
+            </div>
+
+            <div class="bg-black/40 p-6 rounded-xl border border-slate-700">
+                <div class="flex justify-between mb-4 items-center">
+                    <div class="flex items-center gap-3">
+                        <div id="diode-ui" class="w-4 h-4 rounded-full bg-red-500 shadow-lg transition-all duration-500"></div>
+                        <span id="status-text" class="text-xs font-mono uppercase text-gray-400 font-bold tracking-widest">Inconnu</span>
+                    </div>
+                    <div id="path-ui" class="text-[10px] text-gray-500 font-mono italic truncate max-w-md">Prêt.</div>
+                </div>
+
+                <select id="models-ui" class="w-full mb-6" multiple onclick="syncToEditor()" onchange="checkStatus()"></select>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <button onclick="startSmartDownload()" class="btn-action bg-blue-600 hover:bg-blue-500 shadow-lg">Télécharger</button>
+                    <button id="delete-btn" onclick="deleteFromDisk()" class="btn-action bg-red-900/50 text-red-500 border border-red-500 opacity-20 cursor-not-allowed" disabled>Supprimer du disque</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="tasks-ui" class="space-y-3 mb-8"></div>
+
+        <div class="card p-8 shadow-xl border-t-4 border-yellow-600 mb-8">
+            <h2 class="text-xs font-bold text-yellow-500 uppercase mb-4 tracking-widest">Zone 2 : Éditeur Catalogue</h2>
+            <div class="grid grid-cols-2 gap-8">
+                <div class="space-y-3 bg-black/20 p-5 rounded-xl">
+                    <div class="grid grid-cols-2 gap-3">
+                        <select id="edit-env" class="w-full">
+                            <option value="Z-Image">Z-Image</option><option value="Flux">Flux</option><option value="SDXL">SDXL</option>
+                        </select>
+                        <select id="edit-cat" class="w-full">
+                            <option value="diffusion_models">diffusion_models</option><option value="loras">loras</option><option value="vae">vae</option><option value="upscale_models">upscale_models</option>
+                        </select>
+                    </div>
+                    <input id="edit-path" placeholder="/workspace/..." class="w-full font-mono text-xs">
+                    <input id="edit-url" placeholder="Lien URL" class="w-full text-xs">
+                    <input id="edit-file" placeholder="Nom du fichier" class="w-full bg-slate-900 text-xs font-bold" readonly>
+                    <button onclick="saveToCatalogue()" class="w-full bg-yellow-600 py-2 rounded-lg font-bold hover:bg-yellow-500 text-sm">METTRE À JOUR JSON</button>
+                </div>
+                <div id="catalogue-list" class="space-y-1 font-mono text-[10px] bg-black/30 p-4 rounded-xl overflow-y-auto max-h-[250px]"></div>
+            </div>
+        </div>
+
+        <div id="log-console"></div>
+    </div>
+
+    <script>
+        const BASE_PATH = "/workspace/ComfyUI/models/";
+        let cfg = {}; let diskFiles = {};
+        let lastCompleteCount = 0;
+
+        function addLog(msg, isError = false) {
+            const con = document.getElementById('log-console');
+            con.innerHTML += `<div style="color:${isError ? '#ff4d4d' : '#4ade80'}">[${new Date().toLocaleTimeString()}] ${msg}</div>`;
+            con.scrollTop = con.scrollHeight;
+        }
+
+        async function start() {
+            try {
+                const r = await fetch('/config'); cfg = await r.json();
+                const e = document.getElementById('env-ui'); e.innerHTML = "";
+                Object.keys(cfg).forEach(k => e.add(new Option(k, k)));
+                await updateDiskState(); 
+                loadModels(); 
+                renderCatalogue(); 
+                setInterval(loop, 2000);
+                addLog("Manager Pro initialisé.");
+            } catch(e) { addLog("Erreur connexion serveur.", true); }
+        }
+
+        async function updateDiskState() { 
+            const r = await fetch('/scan-disk'); 
+            diskFiles = await r.json(); 
+        }
+
+        function loadModels() {
+            const m = document.getElementById('models-ui');
+            
+            // --- SAUVEGARDE ÉTAT ---
+            const savedScroll = m.scrollTop;
+            const selectedValues = Array.from(m.selectedOptions).map(o => o.value);
+            
+            const env = document.getElementById('env-ui').value;
+            const type = document.getElementById('type-ui').value;
+            const search = document.getElementById('search-ui').value.toLowerCase();
+            
+            m.innerHTML = "";
+            
+            Object.keys(cfg[env] || {}).forEach(cat => {
+                if (type !== 'all' && !cat.startsWith(type)) return;
+
+                cfg[env][cat].forEach(model => {
+                    if(model.filename.toLowerCase().includes(search)) {
+                        const catKey = model.path.split('/')[0];
+                        const sub = model.path.includes('/') ? model.path.split('/').slice(1).join('/') : '';
+                        const isPresent = diskFiles[catKey] && diskFiles[catKey].includes((sub ? sub + '/' : '') + model.filename);
+                        
+                        let o = new Option((isPresent ? "● " : "○ ") + model.filename, model.filename);
+                        o.dataset.url = model.url; o.dataset.cat = model.path; 
+                        if(isPresent) o.style.color = "#4ade80";
+                        
+                        // --- RESTAURATION SÉLECTION ---
+                        if (selectedValues.includes(model.filename)) o.selected = true;
+                        
+                        m.add(o);
+                    }
+                });
+            });
+
+            // --- RESTAURATION SCROLL ---
+            m.scrollTop = savedScroll;
+        }
+
+        async function checkStatus() {
+            const s = Array.from(document.getElementById('models-ui').selectedOptions);
+            const delBtn = document.getElementById('delete-btn');
+            if(s.length === 0) return;
+            const o = s[0];
+            const name = o.value.replace(/^[●○]\s/, "");
+            const r = await fetch(`/check-file?category=${encodeURIComponent(o.dataset.cat)}&filename=${encodeURIComponent(name)}`);
+            const d = await r.json();
+            
+            document.getElementById('diode-ui').className = `w-4 h-4 rounded-full ${d.exists ? 'bg-green-500 shadow-[0_0_15px_#22c55e]' : 'bg-red-500 shadow-lg'}`;
+            document.getElementById('status-text').innerText = d.exists ? "Présent sur le disque" : "Absent du disque";
+            delBtn.disabled = !d.exists;
+            delBtn.className = d.exists ? "btn-action bg-red-600 hover:bg-red-500 text-white shadow-lg" : "btn-action bg-red-900/50 text-red-500 border border-red-500 opacity-20 cursor-not-allowed";
+            document.getElementById('path-ui').innerText = d.path;
+        }
+
+        function syncToEditor() {
+            const s = Array.from(document.getElementById('models-ui').selectedOptions);
+            if(s.length === 0) return;
+            const o = s[0];
+            const cleanName = o.value.replace(/^[●○]\s/, "");
+            document.getElementById('edit-env').value = document.getElementById('env-ui').value;
+            document.getElementById('edit-cat').value = o.dataset.cat.split('/')[0];
+            document.getElementById('edit-path').value = BASE_PATH + o.dataset.cat;
+            document.getElementById('edit-url').value = o.dataset.url;
+            document.getElementById('edit-file').value = cleanName;
+            renderCatalogue(cleanName);
+        }
+
+        async function startSmartDownload() {
+            const url = document.getElementById('edit-url').value;
+            const path = document.getElementById('edit-path').value;
+            const file = document.getElementById('edit-file').value;
+            if(!url || !file) return addLog("Erreur : Aucun fichier sélectionné.", true);
+            const r = await fetch(`/download?url=${encodeURIComponent(url)}&category=${encodeURIComponent(path)}&filename=${encodeURIComponent(file)}`, {method:'POST'});
+            const res = await r.json();
+            if(res.status === "ok") addLog(`Téléchargement lancé : ${file}`);
+            else addLog(`Erreur : ${res.message}`, true);
+        }
+
+        async function loop() {
+            try {
+                const r = await fetch('/progress'); 
+                const tasks = await r.json();
+                
+                // --- OPTIMISATION REFRESH ---
+                const completeCount = tasks.filter(t => t.status.includes('complete')).length;
+                if (completeCount !== lastCompleteCount) {
+                    lastCompleteCount = completeCount;
+                    await updateDiskState(); 
+                    loadModels(); 
+                }
+
+                document.getElementById('tasks-ui').innerHTML = tasks.map(t => `
+                    <div class="bg-slate-900/80 p-3 rounded-xl border-l-4 ${t.status.includes('error') ? 'border-red-500' : (t.status === 'complete' ? 'border-green-500' : 'border-blue-500')}">
+                        <div class="flex justify-between text-[10px] mb-1 font-bold">
+                            <span>${t.name}</span>
+                            <span class="text-blue-300">${t.status.toUpperCase()} ${t.status === 'active' ? '- ' + t.speed : ''}</span>
+                        </div>
+                        <div class="w-full bg-slate-800 h-1 rounded-full overflow-hidden">
+                            <div class="${t.status.includes('error') ? 'bg-red-500' : (t.status === 'complete' ? 'bg-green-500' : 'bg-blue-500')} h-1 transition-all duration-500" style="width:${t.progress}%"></div>
+                        </div>
+                    </div>
+                `).join('');
+            } catch(e) {}
+        }
+
+        async function saveToCatalogue() {
+            const env = document.getElementById('edit-env').value;
+            const cat = document.getElementById('edit-cat').value;
+            const fullPath = document.getElementById('edit-path').value;
+            const url = document.getElementById('edit-url').value;
+            const file = document.getElementById('edit-file').value;
+            const relPath = fullPath.replace(BASE_PATH, "");
+            const obj = { name: file, url: url, path: relPath, filename: file };
+            if(!cfg[env]) cfg[env] = {};
+            if(!cfg[env][cat]) cfg[env][cat] = [];
+            const idx = cfg[env][cat].findIndex(m => m.filename === file);
+            if (idx > -1) cfg[env][cat][idx] = obj;
+            else cfg[env][cat].push(obj);
+            await fetch('/save-config', { method: 'POST', body: JSON.stringify(cfg) });
+            addLog("JSON mis à jour.");
+            loadModels();
+            renderCatalogue(file);
+        }
+
+        function renderCatalogue(filterFile = null) {
+            const list = document.getElementById('catalogue-list'); list.innerHTML = "";
+            Object.keys(cfg).forEach(env => {
+                Object.keys(cfg[env]).forEach(cat => {
+                    cfg[env][cat].forEach((m, idx) => {
+                        if (filterFile && m.filename !== filterFile) return;
+                        list.innerHTML += `<div class="flex justify-between items-center bg-black/40 p-2 mb-1 border border-white/5 rounded ${filterFile ? 'file-highlight' : ''}">
+                            <div class="flex flex-col"><span class="text-blue-400 font-bold uppercase" style="font-size:8px">${env} / ${cat}</span><span class="truncate italic text-slate-300">${m.filename}</span></div>
+                            <button onclick="removeFromCatalogue('${env}','${cat}',${idx})" class="text-red-500 ml-2"><i class="fas fa-times"></i></button>
+                        </div>`;
+                    });
+                });
+            });
+        }
+
+        async function removeFromCatalogue(e,c,i) {
+            if(confirm('Supprimer du JSON ?')) {
+                cfg[e][c].splice(i, 1);
+                await fetch('/save-config', { method: 'POST', body: JSON.stringify(cfg) });
+                renderCatalogue(); loadModels();
+            }
+        }
+
+        async function deleteFromDisk() {
+            const s = Array.from(document.getElementById('models-ui').selectedOptions);
+            if(s.length === 0) return;
+            const o = s[0];
+            const name = o.value.replace(/^[●○]\s/, "");
+            if(confirm(`Supprimer ${name} du disque ?`)) {
+                await fetch(`/delete?cat=${encodeURIComponent(o.dataset.cat)}&file=${encodeURIComponent(name)}`, {method:'DELETE'});
+                addLog(`Fichier supprimé : ${name}`);
+                await updateDiskState(); loadModels();
+            }
+        }
+
+        start();
+    </script>
+</body>
+</html>
