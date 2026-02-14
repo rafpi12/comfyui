@@ -6,7 +6,7 @@ app = FastAPI()
 
 # --- CONFIGURATION SÉCURISÉE ---
 BASE_MODELS_PATH = "/workspace/ComfyUI/models"
-CONFIG_PATH = "/workspace/ComfyUI/custom_nodes/ComfyUI-Personal-Downloader/models.json"
+CONFIG_PATH = "/workspace/workspace/model-manager/models.json"
 
 # On récupère le token depuis le système (plus de fuite sur GitHub !)
 HF_TOKEN = os.environ.get("HF_TOKEN", "") 
