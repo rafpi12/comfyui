@@ -574,13 +574,6 @@
                 "filename": "pussydiffusion-f2-klein-9b_v2.safetensors"
             }
         ],
-        "": [
-            {
-                "name": "t5xxl_fp8_e4m3fn.safetensors",
-                "url": "https://huggingface.co/comfyanonymous/flux_text_encoders/resolve/main/t5xxl_fp8_e4m3fn.safetensors?download=true",
-                "path": "clip",
-                "filename": "t5xxl_fp8_e4m3fn.safetensors"
-            }
-        ]
+        "": []
     }
 }
