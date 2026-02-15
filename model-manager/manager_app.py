@@ -17,8 +17,8 @@ REPO_OWNER = "rafpi12"
 REPO_NAME = "comfyui"
 GITHUB_FILE_PATH = "model-manager/models.json"
 
-MODEL_CATEGORIES = ["checkpoints", "loras", "vae", "upscale_models", "text_encoders", "unet", "diffusion_models", "controlnet"]
-ALLOWED_EXTENSIONS = {'.safetensors', '.pth', '.gguf'}
+# Extensions autorisées
+ALLOWED_EXTENSIONS = {'.safetensors', '.pth', '.gguf', '.bin', '.ckpt'}
 
 def get_client():
     try:
@@ -90,21 +90,24 @@ async def save_config(request: Request, background_tasks: BackgroundTasks):
 
 @app.get("/scan-disk")
 async def scan_disk():
+    """Scan dynamique de TOUS les dossiers présents dans /models/"""
     res = {}
-    for cat in MODEL_CATEGORIES:
-        base_path = os.path.join(BASE_MODELS_PATH, cat)
-        files = []
-        if os.path.exists(base_path):
-            for root, _, filenames in os.walk(base_path):
-                for f in filenames:
-                    if any(f.endswith(ext) for ext in ALLOWED_EXTENSIONS):
-                        rel_path = os.path.relpath(os.path.join(root, f), base_path)
-                        files.append(rel_path.replace("\\", "/"))
-        res[cat] = files
+    if os.path.exists(BASE_MODELS_PATH):
+        for entry in os.scandir(BASE_MODELS_PATH):
+            if entry.is_dir():
+                cat_name = entry.name
+                files = []
+                for root, _, filenames in os.walk(entry.path):
+                    for f in filenames:
+                        if any(f.endswith(ext) for ext in ALLOWED_EXTENSIONS):
+                            rel_path = os.path.relpath(os.path.join(root, f), entry.path)
+                            files.append(rel_path.replace("\\", "/"))
+                res[cat_name] = files
     return res
 
 @app.get("/check-file")
 async def check_file(category: str, filename: str):
+    # La catégorie passée ici est le 'path' du JSON (ex: model_patches)
     path = os.path.join(BASE_MODELS_PATH, category, filename)
     return {"exists": os.path.exists(path), "path": path}
 
@@ -120,7 +123,6 @@ async def download(request: Request):
     client = get_client()
     if not client: return {"status": "error", "message": "Aria2 non connecté"}
     
-    # --- LOGIQUE CALQUÉE SUR TON NOTEBOOK ---
     options = {
         "dir": target_dir, 
         "out": filename,
