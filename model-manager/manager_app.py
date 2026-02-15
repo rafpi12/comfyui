@@ -8,7 +8,6 @@ app = FastAPI()
 BASE_MODELS_PATH = "/workspace/ComfyUI/models"
 CONFIG_PATH = "/workspace/model-manager/models.json"
 
-# Secrets environnement
 HF_TOKEN = os.environ.get("HF_TOKEN", "")
 GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN", "")
 REPO_OWNER = "rafpi12"
@@ -17,13 +16,6 @@ GITHUB_FILE_PATH = "model-manager/models.json"
 
 MODEL_CATEGORIES = ["checkpoints", "loras", "vae", "upscale_models", "text_encoders", "unet", "diffusion_models", "controlnet"]
 ALLOWED_EXTENSIONS = {'.safetensors', '.pth', '.gguf'}
-
-def get_client():
-    try:
-        client = aria2p.Client(host="http://127.0.0.1", port=6800, secret="")
-        api = aria2p.API(client)
-        return api
-    except: return None
 
 def sync_to_github():
     if not GITHUB_TOKEN: return False
@@ -39,11 +31,22 @@ def sync_to_github():
         return True
     except: return False
 
+@app.get("/list-subfolders")
+async def list_subfolders(category: str):
+    """Liste les sous-dossiers d'une catégorie pour le browser"""
+    base = os.path.join(BASE_MODELS_PATH, category)
+    subdirs = [""] # Le dossier racine de la catégorie
+    if os.path.exists(base):
+        for root, dirs, _ in os.walk(base):
+            for d in dirs:
+                rel = os.path.relpath(os.path.join(root, d), base)
+                subdirs.append(rel.replace("\\", "/"))
+    return sorted(list(set(subdirs)))
+
 @app.get("/fetch-civitai-name")
 async def fetch_civitai_name(url: str):
     try:
         if "civitai.com" in url:
-            # Extraction de l'ID de version depuis l'URL de téléchargement
             model_id = url.split('/models/')[1].split('?')[0]
             api_url = f"https://civitai.com/api/v1/model-versions/{model_id}"
             resp = requests.get(api_url, timeout=5)
@@ -52,8 +55,6 @@ async def fetch_civitai_name(url: str):
                 for file in data.get('files', []):
                     if file.get('primary'): return {"filename": file.get('name')}
                 if data.get('files'): return {"filename": data['files'][0].get('name')}
-        
-        # Backup : Headers Content-Disposition
         r = requests.head(url, allow_redirects=True, timeout=5)
         cd = r.headers.get('content-disposition')
         if cd and 'filename=' in cd:
