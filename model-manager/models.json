@@ -596,17 +596,12 @@
                 "url": "https://civitai.com/api/download/models/2569079?type=Model&format=SafeTensor&size=full&fp=fp16",
                 "path": "checkpoints",
                 "filename": "jibMixIllustrious_v40Ascension.safetensors"
-            }
-        ]
-    },
-    "Qwen": {
-        "loras": [],
-        "diffusion_models": [
+            },
             {
-                "name": "jibMixIllustrious_v40Ascension.safetensors",
-                "url": "https://civitai.com/api/download/models/2569079?type=Model&format=SafeTensor&size=full&fp=fp16",
-                "path": "checkpoints",
-                "filename": "jibMixIllustrious_v40Ascension.safetensors"
+                "name": "",
+                "url": "",
+                "path": "",
+                "filename": ""
             }
         ]
     }
