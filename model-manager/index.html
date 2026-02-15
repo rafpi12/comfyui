@@ -22,7 +22,6 @@
         .btn-action { transition: all 0.2s; font-weight: bold; padding: 12px; border-radius: 10px; text-transform: uppercase; letter-spacing: 1px; }
         .file-highlight { background: rgba(251, 191, 36, 0.1) !important; border-left: 4px solid #fbbf24 !important; }
         
-        /* Style pour la notification GitHub */
         #github-toast {
             position: fixed; bottom: 20px; right: 20px;
             background: #16a34a; color: white; padding: 12px 20px;
@@ -84,7 +83,10 @@
         <div id="tasks-ui" class="space-y-3 mb-8"></div>
 
         <div class="card p-8 shadow-xl border-t-4 border-yellow-600 mb-8">
-            <h2 class="text-xs font-bold text-yellow-500 uppercase mb-4 tracking-widest">Zone 2 : Éditeur Catalogue</h2>
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xs font-bold text-yellow-500 uppercase tracking-widest">Zone 2 : Éditeur Catalogue</h2>
+                <button onclick="resetEditor()" class="text-[10px] bg-slate-700 px-2 py-1 rounded hover:bg-slate-600">VIDER LES CHAMPS</button>
+            </div>
             <div class="grid grid-cols-2 gap-8">
                 <div class="space-y-3 bg-black/20 p-5 rounded-xl">
                     <div class="grid grid-cols-2 gap-3">
@@ -96,9 +98,12 @@
                         </select>
                     </div>
                     <input id="edit-path" placeholder="/workspace/..." class="w-full font-mono text-xs">
-                    <input id="edit-url" placeholder="Lien URL" class="w-full text-xs">
-                    <input id="edit-file" placeholder="Nom du fichier" class="w-full bg-slate-900 text-xs font-bold" readonly>
-                    <button onclick="saveToCatalogue()" class="w-full bg-yellow-600 py-2 rounded-lg font-bold hover:bg-yellow-500 text-sm">METTRE À JOUR JSON</button>
+                    <input id="edit-url" placeholder="Coller URL (Civitai ou HF)" class="w-full text-xs" oninput="autoFetchName(this.value)">
+                    <div class="relative">
+                        <input id="edit-file" placeholder="Nom du fichier (ex: mon_lora.safetensors)" class="w-full bg-slate-900 text-xs font-bold border-yellow-900/50 focus:border-yellow-500 outline-none">
+                        <span class="absolute right-3 top-2 text-[9px] text-yellow-600 font-bold uppercase pointer-events-none">Éditable</span>
+                    </div>
+                    <button onclick="saveToCatalogue()" class="w-full bg-yellow-600 py-2 rounded-lg font-bold hover:bg-yellow-500 text-sm">ENREGISTRER DANS LE JSON</button>
                 </div>
                 <div id="catalogue-list" class="space-y-1 font-mono text-[10px] bg-black/30 p-4 rounded-xl overflow-y-auto max-h-[250px]"></div>
             </div>
@@ -116,6 +121,33 @@
             const t = document.getElementById('github-toast');
             t.classList.add('show');
             setTimeout(() => t.classList.remove('show'), 3000);
+        }
+
+        function resetEditor() {
+            document.getElementById('edit-url').value = "";
+            document.getElementById('edit-file').value = "";
+            document.getElementById('edit-path').value = "";
+            renderCatalogue();
+        }
+
+        async function autoFetchName(url) {
+            if (!url) return;
+            const fileInput = document.getElementById('edit-file');
+            
+            // Logique d'extraction rapide pour Hugging Face
+            if (url.includes('huggingface.co')) {
+                const parts = url.split('/');
+                const name = parts[parts.length - 1].split('?')[0];
+                if (name.includes('.')) fileInput.value = name;
+            } 
+            // Logique pour Civitai (Appel API via notre serveur pour éviter CORS)
+            else if (url.includes('civitai.com')) {
+                try {
+                    const r = await fetch(`/fetch-civitai-name?url=${encodeURIComponent(url)}`);
+                    const d = await r.json();
+                    if (d.filename) fileInput.value = d.filename;
+                } catch(e) { console.error("Erreur Civitai Fetch", e); }
+            }
         }
 
         function addLog(msg, isError = false) {
@@ -251,9 +283,9 @@
             
             const r = await fetch('/save-config', { method: 'POST', body: JSON.stringify(cfg) });
             const res = await r.json();
-            if(res.github_sync) showGitHubToast(); // Affiche la notification !
+            if(res.github_sync) showGitHubToast();
             
-            addLog("JSON mis à jour & Synchro lancée.");
+            addLog("JSON mis à jour & Synchro GitHub.");
             loadModels();
             renderCatalogue(file);
         }
