@@ -530,6 +530,12 @@
                 "url": "https://huggingface.co/comfyanonymous/flux_text_encoders/resolve/main/clip_l.safetensors?download=true",
                 "path": "clip",
                 "filename": "clip_l.safetensors"
+            },
+            {
+                "name": "EVA02_CLIP_L_336_psz14_s6B.pt",
+                "url": "https://huggingface.co/QuanSun/EVA-CLIP/resolve/main/EVA02_CLIP_L_336_psz14_s6B.pt?download=true",
+                "path": "clip",
+                "filename": "EVA02_CLIP_L_336_psz14_s6B.pt"
             }
         ],
         "diffusion_models": [
