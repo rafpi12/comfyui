@@ -74,6 +74,12 @@
                 "url": "https://civitai.com/api/download/models/2687961?type=Model&format=SafeTensor",
                 "path": "loras",
                 "filename": "ZIB-Detail-Slider.safetensors"
+            },
+            {
+                "name": "ZiB_SoReal!_POV_V3.safetensors",
+                "url": "https://civitai.com/api/download/models/2691810?type=Model&format=SafeTensor",
+                "path": "loras",
+                "filename": "ZiB_SoReal!_POV_V3.safetensors"
             }
         ],
         "loras/Vyesna": [
