@@ -154,9 +154,8 @@
 
         async function togglePathBrowser() {
             const browser = document.getElementById('path-browser');
-            if (browser.style.display === "block") {
-                hidePathBrowser();
-            } else {
+            if (browser.style.display === "block") hidePathBrowser();
+            else {
                 const cat = document.getElementById('edit-cat').value;
                 const r = await fetch(`/list-subfolders?category=${cat}`);
                 const folders = await r.json();
@@ -206,7 +205,6 @@
                 Object.keys(cfg).forEach(k => e.add(new Option(k, k)));
                 await updateDiskState(); loadModels(); renderCatalogue(); 
                 setInterval(loop, 2000);
-                addLog("Manager Pro initialisé.");
             } catch(e) { addLog("Erreur connexion serveur.", true); }
         }
 
@@ -220,10 +218,7 @@
             const type = document.getElementById('type-ui').value;
             const search = document.getElementById('search-ui').value.toLowerCase();
             const savedScroll = m.scrollTop;
-            
-            // On mémorise la sélection actuelle sauf si on a une cible forcée
             const selectedValues = targetFilename ? [targetFilename] : Array.from(m.selectedOptions).map(o => o.value);
-            
             m.innerHTML = "";
             Object.keys(cfg[env] || {}).forEach(cat => {
                 if (type !== 'all' && !cat.startsWith(type)) return;
@@ -240,15 +235,10 @@
                     }
                 });
             });
-
             if (!targetFilename) m.scrollTop = savedScroll;
             else {
-                // Scroll automatique vers l'élément sélectionné
                 const selectedIdx = Array.from(m.options).findIndex(o => o.selected);
-                if (selectedIdx > -1) {
-                    m.scrollTop = (selectedIdx * 24); // Approximation de la hauteur d'une ligne
-                    checkStatus();
-                }
+                if (selectedIdx > -1) { m.scrollTop = (selectedIdx * 24); checkStatus(); }
             }
         }
 
@@ -260,10 +250,8 @@
             const name = o.value.replace(/^[●○]\s/, "");
             const r = await fetch(`/check-file?category=${encodeURIComponent(o.dataset.cat)}&filename=${encodeURIComponent(name)}`);
             const d = await r.json();
-            
             document.getElementById('diode-ui').className = `w-4 h-4 rounded-full ${d.exists ? 'bg-green-500 shadow-[0_0_15px_#22c55e]' : 'bg-red-500 shadow-lg'}`;
             document.getElementById('status-text').innerText = d.exists ? "Présent sur le disque" : "Absent du disque";
-            
             delBtn.disabled = !d.exists;
             if (d.exists) {
                 delBtn.classList.remove('opacity-20', 'cursor-not-allowed', 'bg-red-900/50');
@@ -272,7 +260,6 @@
                 delBtn.classList.add('opacity-20', 'cursor-not-allowed', 'bg-red-900/50');
                 delBtn.classList.remove('bg-red-600', 'hover:bg-red-500', 'text-white', 'shadow-lg');
             }
-            
             document.getElementById('path-ui').innerText = d.path;
         }
 
@@ -333,25 +320,17 @@
             const file = document.getElementById('edit-file').value;
             const relPath = fullPath.replace(BASE_PATH, "");
             const obj = { name: file, url: url, path: relPath, filename: file };
-            
             if(!cfg[env]) cfg[env] = {};
             if(!cfg[env][cat]) cfg[env][cat] = [];
-            
             const idx = cfg[env][cat].findIndex(m => m.filename === file);
             if (idx > -1) cfg[env][cat][idx] = obj;
             else cfg[env][cat].push(obj);
-            
-            // Mise à jour de l'interface globale
             document.getElementById('env-ui').value = env;
-            
             const r = await fetch('/save-config', { method: 'POST', body: JSON.stringify(cfg) });
             const res = await r.json();
             if(res.github_sync) showGitHubToast();
             addLog("Catalogue mis à jour.");
-            
-            // Actualisation automatique avec sélection du fichier
-            loadModels(file); 
-            renderCatalogue(file);
+            loadModels(file); renderCatalogue(file);
         }
 
         function renderCatalogue(filterFile = null) {
@@ -386,8 +365,7 @@
             const name = o.value.replace(/^[●○]\s/, "");
             if(confirm(`Supprimer ${name} du disque ?`)) {
                 await fetch(`/delete?cat=${encodeURIComponent(o.dataset.cat)}&file=${encodeURIComponent(name)}`, {method:'DELETE'});
-                await updateDiskState(); 
-                loadModels();
+                await updateDiskState(); loadModels();
                 document.getElementById('delete-btn').disabled = true;
             }
         }
