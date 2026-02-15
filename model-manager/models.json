@@ -496,6 +496,12 @@
                 "url": "https://huggingface.co/alibaba-pai/Z-Image-Turbo-Fun-Controlnet-Union-2.1/resolve/main/Z-Image-Turbo-Fun-Controlnet-Union-2.0.safetensors?download=true",
                 "path": "model_patches",
                 "filename": "Z-Image-Turbo-Fun-Controlnet-Union-2.0.safetensors"
+            },
+            {
+                "name": "Z-Image-Turbo-Fun-Controlnet-Union-2.1.safetensors",
+                "url": "https://huggingface.co/alibaba-pai/Z-Image-Turbo-Fun-Controlnet-Union-2.1/resolve/main/Z-Image-Turbo-Fun-Controlnet-Union-2.1.safetensors?download=true",
+                "path": "model_patches",
+                "filename": "Z-Image-Turbo-Fun-Controlnet-Union-2.1.safetensors"
             }
         ]
     }
