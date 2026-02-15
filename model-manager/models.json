@@ -77,7 +77,7 @@
             },
             {
                 "name": "ZiB_SoReal!_POV_V3.safetensors",
-                "url": "https://civitai.com/api/download/models/2691810?type=Model&format=SafeTensor",
+                "url": "https://civitai.com/api/download/models/2691810",
                 "path": "loras",
                 "filename": "ZiB_SoReal!_POV_V3.safetensors"
             }
