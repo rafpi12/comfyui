@@ -84,7 +84,7 @@
             {
                 "name": "MisterMR_Anna_ZImageTurbo.safetensors",
                 "url": "https://civitai.com/api/download/models/2691425?type=Model&format=SafeTensor",
-                "path": "loras/",
+                "path": "loras",
                 "filename": "MisterMR_Anna_ZImageTurbo.safetensors"
             }
         ],
@@ -585,24 +585,28 @@
                 "path": "loras",
                 "filename": "pussydiffusion-f2-klein-9b_v2.safetensors"
             }
-        ],
-        "": []
+        ]
     },
     "SDXL": {
-        "loras": [],
         "diffusion_models": [
             {
                 "name": "jibMixIllustrious_v40Ascension.safetensors",
                 "url": "https://civitai.com/api/download/models/2569079?type=Model&format=SafeTensor&size=full&fp=fp16",
                 "path": "checkpoints",
                 "filename": "jibMixIllustrious_v40Ascension.safetensors"
-            },
-            {
-                "name": "",
-                "url": "",
-                "path": "",
-                "filename": ""
             }
-        ]
+        ],
+        "loras": []
+    },
+    "Qwen": {
+        "diffusion_models": [],
+        "text_encoders": [],
+        "loras": []
+    },
+    "Wan": {
+        "diffusion_models": [],
+        "t2v": [],
+        "i2v": [],
+        "loras": []
     }
 }
