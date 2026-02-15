@@ -539,6 +539,14 @@
                 "path": "unet",
                 "filename": "flux-2-klein-base-9b-fp8.safetensors"
             }
+        ],
+        "vae": [
+            {
+                "name": "ae.safetensors",
+                "url": "https://huggingface.co/modelzpalace/ae.safetensors/resolve/main/ae.safetensors?download=true",
+                "path": "vae",
+                "filename": "ae.safetensors"
+            }
         ]
     }
 }
