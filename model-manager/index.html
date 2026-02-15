@@ -21,7 +21,6 @@
         }
         .btn-action { transition: all 0.2s; font-weight: bold; padding: 12px; border-radius: 10px; text-transform: uppercase; letter-spacing: 1px; }
         .file-highlight { background: rgba(251, 191, 36, 0.1) !important; border-left: 4px solid #fbbf24 !important; }
-        
         #github-toast {
             position: fixed; bottom: 20px; right: 20px;
             background: #16a34a; color: white; padding: 12px 20px;
@@ -31,7 +30,6 @@
             z-index: 1000;
         }
         #github-toast.show { transform: translateY(0); }
-
         #path-browser {
             position: absolute; width: 100%; top: 100%; left: 0;
             background: #1e293b; border: 1px solid #475569; border-radius: 8px;
@@ -46,7 +44,6 @@
         <i class="fab fa-github"></i>
         <span>Catalogue synchronisé sur GitHub !</span>
     </div>
-
     <div class="max-w-6xl mx-auto">
         <div class="flex justify-between items-center mb-8">
             <h1 class="text-2xl font-black text-blue-400 uppercase tracking-tighter">Model Manager Pro</h1>
@@ -55,7 +52,6 @@
                 <button onclick="location.reload()" class="bg-slate-800 px-5 py-2 rounded-lg border border-slate-600 text-xs font-bold hover:bg-slate-700">ACTUALISER TOUT</button>
             </div>
         </div>
-
         <div class="card p-8 mb-8 shadow-2xl border-t-4 border-blue-500">
             <div class="flex gap-4 mb-6">
                 <select id="env-ui" class="w-1/4" onchange="loadModels()"></select>
@@ -70,7 +66,6 @@
                 </select>
                 <input id="search-ui" type="text" placeholder="Filtrer par nom..." class="flex-1" onkeyup="loadModels()">
             </div>
-
             <div class="bg-black/40 p-6 rounded-xl border border-slate-700">
                 <div class="flex justify-between mb-4 items-center">
                     <div class="flex items-center gap-3">
@@ -79,18 +74,14 @@
                     </div>
                     <div id="path-ui" class="text-[10px] text-gray-500 font-mono italic truncate max-w-md">Prêt.</div>
                 </div>
-
                 <select id="models-ui" class="w-full mb-6" multiple onclick="syncToEditor()" onchange="checkStatus()"></select>
-                
                 <div class="grid grid-cols-2 gap-4">
                     <button onclick="startSmartDownload()" class="btn-action bg-blue-600 hover:bg-blue-500 shadow-lg">Télécharger</button>
                     <button id="delete-btn" onclick="deleteFromDisk()" class="btn-action bg-red-900/50 text-red-500 border border-red-500 opacity-20 cursor-not-allowed" disabled>Supprimer du disque</button>
                 </div>
             </div>
         </div>
-
         <div id="tasks-ui" class="space-y-3 mb-8"></div>
-
         <div class="card p-8 shadow-xl border-t-4 border-yellow-600 mb-8">
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-xs font-bold text-yellow-500 uppercase tracking-widest">Zone 2 : Éditeur Catalogue</h2>
@@ -106,7 +97,6 @@
                             <option value="diffusion_models">diffusion_models</option><option value="loras">loras</option><option value="vae">vae</option><option value="upscale_models">upscale_models</option><option value="text_encoders">text_encoders</option><option value="controlnet">controlnet</option>
                         </select>
                     </div>
-
                     <div class="relative">
                         <div class="flex items-center gap-2">
                             <input id="edit-path" placeholder="/workspace/..." class="flex-1 font-mono text-[10px]">
@@ -116,7 +106,6 @@
                         </div>
                         <div id="path-browser"></div>
                     </div>
-
                     <input id="edit-url" placeholder="Coller URL (Civitai ou HF)" class="w-full text-xs" oninput="autoFetchName(this.value)">
                     <input id="edit-file" placeholder="Nom du fichier" class="w-full bg-slate-900 text-xs font-bold border-yellow-900/50 outline-none">
                     <button onclick="saveToCatalogue()" class="w-full bg-yellow-600 py-2 rounded-lg font-bold hover:bg-yellow-500 text-sm">ENREGISTRER DANS LE JSON</button>
@@ -124,34 +113,28 @@
                 <div id="catalogue-list" class="space-y-1 font-mono text-[10px] bg-black/30 p-4 rounded-xl overflow-y-auto max-h-[250px]"></div>
             </div>
         </div>
-
         <div id="log-console"></div>
     </div>
-
     <script>
         const BASE_PATH = "/workspace/ComfyUI/models/";
         let cfg = {}; let diskFiles = {};
         let lastCompleteCount = 0;
-
         function showGitHubToast() {
             const t = document.getElementById('github-toast');
             t.classList.add('show');
             setTimeout(() => t.classList.remove('show'), 3000);
         }
-
         function resetEditor() {
             document.getElementById('edit-url').value = "";
             document.getElementById('edit-file').value = "";
             document.getElementById('edit-path').value = "";
             hidePathBrowser();
         }
-
         function updatePathByCategory() {
             const cat = document.getElementById('edit-cat').value;
             document.getElementById('edit-path').value = BASE_PATH + cat;
             hidePathBrowser();
         }
-
         async function togglePathBrowser() {
             const browser = document.getElementById('path-browser');
             if (browser.style.display === "block") hidePathBrowser();
@@ -167,15 +150,12 @@
                 browser.style.display = "block";
             }
         }
-
         function hidePathBrowser() { document.getElementById('path-browser').style.display = "none"; }
-
         function setPath(cat, sub) {
             const cleanSub = sub === "" ? "" : (sub.startsWith('/') ? sub : '/' + sub);
             document.getElementById('edit-path').value = BASE_PATH + cat + cleanSub;
             hidePathBrowser();
         }
-
         async function autoFetchName(url) {
             if (!url) return;
             const fileInput = document.getElementById('edit-file');
@@ -191,13 +171,11 @@
                 } catch(e) { fileInput.value = ""; }
             }
         }
-
         function addLog(msg, isError = false) {
             const con = document.getElementById('log-console');
             con.innerHTML += `<div style="color:${isError ? '#ff4d4d' : '#4ade80'}">[${new Date().toLocaleTimeString()}] ${msg}</div>`;
             con.scrollTop = con.scrollHeight;
         }
-
         async function start() {
             try {
                 const r = await fetch('/config'); cfg = await r.json();
@@ -205,13 +183,12 @@
                 Object.keys(cfg).forEach(k => e.add(new Option(k, k)));
                 await updateDiskState(); loadModels(); renderCatalogue(); 
                 setInterval(loop, 2000);
+                addLog("Manager Pro initialisé.");
             } catch(e) { addLog("Erreur connexion serveur.", true); }
         }
-
         async function updateDiskState() { 
             const r = await fetch('/scan-disk'); diskFiles = await r.json(); 
         }
-
         function loadModels(targetFilename = null) {
             const m = document.getElementById('models-ui');
             const env = document.getElementById('env-ui').value;
@@ -241,7 +218,6 @@
                 if (selectedIdx > -1) { m.scrollTop = (selectedIdx * 24); checkStatus(); }
             }
         }
-
         async function checkStatus() {
             const s = Array.from(document.getElementById('models-ui').selectedOptions);
             const delBtn = document.getElementById('delete-btn');
@@ -262,7 +238,6 @@
             }
             document.getElementById('path-ui').innerText = d.path;
         }
-
         function syncToEditor() {
             const s = Array.from(document.getElementById('models-ui').selectedOptions);
             if(s.length === 0) return;
@@ -275,7 +250,6 @@
             document.getElementById('edit-file').value = cleanName;
             renderCatalogue(cleanName);
         }
-
         async function startSmartDownload() {
             const url = document.getElementById('edit-url').value;
             const path = document.getElementById('edit-path').value.replace(BASE_PATH, "");
@@ -288,7 +262,6 @@
             const res = await r.json();
             if(res.status === "ok") addLog(`Téléchargement lancé : ${file}`);
         }
-
         async function loop() {
             try {
                 const r = await fetch('/progress'); 
@@ -311,7 +284,6 @@
                 `).join('');
             } catch(e) {}
         }
-
         async function saveToCatalogue() {
             const env = document.getElementById('edit-env').value;
             const cat = document.getElementById('edit-cat').value;
@@ -332,7 +304,6 @@
             addLog("Catalogue mis à jour.");
             loadModels(file); renderCatalogue(file);
         }
-
         function renderCatalogue(filterFile = null) {
             const list = document.getElementById('catalogue-list'); list.innerHTML = "";
             Object.keys(cfg).forEach(env => {
@@ -347,7 +318,6 @@
                 });
             });
         }
-
         async function removeFromCatalogue(e,c,i) {
             if(confirm('Supprimer du JSON ?')) {
                 cfg[e][c].splice(i, 1);
@@ -357,7 +327,6 @@
                 renderCatalogue(); loadModels();
             }
         }
-
         async function deleteFromDisk() {
             const s = Array.from(document.getElementById('models-ui').selectedOptions);
             if(s.length === 0) return;
@@ -369,7 +338,6 @@
                 document.getElementById('delete-btn').disabled = true;
             }
         }
-
         start();
     </script>
 </body>
