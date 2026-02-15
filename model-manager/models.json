@@ -489,6 +489,14 @@
                 "path": "upscale_models",
                 "filename": "remacri_original.safetensors"
             }
+        ],
+        "controlnet": [
+            {
+                "name": "Z-Image-Turbo-Fun-Controlnet-Union-2.0.safetensors",
+                "url": "https://huggingface.co/alibaba-pai/Z-Image-Turbo-Fun-Controlnet-Union-2.1/resolve/main/Z-Image-Turbo-Fun-Controlnet-Union-2.0.safetensors?download=true",
+                "path": "model_patches",
+                "filename": "Z-Image-Turbo-Fun-Controlnet-Union-2.0.safetensors"
+            }
         ]
     }
 }
