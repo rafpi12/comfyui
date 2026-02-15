@@ -204,7 +204,6 @@
                 Object.keys(cfg).forEach(k => e.add(new Option(k, k)));
                 await updateDiskState(); loadModels(); renderCatalogue(); 
                 setInterval(loop, 2000);
-                addLog("Manager Pro initialisé.");
             } catch(e) { addLog("Erreur connexion serveur.", true); }
         }
 
@@ -240,14 +239,26 @@
 
         async function checkStatus() {
             const s = Array.from(document.getElementById('models-ui').selectedOptions);
+            const delBtn = document.getElementById('delete-btn');
             if(s.length === 0) return;
             const o = s[0];
             const name = o.value.replace(/^[●○]\s/, "");
             const r = await fetch(`/check-file?category=${encodeURIComponent(o.dataset.cat)}&filename=${encodeURIComponent(name)}`);
             const d = await r.json();
+            
+            // Correction de l'activation du bouton
             document.getElementById('diode-ui').className = `w-4 h-4 rounded-full ${d.exists ? 'bg-green-500 shadow-[0_0_15px_#22c55e]' : 'bg-red-500 shadow-lg'}`;
             document.getElementById('status-text').innerText = d.exists ? "Présent sur le disque" : "Absent du disque";
-            document.getElementById('delete-btn').disabled = !d.exists;
+            
+            delBtn.disabled = !d.exists;
+            if (d.exists) {
+                delBtn.classList.remove('opacity-20', 'cursor-not-allowed', 'bg-red-900/50');
+                delBtn.classList.add('bg-red-600', 'hover:bg-red-500', 'text-white', 'shadow-lg');
+            } else {
+                delBtn.classList.add('opacity-20', 'cursor-not-allowed', 'bg-red-900/50');
+                delBtn.classList.remove('bg-red-600', 'hover:bg-red-500', 'text-white', 'shadow-lg');
+            }
+            
             document.getElementById('path-ui').innerText = d.path;
         }
 
@@ -349,10 +360,11 @@
             const s = Array.from(document.getElementById('models-ui').selectedOptions);
             if(s.length === 0) return;
             const o = s[0];
-            const name = o.value.replace(/^[●○]\\s/, "");
+            const name = o.value.replace(/^[●○]\s/, "");
             if(confirm(`Supprimer ${name} du disque ?`)) {
                 await fetch(`/delete?cat=${encodeURIComponent(o.dataset.cat)}&file=${encodeURIComponent(name)}`, {method:'DELETE'});
                 await updateDiskState(); loadModels();
+                document.getElementById('delete-btn').disabled = true;
             }
         }
 
