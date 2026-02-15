@@ -31,6 +31,15 @@
             z-index: 1000;
         }
         #github-toast.show { transform: translateY(0); }
+
+        /* Path Browser Popup */
+        #path-browser {
+            position: absolute; width: 100%; top: 100%; left: 0;
+            background: #1e293b; border: 1px solid #475569; border-radius: 8px;
+            max-height: 150px; overflow-y: auto; z-index: 50; display: none;
+        }
+        .path-item { padding: 8px 12px; font-size: 11px; cursor: pointer; border-bottom: 1px solid #334155; }
+        .path-item:hover { background: #334155; color: #60a5fa; }
     </style>
 </head>
 <body class="p-8">
@@ -92,11 +101,21 @@
                         <select id="edit-env" class="w-full">
                             <option value="Z-Image">Z-Image</option><option value="Flux">Flux</option><option value="SDXL">SDXL</option>
                         </select>
-                        <select id="edit-cat" class="w-full">
-                            <option value="diffusion_models">diffusion_models</option><option value="loras">loras</option><option value="vae">vae</option><option value="upscale_models">upscale_models</option>
+                        <select id="edit-cat" class="w-full" onchange="updatePathByCategory()">
+                            <option value="diffusion_models">diffusion_models</option><option value="loras">loras</option><option value="vae">vae</option><option value="upscale_models">upscale_models</option><option value="text_encoders">text_encoders</option><option value="controlnet">controlnet</option>
                         </select>
                     </div>
-                    <input id="edit-path" placeholder="/workspace/..." class="w-full font-mono text-xs">
+
+                    <div class="relative">
+                        <div class="flex items-center gap-2">
+                            <input id="edit-path" placeholder="/workspace/..." class="flex-1 font-mono text-[10px]">
+                            <button onclick="togglePathBrowser()" class="bg-slate-800 p-2 rounded border border-slate-600 hover:bg-slate-700">
+                                <i class="fas fa-folder-open text-blue-400"></i>
+                            </button>
+                        </div>
+                        <div id="path-browser"></div>
+                    </div>
+
                     <input id="edit-url" placeholder="Coller URL (Civitai ou HF)" class="w-full text-xs" oninput="autoFetchName(this.value)">
                     <input id="edit-file" placeholder="Nom du fichier" class="w-full bg-slate-900 text-xs font-bold border-yellow-900/50 focus:border-yellow-500 outline-none">
                     <button onclick="saveToCatalogue()" class="w-full bg-yellow-600 py-2 rounded-lg font-bold hover:bg-yellow-500 text-sm">ENREGISTRER DANS LE JSON</button>
@@ -124,6 +143,39 @@
             document.getElementById('edit-file').value = "";
             document.getElementById('edit-path').value = "";
             renderCatalogue();
+        }
+
+        // --- NOUVEAUTÉ : PATH BROWSER ---
+        function updatePathByCategory() {
+            const cat = document.getElementById('edit-cat').value;
+            document.getElementById('edit-path').value = BASE_PATH + cat;
+            hidePathBrowser();
+        }
+
+        async function togglePathBrowser() {
+            const browser = document.getElementById('path-browser');
+            if (browser.style.display === "block") {
+                hidePathBrowser();
+            } else {
+                const cat = document.getElementById('edit-cat').value;
+                const r = await fetch(`/list-subfolders?category=${cat}`);
+                const folders = await r.json();
+                
+                browser.innerHTML = folders.map(f => `
+                    <div class="path-item" onclick="setPath('${cat}', '${f}')">
+                        <i class="fas fa-folder mr-2"></i> ${f === "" ? "[Racine]" : f}
+                    </div>
+                `).join('');
+                browser.style.display = "block";
+            }
+        }
+
+        function hidePathBrowser() { document.getElementById('path-browser').style.display = "none"; }
+
+        function setPath(cat, sub) {
+            const cleanSub = sub === "" ? "" : (sub.startsWith('/') ? sub : '/' + sub);
+            document.getElementById('edit-path').value = BASE_PATH + cat + cleanSub;
+            hidePathBrowser();
         }
 
         async function autoFetchName(url) {
