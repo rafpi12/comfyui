@@ -553,6 +553,14 @@
                 "path": "vae",
                 "filename": "flux2-vae.safetensors"
             }
+        ],
+        "loras": [
+            {
+                "name": "klein-m4crom4sti4-5epoc-k3nk.safetensors",
+                "url": "https://civitai.com/api/download/models/2618139?type=Model&format=SafeTensor",
+                "path": "loras",
+                "filename": "klein-m4crom4sti4-5epoc-k3nk.safetensors"
+            }
         ]
     }
 }
