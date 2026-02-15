@@ -560,6 +560,12 @@
                 "url": "https://civitai.com/api/download/models/2618139?type=Model&format=SafeTensor",
                 "path": "loras",
                 "filename": "klein-m4crom4sti4-5epoc-k3nk.safetensors"
+            },
+            {
+                "name": "pussydiffusion-f2-klein-9b_v2.safetensors",
+                "url": "https://civitai.com/api/download/models/2645238?type=Model&format=SafeTensor",
+                "path": "loras",
+                "filename": "pussydiffusion-f2-klein-9b_v2.safetensors"
             }
         ]
     }
