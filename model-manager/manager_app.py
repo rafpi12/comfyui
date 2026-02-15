@@ -17,6 +17,13 @@ GITHUB_FILE_PATH = "model-manager/models.json"
 MODEL_CATEGORIES = ["checkpoints", "loras", "vae", "upscale_models", "text_encoders", "unet", "diffusion_models", "controlnet"]
 ALLOWED_EXTENSIONS = {'.safetensors', '.pth', '.gguf'}
 
+def get_client():
+    try:
+        client = aria2p.Client(host="http://127.0.0.1", port=6800, secret="")
+        api = aria2p.API(client)
+        return api
+    except: return None
+
 def sync_to_github():
     if not GITHUB_TOKEN: return False
     url = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/contents/{GITHUB_FILE_PATH}"
@@ -33,11 +40,12 @@ def sync_to_github():
 
 @app.get("/list-subfolders")
 async def list_subfolders(category: str):
-    """Liste les sous-dossiers d'une catégorie pour le browser"""
     base = os.path.join(BASE_MODELS_PATH, category)
-    subdirs = [""] # Le dossier racine de la catégorie
+    subdirs = [""]
     if os.path.exists(base):
         for root, dirs, _ in os.walk(base):
+            # Filtrage des dossiers cachés (commençant par .)
+            dirs[:] = [d for d in dirs if not d.startswith('.')]
             for d in dirs:
                 rel = os.path.relpath(os.path.join(root, d), base)
                 subdirs.append(rel.replace("\\", "/"))
@@ -55,6 +63,7 @@ async def fetch_civitai_name(url: str):
                 for file in data.get('files', []):
                     if file.get('primary'): return {"filename": file.get('name')}
                 if data.get('files'): return {"filename": data['files'][0].get('name')}
+        
         r = requests.head(url, allow_redirects=True, timeout=5)
         cd = r.headers.get('content-disposition')
         if cd and 'filename=' in cd:
