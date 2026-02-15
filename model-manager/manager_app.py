@@ -44,7 +44,6 @@ async def list_subfolders(category: str):
     subdirs = [""]
     if os.path.exists(base):
         for root, dirs, _ in os.walk(base):
-            # Filtrage des dossiers cachés (commençant par .)
             dirs[:] = [d for d in dirs if not d.startswith('.')]
             for d in dirs:
                 rel = os.path.relpath(os.path.join(root, d), base)
@@ -63,7 +62,6 @@ async def fetch_civitai_name(url: str):
                 for file in data.get('files', []):
                     if file.get('primary'): return {"filename": file.get('name')}
                 if data.get('files'): return {"filename": data['files'][0].get('name')}
-        
         r = requests.head(url, allow_redirects=True, timeout=5)
         cd = r.headers.get('content-disposition')
         if cd and 'filename=' in cd:
@@ -115,7 +113,8 @@ async def check_file(category: str, filename: str):
 async def download(request: Request):
     data = await request.json()
     url, category, filename = data.get("url"), data.get("path"), data.get("filename")
-    target_dir = os.path.join(BASE_MODELS_PATH, category)
+    clean_cat = category.replace(BASE_MODELS_PATH, "").lstrip("/")
+    target_dir = os.path.join(BASE_MODELS_PATH, clean_cat)
     os.makedirs(target_dir, exist_ok=True)
     client = get_client()
     if not client: return {"status": "error", "message": "Aria2 non connecté"}
@@ -138,7 +137,8 @@ async def progress():
 
 @app.delete("/delete")
 async def delete(cat: str, file: str):
-    p = os.path.join(BASE_MODELS_PATH, cat, file)
+    clean_cat = cat.replace(BASE_MODELS_PATH, "").lstrip("/")
+    p = os.path.join(BASE_MODELS_PATH, clean_cat, file)
     if os.path.exists(p): os.remove(p)
     return {"status": "ok"}
 
