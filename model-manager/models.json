@@ -601,7 +601,15 @@
     "Qwen": {
         "diffusion_models": [],
         "text_encoders": [],
-        "loras": []
+        "loras": [],
+        "vae": [
+            {
+                "name": "qwen_image_vae.safetensors",
+                "url": "https://huggingface.co/Comfy-Org/Qwen-Image_ComfyUI/resolve/main/split_files/vae/qwen_image_vae.safetensors?download=true",
+                "path": "vae",
+                "filename": "qwen_image_vae.safetensors"
+            }
+        ]
     },
     "Wan": {
         "diffusion_models": [],
