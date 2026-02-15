@@ -546,6 +546,12 @@
                 "url": "https://huggingface.co/modelzpalace/ae.safetensors/resolve/main/ae.safetensors?download=true",
                 "path": "vae",
                 "filename": "ae.safetensors"
+            },
+            {
+                "name": "flux2-vae.safetensors",
+                "url": "https://huggingface.co/Comfy-Org/flux2-dev/resolve/main/split_files/vae/flux2-vae.safetensors?download=true",
+                "path": "vae",
+                "filename": "flux2-vae.safetensors"
             }
         ]
     }
