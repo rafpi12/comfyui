@@ -524,6 +524,12 @@
                 "url": "https://huggingface.co/comfyanonymous/flux_text_encoders/resolve/main/t5xxl_fp8_e4m3fn.safetensors?download=true",
                 "path": "clip",
                 "filename": "t5xxl_fp8_e4m3fn.safetensors"
+            },
+            {
+                "name": "clip_l.safetensors",
+                "url": "https://huggingface.co/comfyanonymous/flux_text_encoders/resolve/main/clip_l.safetensors?download=true",
+                "path": "clip",
+                "filename": "clip_l.safetensors"
             }
         ],
         "diffusion_models": [
