@@ -8,8 +8,11 @@ app = FastAPI()
 BASE_MODELS_PATH = "/workspace/ComfyUI/models"
 CONFIG_PATH = "/workspace/model-manager/models.json"
 
+# Récupération des secrets (HF, GitHub et ton CIVITAI_TOKEN)
 HF_TOKEN = os.environ.get("HF_TOKEN", "")
+CIVITAI_TOKEN = os.environ.get("CIVITAI_TOKEN", "") 
 GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN", "")
+
 REPO_OWNER = "rafpi12"
 REPO_NAME = "comfyui"
 GITHUB_FILE_PATH = "model-manager/models.json"
@@ -54,17 +57,16 @@ async def list_subfolders(category: str):
 async def fetch_civitai_name(url: str):
     try:
         if "civitai.com" in url:
-            # Extraction ID
-            parts = url.split('/models/')
-            if len(parts) > 1:
-                model_id = parts[1].split('?')[0]
-                api_url = f"https://civitai.com/api/v1/model-versions/{model_id}"
-                resp = requests.get(api_url, timeout=5)
-                if resp.status_code == 200:
-                    data = resp.json()
-                    for file in data.get('files', []):
-                        if file.get('primary'): return {"filename": file.get('name')}
-                    if data.get('files'): return {"filename": data['files'][0].get('name')}
+            model_id = url.split('/models/')[1].split('?')[0]
+            api_url = f"https://civitai.com/api/v1/model-versions/{model_id}"
+            # On utilise aussi le token pour l'API metadata au cas où
+            headers = {"Authorization": f"Bearer {CIVITAI_TOKEN}"} if CIVITAI_TOKEN else {}
+            resp = requests.get(api_url, headers=headers, timeout=5)
+            if resp.status_code == 200:
+                data = resp.json()
+                for file in data.get('files', []):
+                    if file.get('primary'): return {"filename": file.get('name')}
+                if data.get('files'): return {"filename": data['files'][0].get('name')}
         
         r = requests.head(url, allow_redirects=True, timeout=5)
         cd = r.headers.get('content-disposition')
@@ -118,7 +120,7 @@ async def download(request: Request):
     data = await request.json()
     url, category, filename = data.get("url"), data.get("path"), data.get("filename")
     
-    # Nettoyage URL pour Civitai (on enlève les paramètres superflus qui perdent Aria2)
+    # Nettoyage URL pour Civitai
     if "civitai.com" in url and "api/download/models/" in url:
         url = url.split('?')[0]
 
@@ -133,20 +135,28 @@ async def download(request: Request):
         "dir": target_dir, 
         "out": filename,
         "follow-mirror": "true",
-        "max-file-not-found": "3",
-        "stream-piece-selector": "random",
+        "max-file-not-found": "5",
         "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
     }
     
+    # --- GESTION DES TOKENS DANS LES HEADERS ---
+    headers_list = []
     if "huggingface.co" in url.lower() and HF_TOKEN:
-        options["header"] = f"Authorization: Bearer {HF_TOKEN}"
+        headers_list.append(f"Authorization: Bearer {HF_TOKEN}")
     
+    # C'est ici que ton CIVITAI_TOKEN entre en jeu
+    if "civitai.com" in url.lower() and CIVITAI_TOKEN:
+        headers_list.append(f"Authorization: Bearer {CIVITAI_TOKEN}")
+    
+    if headers_list:
+        options["header"] = headers_list
+
     try:
-        # On supprime d'éventuels résidus corrompus (.aria2)
-        old_file = os.path.join(target_dir, filename)
-        if os.path.exists(old_file) and os.path.getsize(old_file) < 1000000: # Si < 1Mo, c'est probablement une erreur
-             os.remove(old_file)
-             if os.path.exists(old_file + ".aria2"): os.remove(old_file + ".aria2")
+        # Nettoyage avant de relancer
+        dest = os.path.join(target_dir, filename)
+        if os.path.exists(dest) and os.path.getsize(dest) < 1000000:
+             os.remove(dest)
+             if os.path.exists(dest + ".aria2"): os.remove(dest + ".aria2")
 
         client.add(url, options=options)
         return {"status": "ok"}
