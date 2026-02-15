@@ -16,7 +16,6 @@ REPO_OWNER = "rafpi12"
 REPO_NAME = "comfyui"
 GITHUB_FILE_PATH = "model-manager/models.json"
 
-# Extensions autorisées (Ajout de .pt)
 ALLOWED_EXTENSIONS = {'.safetensors', '.pth', '.pt', '.gguf', '.bin', '.ckpt', '.yaml'}
 
 def get_client():
