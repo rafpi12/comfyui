@@ -1,4 +1,4 @@
-import os, json, aria2p, subprocess, time, uvicorn, shutil, psutil, requests, base64
+import os, json, aria2p, subprocess, time, uvicorn, shutil, psutil, requests, base64, re
 from fastapi import FastAPI, Request, BackgroundTasks
 from fastapi.responses import HTMLResponse
 
@@ -8,6 +8,7 @@ app = FastAPI()
 BASE_MODELS_PATH = "/workspace/ComfyUI/models"
 CONFIG_PATH = "/workspace/model-manager/models.json"
 
+# Secrets environnement
 HF_TOKEN = os.environ.get("HF_TOKEN", "")
 GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN", "")
 REPO_OWNER = "rafpi12"
@@ -16,6 +17,13 @@ GITHUB_FILE_PATH = "model-manager/models.json"
 
 MODEL_CATEGORIES = ["checkpoints", "loras", "vae", "upscale_models", "text_encoders", "unet", "diffusion_models", "controlnet"]
 ALLOWED_EXTENSIONS = {'.safetensors', '.pth', '.gguf'}
+
+def get_client():
+    try:
+        client = aria2p.Client(host="http://127.0.0.1", port=6800, secret="")
+        api = aria2p.API(client)
+        return api
+    except: return None
 
 def sync_to_github():
     if not GITHUB_TOKEN: return False
@@ -26,27 +34,33 @@ def sync_to_github():
         sha = r.json().get('sha') if r.status_code == 200 else None
         with open(CONFIG_PATH, "rb") as f:
             content = base64.b64encode(f.read()).decode()
-        payload = {"message": "Update models.json via Manager", "content": content, "sha": sha}
+        payload = {"message": "Update models.json via Model Manager Pro", "content": content, "sha": sha}
         requests.put(url, headers=headers, json=payload)
         return True
     except: return False
 
 @app.get("/fetch-civitai-name")
 async def fetch_civitai_name(url: str):
-    """Tente de récupérer le nom du fichier depuis l'API Civitai"""
     try:
-        # Extraire l'ID du modèle depuis l'URL
-        # Exemple: https://civitai.com/api/download/models/2687961
-        model_id = url.split('/')[-1].split('?')[0]
-        r = requests.head(url, allow_redirects=True)
-        # On regarde dans les headers de réponse (Content-Disposition)
+        if "civitai.com" in url:
+            # Extraction de l'ID de version depuis l'URL de téléchargement
+            model_id = url.split('/models/')[1].split('?')[0]
+            api_url = f"https://civitai.com/api/v1/model-versions/{model_id}"
+            resp = requests.get(api_url, timeout=5)
+            if resp.status_code == 200:
+                data = resp.json()
+                for file in data.get('files', []):
+                    if file.get('primary'): return {"filename": file.get('name')}
+                if data.get('files'): return {"filename": data['files'][0].get('name')}
+        
+        # Backup : Headers Content-Disposition
+        r = requests.head(url, allow_redirects=True, timeout=5)
         cd = r.headers.get('content-disposition')
         if cd and 'filename=' in cd:
-            fname = cd.split('filename=')[1].strip('"')
-            return {"filename": fname}
-        return {"filename": f"model_{model_id}.safetensors"}
-    except:
+            fname = re.findall("filename\\*?=['\"]?(?:UTF-8'')?([^'\"\\n;]+)", cd)
+            if fname: return {"filename": fname[0]}
         return {"filename": ""}
+    except: return {"filename": ""}
 
 @app.get("/", response_class=HTMLResponse)
 async def index(): 
@@ -116,6 +130,12 @@ async def progress():
 async def delete(cat: str, file: str):
     p = os.path.join(BASE_MODELS_PATH, cat, file)
     if os.path.exists(p): os.remove(p)
+    return {"status": "ok"}
+
+@app.post("/purge")
+async def purge():
+    client = get_client()
+    if client: client.purge()
     return {"status": "ok"}
 
 if __name__ == "__main__":
