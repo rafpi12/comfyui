@@ -519,6 +519,14 @@
                 "path": "clip",
                 "filename": "qwen_3_8b_fp8mixed.safetensors"
             }
+        ],
+        "diffusion_models": [
+            {
+                "name": "flux-2-klein-9b-fp8.safetensors",
+                "url": "https://huggingface.co/black-forest-labs/FLUX.2-klein-9b-fp8/resolve/main/flux-2-klein-9b-fp8.safetensors?download=true",
+                "path": "unet",
+                "filename": "flux-2-klein-9b-fp8.safetensors"
+            }
         ]
     }
 }
