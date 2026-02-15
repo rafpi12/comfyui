@@ -80,6 +80,12 @@
                 "url": "https://civitai.com/api/download/models/2691810",
                 "path": "loras",
                 "filename": "ZiB_SoReal!_POV_V3.safetensors"
+            },
+            {
+                "name": "MisterMR_Anna_ZImageTurbo.safetensors",
+                "url": "https://civitai.com/api/download/models/2691425?type=Model&format=SafeTensor",
+                "path": "loras/",
+                "filename": "MisterMR_Anna_ZImageTurbo.safetensors"
             }
         ],
         "loras/Vyesna": [
