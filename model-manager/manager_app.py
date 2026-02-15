@@ -6,9 +6,9 @@ app = FastAPI()
 
 # --- CONFIGURATION SÉCURISÉE ---
 BASE_MODELS_PATH = "/workspace/ComfyUI/models"
-CONFIG_PATH = "/workspace/workspace/model-manager/models.json"
+# Correction du chemin ici :
+CONFIG_PATH = "/workspace/model-manager/models.json"
 
-# On récupère le token depuis le système (plus de fuite sur GitHub !)
 HF_TOKEN = os.environ.get("HF_TOKEN", "") 
 
 MODEL_CATEGORIES = ["checkpoints", "loras", "vae", "upscale_models", "text_encoders", "unet", "diffusion_models", "controlnet"]
@@ -22,52 +22,52 @@ def get_client():
     except: return None
 
 @app.get("/", response_class=HTMLResponse)
-async def index(): return open("index.html").read()
+async def index(): 
+    if os.path.exists("index.html"):
+        return open("index.html").read()
+    return "Fichier index.html introuvable."
 
 @app.get("/config")
 async def get_config():
     if os.path.exists(CONFIG_PATH):
-        with open(CONFIG_PATH, 'r', encoding='utf-8') as f: return json.load(f)
+        with open(CONFIG_PATH, 'r', encoding='utf-8') as f: 
+            return json.load(f)
     return {}
 
 @app.post("/save-config")
 async def save_config(request: Request):
     data = await request.json()
     with open(CONFIG_PATH, 'w', encoding='utf-8') as f:
-        json.dump(data, f, indent=2)
+        json.dump(data, f, indent=4)
     return {"status": "ok"}
 
-@app.get("/check-file")
-async def check_file(category: str, filename: str):
-    clean_cat = category.replace(BASE_MODELS_PATH, "").lstrip("/")
-    p = os.path.join(BASE_MODELS_PATH, clean_cat, filename)
-    return {"exists": os.path.exists(p), "path": p}
-
-@app.get("/scan-disk")
-async def scan_disk():
-    res = {}
+@app.get("/disk-state")
+async def disk_state():
+    state = {}
     for cat in MODEL_CATEGORIES:
-        base_path = os.path.join(BASE_MODELS_PATH, cat)
-        files = []
-        if os.path.exists(base_path):
-            for root, _, filenames in os.walk(base_path):
-                for f in filenames:
-                    if any(f.endswith(ext) for ext in ALLOWED_EXTENSIONS):
-                        rel = os.path.relpath(os.path.join(root, f), base_path)
-                        files.append(rel.replace("\\", "/"))
-        res[cat] = files
-    return res
+        p = os.path.join(BASE_MODELS_PATH, cat)
+        if os.path.exists(p):
+            state[cat] = [f for f in os.listdir(p) if any(f.endswith(ext) for ext in ALLOWED_EXTENSIONS)]
+        else:
+            state[cat] = []
+    return state
 
 @app.post("/download")
-async def download(url: str, category: str, filename: str):
-    client = get_client()
-    if not client: return {"status": "error", "message": "Moteur Aria2 hors ligne"}
+async def download(request: Request):
+    data = await request.json()
+    url = data.get("url")
+    target_dir = data.get("path")
+    filename = data.get("filename")
+
+    if not target_dir.startswith("/"):
+        target_dir = os.path.join(BASE_MODELS_PATH, target_dir)
     
-    target_dir = category if category.startswith("/") else os.path.join(BASE_MODELS_PATH, category)
     os.makedirs(target_dir, exist_ok=True)
     
+    client = get_client()
+    if not client: return {"status": "error", "message": "Aria2 non connecté"}
+
     options = {"dir": target_dir, "out": filename}
-    
     if "huggingface.co" in url.lower() and HF_TOKEN:
         options["header"] = f"Authorization: Bearer {HF_TOKEN}"
     
@@ -85,7 +85,7 @@ async def progress():
         downloads = client.get_downloads()
         return [{
             "name": d.name,
-            "status": f"{d.status} (Code: {d.error_code})" if d.status == 'error' else d.status,
+            "status": d.status,
             "progress": d.progress,
             "speed": d.download_speed_string,
             "eta": d.eta_string
@@ -106,8 +106,9 @@ async def delete(cat: str, file: str):
     return {"status": "ok"}
 
 if __name__ == "__main__":
+    # Nettoyage et lancement d'Aria2
     subprocess.run(["pkill", "-9", "aria2c"])
     subprocess.Popen(["aria2c", "--enable-rpc", "--rpc-listen-all=true", "--rpc-allow-origin-all=true", "-D"])
     time.sleep(1)
-    print(f"🚀 Manager Pro lancé (Mode Sécurisé).")
-    uvicorn.run(app, host="0.0.0.0", port=8080, log_level="error")
+    # Lancement Uvicorn sur 0.0.0.0 pour RunPod
+    uvicorn.run(app, host="0.0.0.0", port=8080)
