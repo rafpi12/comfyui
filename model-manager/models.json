@@ -607,7 +607,14 @@
                 "filename": "qwen_image_edit_2511_fp8_e4m3fn.safetensors"
             }
         ],
-        "text_encoders": [],
+        "text_encoders": [
+            {
+                "name": "qwen_2.5_vl_7b_fp8_scaled.safetensors",
+                "url": "https://huggingface.co/Comfy-Org/Qwen-Image_ComfyUI/resolve/main/split_files/text_encoders/qwen_2.5_vl_7b_fp8_scaled.safetensors?download=true",
+                "path": "text_encoders",
+                "filename": "qwen_2.5_vl_7b_fp8_scaled.safetensors"
+            }
+        ],
         "loras": [],
         "vae": [
             {
