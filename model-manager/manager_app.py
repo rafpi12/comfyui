@@ -6,7 +6,6 @@ app = FastAPI()
 
 # --- CONFIGURATION SÉCURISÉE ---
 BASE_MODELS_PATH = "/workspace/ComfyUI/models"
-# Correction du chemin ici :
 CONFIG_PATH = "/workspace/model-manager/models.json"
 
 HF_TOKEN = os.environ.get("HF_TOKEN", "") 
@@ -41,27 +40,36 @@ async def save_config(request: Request):
         json.dump(data, f, indent=4)
     return {"status": "ok"}
 
-@app.get("/disk-state")
-async def disk_state():
-    state = {}
+@app.get("/scan-disk")
+async def scan_disk():
+    res = {}
     for cat in MODEL_CATEGORIES:
-        p = os.path.join(BASE_MODELS_PATH, cat)
-        if os.path.exists(p):
-            state[cat] = [f for f in os.listdir(p) if any(f.endswith(ext) for ext in ALLOWED_EXTENSIONS)]
-        else:
-            state[cat] = []
-    return state
+        base_path = os.path.join(BASE_MODELS_PATH, cat)
+        files = []
+        if os.path.exists(base_path):
+            for root, _, filenames in os.walk(base_path):
+                for f in filenames:
+                    if any(f.endswith(ext) for ext in ALLOWED_EXTENSIONS):
+                        # On calcule le chemin relatif par rapport au dossier de base de la catégorie
+                        rel_path = os.path.relpath(os.path.join(root, f), base_path)
+                        files.append(rel_path.replace("\\", "/"))
+        res[cat] = files
+    return res
+
+@app.get("/check-file")
+async def check_file(category: str, filename: str):
+    # Gère les sous-dossiers éventuels (ex: loras/Vyesna/mon_lora.safetensors)
+    path = os.path.join(BASE_MODELS_PATH, category, filename)
+    return {"exists": os.path.exists(path), "path": path}
 
 @app.post("/download")
 async def download(request: Request):
     data = await request.json()
     url = data.get("url")
-    target_dir = data.get("path")
+    category = data.get("path") # Ex: "loras/Vyesna"
     filename = data.get("filename")
 
-    if not target_dir.startswith("/"):
-        target_dir = os.path.join(BASE_MODELS_PATH, target_dir)
-    
+    target_dir = os.path.join(BASE_MODELS_PATH, category)
     os.makedirs(target_dir, exist_ok=True)
     
     client = get_client()
@@ -100,15 +108,12 @@ async def purge():
 
 @app.delete("/delete")
 async def delete(cat: str, file: str):
-    target_dir = cat if cat.startswith("/") else os.path.join(BASE_MODELS_PATH, cat)
-    p = os.path.join(target_dir, file)
+    p = os.path.join(BASE_MODELS_PATH, cat, file)
     if os.path.exists(p): os.remove(p)
     return {"status": "ok"}
 
 if __name__ == "__main__":
-    # Nettoyage et lancement d'Aria2
     subprocess.run(["pkill", "-9", "aria2c"])
     subprocess.Popen(["aria2c", "--enable-rpc", "--rpc-listen-all=true", "--rpc-allow-origin-all=true", "-D"])
     time.sleep(1)
-    # Lancement Uvicorn sur 0.0.0.0 pour RunPod
     uvicorn.run(app, host="0.0.0.0", port=8080)
