@@ -8,7 +8,6 @@ app = FastAPI()
 BASE_MODELS_PATH = "/workspace/ComfyUI/models"
 CONFIG_PATH = "/workspace/model-manager/models.json"
 
-# Secrets environnement
 HF_TOKEN = os.environ.get("HF_TOKEN", "")
 GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN", "")
 REPO_OWNER = "rafpi12"
@@ -18,41 +17,36 @@ GITHUB_FILE_PATH = "model-manager/models.json"
 MODEL_CATEGORIES = ["checkpoints", "loras", "vae", "upscale_models", "text_encoders", "unet", "diffusion_models", "controlnet"]
 ALLOWED_EXTENSIONS = {'.safetensors', '.pth', '.gguf'}
 
-def get_client():
-    try:
-        client = aria2p.Client(host="http://127.0.0.1", port=6800, secret="")
-        api = aria2p.API(client)
-        return api
-    except: return None
-
 def sync_to_github():
-    if not GITHUB_TOKEN:
-        print("⚠️ GITHUB_TOKEN manquant")
-        return False
-    
+    if not GITHUB_TOKEN: return False
     url = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/contents/{GITHUB_FILE_PATH}"
     headers = {"Authorization": f"token {GITHUB_TOKEN}", "Accept": "application/vnd.github.v3+json"}
-    
     try:
-        # 1. Obtenir le SHA actuel
         r = requests.get(url, headers=headers)
         sha = r.json().get('sha') if r.status_code == 200 else None
-        
-        # 2. Lire et encoder le fichier local
         with open(CONFIG_PATH, "rb") as f:
             content = base64.b64encode(f.read()).decode()
-            
-        # 3. Push
-        payload = {
-            "message": "Update models.json via Model Manager Pro",
-            "content": content,
-            "sha": sha
-        }
-        res = requests.put(url, headers=headers, json=payload)
-        return res.status_code in [200, 201]
-    except Exception as e:
-        print(f"Erreur synchro GitHub: {e}")
-        return False
+        payload = {"message": "Update models.json via Manager", "content": content, "sha": sha}
+        requests.put(url, headers=headers, json=payload)
+        return True
+    except: return False
+
+@app.get("/fetch-civitai-name")
+async def fetch_civitai_name(url: str):
+    """Tente de récupérer le nom du fichier depuis l'API Civitai"""
+    try:
+        # Extraire l'ID du modèle depuis l'URL
+        # Exemple: https://civitai.com/api/download/models/2687961
+        model_id = url.split('/')[-1].split('?')[0]
+        r = requests.head(url, allow_redirects=True)
+        # On regarde dans les headers de réponse (Content-Disposition)
+        cd = r.headers.get('content-disposition')
+        if cd and 'filename=' in cd:
+            fname = cd.split('filename=')[1].strip('"')
+            return {"filename": fname}
+        return {"filename": f"model_{model_id}.safetensors"}
+    except:
+        return {"filename": ""}
 
 @app.get("/", response_class=HTMLResponse)
 async def index(): 
@@ -70,7 +64,6 @@ async def save_config(request: Request, background_tasks: BackgroundTasks):
     data = await request.json()
     with open(CONFIG_PATH, 'w', encoding='utf-8') as f:
         json.dump(data, f, indent=4)
-    # On lance la synchro en tâche de fond pour ne pas faire ramer l'UI
     background_tasks.add_task(sync_to_github)
     return {"status": "ok", "github_sync": "started"}
 
@@ -118,12 +111,6 @@ async def progress():
         downloads = client.get_downloads()
         return [{"name": d.name, "status": d.status, "progress": d.progress, "speed": d.download_speed_string, "eta": d.eta_string} for d in downloads]
     except: return []
-
-@app.post("/purge")
-async def purge():
-    client = get_client()
-    if client: client.purge()
-    return {"status": "ok"}
 
 @app.delete("/delete")
 async def delete(cat: str, file: str):
