@@ -57,7 +57,6 @@
                     <option value="loras">LORAS</option>
                     <option value="vae">VAE</option>
                     <option value="upscale_models">UPSCALERS</option>
-                    <option value="text_encoders">TEXT ENCODERS</option>
                 </select>
                 <input id="search-ui" type="text" placeholder="Filtrer par nom..." class="flex-1" onkeyup="loadModels()">
             </div>
@@ -99,10 +98,7 @@
                     </div>
                     <input id="edit-path" placeholder="/workspace/..." class="w-full font-mono text-xs">
                     <input id="edit-url" placeholder="Coller URL (Civitai ou HF)" class="w-full text-xs" oninput="autoFetchName(this.value)">
-                    <div class="relative">
-                        <input id="edit-file" placeholder="Nom du fichier (ex: mon_lora.safetensors)" class="w-full bg-slate-900 text-xs font-bold border-yellow-900/50 focus:border-yellow-500 outline-none">
-                        <span class="absolute right-3 top-2 text-[9px] text-yellow-600 font-bold uppercase pointer-events-none">Éditable</span>
-                    </div>
+                    <input id="edit-file" placeholder="Nom du fichier" class="w-full bg-slate-900 text-xs font-bold border-yellow-900/50 focus:border-yellow-500 outline-none">
                     <button onclick="saveToCatalogue()" class="w-full bg-yellow-600 py-2 rounded-lg font-bold hover:bg-yellow-500 text-sm">ENREGISTRER DANS LE JSON</button>
                 </div>
                 <div id="catalogue-list" class="space-y-1 font-mono text-[10px] bg-black/30 p-4 rounded-xl overflow-y-auto max-h-[250px]"></div>
@@ -133,20 +129,17 @@
         async function autoFetchName(url) {
             if (!url) return;
             const fileInput = document.getElementById('edit-file');
-            
-            // Logique d'extraction rapide pour Hugging Face
+            fileInput.value = "⏳ Recherche du nom...";
+
             if (url.includes('huggingface.co')) {
-                const parts = url.split('/');
-                const name = parts[parts.length - 1].split('?')[0];
-                if (name.includes('.')) fileInput.value = name;
-            } 
-            // Logique pour Civitai (Appel API via notre serveur pour éviter CORS)
-            else if (url.includes('civitai.com')) {
+                const name = url.split('/').pop().split('?')[0];
+                fileInput.value = name;
+            } else if (url.includes('civitai.com')) {
                 try {
                     const r = await fetch(`/fetch-civitai-name?url=${encodeURIComponent(url)}`);
                     const d = await r.json();
-                    if (d.filename) fileInput.value = d.filename;
-                } catch(e) { console.error("Erreur Civitai Fetch", e); }
+                    fileInput.value = d.filename || "";
+                } catch(e) { fileInput.value = ""; }
             }
         }
 
@@ -161,26 +154,22 @@
                 const r = await fetch('/config'); cfg = await r.json();
                 const e = document.getElementById('env-ui'); e.innerHTML = "";
                 Object.keys(cfg).forEach(k => e.add(new Option(k, k)));
-                await updateDiskState(); 
-                loadModels(); 
-                renderCatalogue(); 
+                await updateDiskState(); loadModels(); renderCatalogue(); 
                 setInterval(loop, 2000);
-                addLog("Manager Pro initialisé.");
             } catch(e) { addLog("Erreur connexion serveur.", true); }
         }
 
         async function updateDiskState() { 
-            const r = await fetch('/scan-disk'); 
-            diskFiles = await r.json(); 
+            const r = await fetch('/scan-disk'); diskFiles = await r.json(); 
         }
 
         function loadModels() {
             const m = document.getElementById('models-ui');
-            const savedScroll = m.scrollTop;
-            const selectedValues = Array.from(m.selectedOptions).map(o => o.value);
             const env = document.getElementById('env-ui').value;
             const type = document.getElementById('type-ui').value;
             const search = document.getElementById('search-ui').value.toLowerCase();
+            const savedScroll = m.scrollTop;
+            const selectedValues = Array.from(m.selectedOptions).map(o => o.value);
             m.innerHTML = "";
             Object.keys(cfg[env] || {}).forEach(cat => {
                 if (type !== 'all' && !cat.startsWith(type)) return;
@@ -202,7 +191,6 @@
 
         async function checkStatus() {
             const s = Array.from(document.getElementById('models-ui').selectedOptions);
-            const delBtn = document.getElementById('delete-btn');
             if(s.length === 0) return;
             const o = s[0];
             const name = o.value.replace(/^[●○]\s/, "");
@@ -210,8 +198,7 @@
             const d = await r.json();
             document.getElementById('diode-ui').className = `w-4 h-4 rounded-full ${d.exists ? 'bg-green-500 shadow-[0_0_15px_#22c55e]' : 'bg-red-500 shadow-lg'}`;
             document.getElementById('status-text').innerText = d.exists ? "Présent sur le disque" : "Absent du disque";
-            delBtn.disabled = !d.exists;
-            delBtn.className = d.exists ? "btn-action bg-red-600 hover:bg-red-500 text-white shadow-lg" : "btn-action bg-red-900/50 text-red-500 border border-red-500 opacity-20 cursor-not-allowed";
+            document.getElementById('delete-btn').disabled = !d.exists;
             document.getElementById('path-ui').innerText = d.path;
         }
 
@@ -230,9 +217,8 @@
 
         async function startSmartDownload() {
             const url = document.getElementById('edit-url').value;
-            const path = document.getElementById('edit-path').value;
+            const path = document.getElementById('edit-path').value.replace(BASE_PATH, "");
             const file = document.getElementById('edit-file').value;
-            if(!url || !file) return addLog("Erreur : Aucun fichier sélectionné.", true);
             const r = await fetch('/download', {
                 method:'POST', 
                 headers: {'Content-Type': 'application/json'},
@@ -240,7 +226,6 @@
             });
             const res = await r.json();
             if(res.status === "ok") addLog(`Téléchargement lancé : ${file}`);
-            else addLog(`Erreur : ${res.message}`, true);
         }
 
         async function loop() {
@@ -250,8 +235,7 @@
                 const completeCount = tasks.filter(t => t.status.includes('complete')).length;
                 if (completeCount !== lastCompleteCount) {
                     lastCompleteCount = completeCount;
-                    await updateDiskState(); 
-                    loadModels(); 
+                    await updateDiskState(); loadModels(); 
                 }
                 document.getElementById('tasks-ui').innerHTML = tasks.map(t => `
                     <div class="bg-slate-900/80 p-3 rounded-xl border-l-4 ${t.status.includes('error') ? 'border-red-500' : (t.status === 'complete' ? 'border-green-500' : 'border-blue-500')}">
@@ -284,10 +268,8 @@
             const r = await fetch('/save-config', { method: 'POST', body: JSON.stringify(cfg) });
             const res = await r.json();
             if(res.github_sync) showGitHubToast();
-            
-            addLog("JSON mis à jour & Synchro GitHub.");
-            loadModels();
-            renderCatalogue(file);
+            addLog("Catalogue mis à jour.");
+            loadModels(); renderCatalogue(file);
         }
 
         function renderCatalogue(filterFile = null) {
@@ -322,7 +304,6 @@
             const name = o.value.replace(/^[●○]\s/, "");
             if(confirm(`Supprimer ${name} du disque ?`)) {
                 await fetch(`/delete?cat=${encodeURIComponent(o.dataset.cat)}&file=${encodeURIComponent(name)}`, {method:'DELETE'});
-                addLog(`Fichier supprimé : ${name}`);
                 await updateDiskState(); loadModels();
             }
         }
