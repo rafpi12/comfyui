@@ -518,6 +518,12 @@
                 "url": "https://huggingface.co/Comfy-Org/vae-text-encorder-for-flux-klein-9b/resolve/main/split_files/text_encoders/qwen_3_8b_fp8mixed.safetensors?download=true",
                 "path": "clip",
                 "filename": "qwen_3_8b_fp8mixed.safetensors"
+            },
+            {
+                "name": "t5xxl_fp8_e4m3fn.safetensors",
+                "url": "https://huggingface.co/comfyanonymous/flux_text_encoders/resolve/main/t5xxl_fp8_e4m3fn.safetensors?download=true",
+                "path": "clip",
+                "filename": "t5xxl_fp8_e4m3fn.safetensors"
             }
         ],
         "diffusion_models": [
