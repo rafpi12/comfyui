@@ -64,8 +64,9 @@
                     <option value="diffusion_models">DIFFUSION MODELS</option>
                     <option value="loras">LORAS</option>
                     <option value="vae">VAE</option>
+                    <option value="clip">CLIP / TEXT ENCODERS</option>
+                    <option value="unet">UNET / GGUF</option>
                     <option value="upscale_models">UPSCALERS</option>
-                    <option value="text_encoders">TEXT ENCODERS</option>
                     <option value="controlnet">CONTROLNET</option>
                 </select>
                 <input id="search-ui" type="text" placeholder="Filtrer par nom..." class="flex-1" onkeyup="loadModels()">
@@ -103,14 +104,19 @@
                             <option value="Z-Image">Z-Image</option>
                             <option value="Flux">Flux</option>
                             <option value="SDXL">SDXL</option>
+                            <option value="Qwen">Qwen</option>
+                            <option value="Wan">Wan</option>
                         </select>
                         <select id="edit-cat" class="w-full" onchange="updatePathByCategory()">
                             <option value="diffusion_models">diffusion_models</option>
                             <option value="loras">loras</option>
                             <option value="vae">vae</option>
-                            <option value="upscale_models">upscale_models</option>
+                            <option value="clip">clip</option>
+                            <option value="unet">unet</option>
                             <option value="text_encoders">text_encoders</option>
+                            <option value="upscale_models">upscale_models</option>
                             <option value="controlnet">controlnet</option>
+                            <option value="model_patches">model_patches</option>
                         </select>
                     </div>
 
@@ -218,8 +224,9 @@
                     environments.forEach(env => {
                         envSelector.add(new Option(env, env));
                     });
-                    // On essaie de détecter l'environnement actuel dans l'URL ou on met Flux par défaut
+                    // Détection auto environnement (on privilégie Flux ou Z-Image)
                     if (environments.includes("Flux")) envSelector.value = "Flux";
+                    else if (environments.includes("Z-Image")) envSelector.value = "Z-Image";
                     else envSelector.value = environments[0];
                 }
 
@@ -247,13 +254,14 @@
             if (!cfg[env]) return;
 
             Object.keys(cfg[env]).forEach(cat => {
-                if (type !== 'all' && !cat.startsWith(type)) return;
+                // Filtrage par type
+                if (type !== 'all' && !cat.toLowerCase().includes(type.toLowerCase())) return;
+                
                 cfg[env][cat].forEach(model => {
                     if(model.filename.toLowerCase().includes(search)) {
                         const catKey = model.path.split('/')[0];
                         const sub = model.path.includes('/') ? model.path.split('/').slice(1).join('/') : '';
                         
-                        // Détection flexible (casse et dossier physique)
                         const diskCategoryFiles = diskFiles[catKey] || [];
                         const fullModelPath = (sub ? sub + '/' : '') + model.filename;
                         const isPresent = diskCategoryFiles.some(f => f.toLowerCase() === fullModelPath.toLowerCase());
@@ -352,7 +360,7 @@
             const fullPath = document.getElementById('edit-path').value;
             const url = document.getElementById('edit-url').value;
             const file = document.getElementById('edit-file').value;
-            const relPath = fullPath.replace(BASE_PATH, "");
+            const relPath = fullPath.replace(BASE_PATH, "").replace(/^\/+/, "");
             const obj = { name: file, url: url, path: relPath, filename: file };
             
             if(!cfg[env]) cfg[env] = {};
