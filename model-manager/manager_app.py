@@ -66,11 +66,6 @@ async def fetch_civitai_name(url: str):
                 for file in data.get('files', []):
                     if file.get('primary'): return {"filename": file.get('name')}
                 if data.get('files'): return {"filename": data['files'][0].get('name')}
-        r = requests.head(url, allow_redirects=True, timeout=5)
-        cd = r.headers.get('content-disposition')
-        if cd and 'filename=' in cd:
-            fname = re.findall("filename\\*?=['\"]?(?:UTF-8'')?([^'\"\\n;]+)", cd)
-            if fname: return {"filename": fname[0]}
         return {"filename": ""}
     except: return {"filename": ""}
 
@@ -118,9 +113,6 @@ async def download(request: Request):
     data = await request.json()
     url, category, filename = data.get("url"), data.get("path"), data.get("filename")
     
-    if "civitai.com" in url and "api/download/models/" in url:
-        url = url.split('?')[0]
-
     clean_cat = category.replace(BASE_MODELS_PATH, "").lstrip("/")
     target_dir = os.path.join(BASE_MODELS_PATH, clean_cat)
     os.makedirs(target_dir, exist_ok=True)
@@ -128,33 +120,30 @@ async def download(request: Request):
     client = get_client()
     if not client: return {"status": "error", "message": "Aria2 non connecté"}
     
+    # --- LOGIQUE CALQUÉE SUR TON NOTEBOOK ---
     options = {
         "dir": target_dir, 
         "out": filename,
-        "follow-mirror": "true",
-        "max-file-not-found": "5",
-        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
-        "allow-overwrite": "true"
+        "continue": "true",
+        "max-connection-per-server": "16",
+        "split": "16",
+        "min-split-size": "1M"
     }
     
-    headers_list = []
-    if "huggingface.co" in url.lower() and HF_TOKEN:
-        headers_list.append(f"Authorization: Bearer {HF_TOKEN}")
-    if "civitai.com" in url.lower() and CIVITAI_TOKEN:
-        headers_list.append(f"Authorization: Bearer {CIVITAI_TOKEN}")
-    
-    if headers_list:
-        options["header"] = headers_list
+    final_url = url
+    if "huggingface.co" in url.lower():
+        options["header"] = f"Authorization: Bearer {HF_TOKEN}"
+    elif "civitai.com" in url.lower():
+        sep = "&" if "?" in url else "?"
+        final_url = f"{url}{sep}token={CIVITAI_TOKEN}"
 
     try:
-        # Nettoyage RADICAL des fichiers corrompus avant téléchargement
         dest = os.path.join(target_dir, filename)
-        if os.path.exists(dest):
+        if os.path.exists(dest) and os.path.getsize(dest) < 1024*1024:
              os.remove(dest)
-        if os.path.exists(dest + ".aria2"):
-             os.remove(dest + ".aria2")
+             if os.path.exists(dest + ".aria2"): os.remove(dest + ".aria2")
 
-        client.add(url, options=options)
+        client.add(final_url, options=options)
         return {"status": "ok"}
     except Exception as e: return {"status": "error", "message": str(e)}
 
@@ -164,7 +153,13 @@ async def progress():
     if not client: return []
     try:
         downloads = client.get_downloads()
-        return [{"name": d.name, "status": d.status, "progress": d.progress, "speed": d.download_speed_string, "eta": d.eta_string} for d in downloads]
+        return [{
+            "name": d.name, 
+            "status": f"{d.status} (Code: {d.error_code})" if d.status == 'error' else d.status,
+            "progress": d.progress, 
+            "speed": d.download_speed_string, 
+            "eta": d.eta_string
+        } for d in downloads]
     except: return []
 
 @app.delete("/delete")
