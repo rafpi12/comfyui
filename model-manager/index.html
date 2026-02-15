@@ -32,13 +32,12 @@
         }
         #github-toast.show { transform: translateY(0); }
 
-        /* Path Browser Popup */
         #path-browser {
             position: absolute; width: 100%; top: 100%; left: 0;
             background: #1e293b; border: 1px solid #475569; border-radius: 8px;
             max-height: 150px; overflow-y: auto; z-index: 50; display: none;
         }
-        .path-item { padding: 8px 12px; font-size: 11px; cursor: pointer; border-bottom: 1px solid #334155; }
+        .path-item { padding: 8px 12px; font-size: 11px; cursor: pointer; border-bottom: 1px solid #334155; transition: 0.2s; }
         .path-item:hover { background: #334155; color: #60a5fa; }
     </style>
 </head>
@@ -117,7 +116,7 @@
                     </div>
 
                     <input id="edit-url" placeholder="Coller URL (Civitai ou HF)" class="w-full text-xs" oninput="autoFetchName(this.value)">
-                    <input id="edit-file" placeholder="Nom du fichier" class="w-full bg-slate-900 text-xs font-bold border-yellow-900/50 focus:border-yellow-500 outline-none">
+                    <input id="edit-file" placeholder="Nom du fichier" class="w-full bg-slate-900 text-xs font-bold border-yellow-900/50 outline-none">
                     <button onclick="saveToCatalogue()" class="w-full bg-yellow-600 py-2 rounded-lg font-bold hover:bg-yellow-500 text-sm">ENREGISTRER DANS LE JSON</button>
                 </div>
                 <div id="catalogue-list" class="space-y-1 font-mono text-[10px] bg-black/30 p-4 rounded-xl overflow-y-auto max-h-[250px]"></div>
@@ -142,10 +141,9 @@
             document.getElementById('edit-url').value = "";
             document.getElementById('edit-file').value = "";
             document.getElementById('edit-path').value = "";
-            renderCatalogue();
+            hidePathBrowser();
         }
 
-        // --- NOUVEAUTÉ : PATH BROWSER ---
         function updatePathByCategory() {
             const cat = document.getElementById('edit-cat').value;
             document.getElementById('edit-path').value = BASE_PATH + cat;
@@ -160,10 +158,9 @@
                 const cat = document.getElementById('edit-cat').value;
                 const r = await fetch(`/list-subfolders?category=${cat}`);
                 const folders = await r.json();
-                
                 browser.innerHTML = folders.map(f => `
-                    <div class="path-item" onclick="setPath('${cat}', '${f}')">
-                        <i class="fas fa-folder mr-2"></i> ${f === "" ? "[Racine]" : f}
+                    <div class="path-item flex items-center gap-2" onclick="setPath('${cat}', '${f}')">
+                        ${f === "" ? '<span class="text-blue-400">⤴️</span> <span class="font-bold">Dossier Racine</span>' : '<i class="fas fa-folder text-yellow-500"></i> ' + f}
                     </div>
                 `).join('');
                 browser.style.display = "block";
@@ -182,7 +179,6 @@
             if (!url) return;
             const fileInput = document.getElementById('edit-file');
             fileInput.value = "⏳ Recherche du nom...";
-
             if (url.includes('huggingface.co')) {
                 const name = url.split('/').pop().split('?')[0];
                 fileInput.value = name;
@@ -208,6 +204,7 @@
                 Object.keys(cfg).forEach(k => e.add(new Option(k, k)));
                 await updateDiskState(); loadModels(); renderCatalogue(); 
                 setInterval(loop, 2000);
+                addLog("Manager Pro initialisé.");
             } catch(e) { addLog("Erreur connexion serveur.", true); }
         }
 
@@ -316,7 +313,6 @@
             const idx = cfg[env][cat].findIndex(m => m.filename === file);
             if (idx > -1) cfg[env][cat][idx] = obj;
             else cfg[env][cat].push(obj);
-            
             const r = await fetch('/save-config', { method: 'POST', body: JSON.stringify(cfg) });
             const res = await r.json();
             if(res.github_sync) showGitHubToast();
@@ -353,7 +349,7 @@
             const s = Array.from(document.getElementById('models-ui').selectedOptions);
             if(s.length === 0) return;
             const o = s[0];
-            const name = o.value.replace(/^[●○]\s/, "");
+            const name = o.value.replace(/^[●○]\\s/, "");
             if(confirm(`Supprimer ${name} du disque ?`)) {
                 await fetch(`/delete?cat=${encodeURIComponent(o.dataset.cat)}&file=${encodeURIComponent(name)}`, {method:'DELETE'});
                 await updateDiskState(); loadModels();
