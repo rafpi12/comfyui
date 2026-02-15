@@ -510,5 +510,15 @@
                 "filename": "Z-Image-Turbo-Fun-Controlnet-Union-2.1-2601-8steps.safetensors"
             }
         ]
+    },
+    "Flux": {
+        "text_encoders": [
+            {
+                "name": "qwen_3_8b_fp8mixed.safetensors",
+                "url": "https://huggingface.co/Comfy-Org/vae-text-encorder-for-flux-klein-9b/resolve/main/split_files/text_encoders/qwen_3_8b_fp8mixed.safetensors?download=true",
+                "path": "clip",
+                "filename": "qwen_3_8b_fp8mixed.safetensors"
+            }
+        ]
     }
 }
