@@ -526,6 +526,12 @@
                 "url": "https://huggingface.co/black-forest-labs/FLUX.2-klein-9b-fp8/resolve/main/flux-2-klein-9b-fp8.safetensors?download=true",
                 "path": "unet",
                 "filename": "flux-2-klein-9b-fp8.safetensors"
+            },
+            {
+                "name": "flux-2-klein-9b.safetensors",
+                "url": "https://huggingface.co/black-forest-labs/FLUX.2-klein-9B/resolve/main/flux-2-klein-9b.safetensors?download=true",
+                "path": "diffusion_models",
+                "filename": "flux-2-klein-9b.safetensors"
             }
         ]
     }
