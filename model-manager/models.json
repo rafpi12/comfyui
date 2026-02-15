@@ -550,6 +550,12 @@
                 "url": "https://huggingface.co/black-forest-labs/FLUX.2-klein-base-9b-fp8/resolve/main/flux-2-klein-base-9b-fp8.safetensors?download=true",
                 "path": "unet",
                 "filename": "flux-2-klein-base-9b-fp8.safetensors"
+            },
+            {
+                "name": "EVA02_CLIP_L_336_psz14_s6B.pt",
+                "url": "https://huggingface.co/QuanSun/EVA-CLIP/resolve/main/EVA02_CLIP_L_336_psz14_s6B.pt?download=true",
+                "path": "clip",
+                "filename": "EVA02_CLIP_L_336_psz14_s6B.pt"
             }
         ],
         "vae": [
