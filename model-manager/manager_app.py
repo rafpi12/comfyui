@@ -8,7 +8,6 @@ app = FastAPI()
 BASE_MODELS_PATH = "/workspace/ComfyUI/models"
 CONFIG_PATH = "/workspace/model-manager/models.json"
 
-# Récupération des secrets
 HF_TOKEN = os.environ.get("HF_TOKEN", "")
 CIVITAI_TOKEN = os.environ.get("CIVITAI_TOKEN", "") 
 GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN", "")
@@ -17,7 +16,6 @@ REPO_OWNER = "rafpi12"
 REPO_NAME = "comfyui"
 GITHUB_FILE_PATH = "model-manager/models.json"
 
-# Extensions autorisées
 ALLOWED_EXTENSIONS = {'.safetensors', '.pth', '.gguf', '.bin', '.ckpt'}
 
 def get_client():
@@ -90,7 +88,6 @@ async def save_config(request: Request, background_tasks: BackgroundTasks):
 
 @app.get("/scan-disk")
 async def scan_disk():
-    """Scan dynamique de TOUS les dossiers présents dans /models/"""
     res = {}
     if os.path.exists(BASE_MODELS_PATH):
         for entry in os.scandir(BASE_MODELS_PATH):
@@ -107,7 +104,6 @@ async def scan_disk():
 
 @app.get("/check-file")
 async def check_file(category: str, filename: str):
-    # La catégorie passée ici est le 'path' du JSON (ex: model_patches)
     path = os.path.join(BASE_MODELS_PATH, category, filename)
     return {"exists": os.path.exists(path), "path": path}
 
@@ -115,36 +111,26 @@ async def check_file(category: str, filename: str):
 async def download(request: Request):
     data = await request.json()
     url, category, filename = data.get("url"), data.get("path"), data.get("filename")
-    
     clean_cat = category.replace(BASE_MODELS_PATH, "").lstrip("/")
     target_dir = os.path.join(BASE_MODELS_PATH, clean_cat)
     os.makedirs(target_dir, exist_ok=True)
-    
     client = get_client()
     if not client: return {"status": "error", "message": "Aria2 non connecté"}
-    
     options = {
-        "dir": target_dir, 
-        "out": filename,
-        "continue": "true",
-        "max-connection-per-server": "16",
-        "split": "16",
-        "min-split-size": "1M"
+        "dir": target_dir, "out": filename, "continue": "true",
+        "max-connection-per-server": "16", "split": "16", "min-split-size": "1M"
     }
-    
     final_url = url
     if "huggingface.co" in url.lower():
         options["header"] = f"Authorization: Bearer {HF_TOKEN}"
     elif "civitai.com" in url.lower():
         sep = "&" if "?" in url else "?"
         final_url = f"{url}{sep}token={CIVITAI_TOKEN}"
-
     try:
         dest = os.path.join(target_dir, filename)
         if os.path.exists(dest) and os.path.getsize(dest) < 1024*1024:
              os.remove(dest)
              if os.path.exists(dest + ".aria2"): os.remove(dest + ".aria2")
-
         client.add(final_url, options=options)
         return {"status": "ok"}
     except Exception as e: return {"status": "error", "message": str(e)}
@@ -155,13 +141,7 @@ async def progress():
     if not client: return []
     try:
         downloads = client.get_downloads()
-        return [{
-            "name": d.name, 
-            "status": f"{d.status} (Code: {d.error_code})" if d.status == 'error' else d.status,
-            "progress": d.progress, 
-            "speed": d.download_speed_string, 
-            "eta": d.eta_string
-        } for d in downloads]
+        return [{"name": d.name, "status": f"{d.status} (Code: {d.error_code})" if d.status == 'error' else d.status, "progress": d.progress, "speed": d.download_speed_string, "eta": d.eta_string} for d in downloads]
     except: return []
 
 @app.delete("/delete")
