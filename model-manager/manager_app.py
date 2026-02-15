@@ -1,14 +1,19 @@
-import os, json, aria2p, subprocess, time, uvicorn, shutil, psutil
-from fastapi import FastAPI, Request
+import os, json, aria2p, subprocess, time, uvicorn, shutil, psutil, requests, base64
+from fastapi import FastAPI, Request, BackgroundTasks
 from fastapi.responses import HTMLResponse
 
 app = FastAPI()
 
-# --- CONFIGURATION SÉCURISÉE ---
+# --- CONFIGURATION ---
 BASE_MODELS_PATH = "/workspace/ComfyUI/models"
 CONFIG_PATH = "/workspace/model-manager/models.json"
 
-HF_TOKEN = os.environ.get("HF_TOKEN", "") 
+# Secrets environnement
+HF_TOKEN = os.environ.get("HF_TOKEN", "")
+GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN", "")
+REPO_OWNER = "rafpi12"
+REPO_NAME = "comfyui"
+GITHUB_FILE_PATH = "model-manager/models.json"
 
 MODEL_CATEGORIES = ["checkpoints", "loras", "vae", "upscale_models", "text_encoders", "unet", "diffusion_models", "controlnet"]
 ALLOWED_EXTENSIONS = {'.safetensors', '.pth', '.gguf'}
@@ -20,25 +25,54 @@ def get_client():
         return api
     except: return None
 
+def sync_to_github():
+    if not GITHUB_TOKEN:
+        print("⚠️ GITHUB_TOKEN manquant")
+        return False
+    
+    url = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/contents/{GITHUB_FILE_PATH}"
+    headers = {"Authorization": f"token {GITHUB_TOKEN}", "Accept": "application/vnd.github.v3+json"}
+    
+    try:
+        # 1. Obtenir le SHA actuel
+        r = requests.get(url, headers=headers)
+        sha = r.json().get('sha') if r.status_code == 200 else None
+        
+        # 2. Lire et encoder le fichier local
+        with open(CONFIG_PATH, "rb") as f:
+            content = base64.b64encode(f.read()).decode()
+            
+        # 3. Push
+        payload = {
+            "message": "Update models.json via Model Manager Pro",
+            "content": content,
+            "sha": sha
+        }
+        res = requests.put(url, headers=headers, json=payload)
+        return res.status_code in [200, 201]
+    except Exception as e:
+        print(f"Erreur synchro GitHub: {e}")
+        return False
+
 @app.get("/", response_class=HTMLResponse)
 async def index(): 
-    if os.path.exists("index.html"):
-        return open("index.html").read()
+    if os.path.exists("index.html"): return open("index.html").read()
     return "Fichier index.html introuvable."
 
 @app.get("/config")
 async def get_config():
     if os.path.exists(CONFIG_PATH):
-        with open(CONFIG_PATH, 'r', encoding='utf-8') as f: 
-            return json.load(f)
+        with open(CONFIG_PATH, 'r', encoding='utf-8') as f: return json.load(f)
     return {}
 
 @app.post("/save-config")
-async def save_config(request: Request):
+async def save_config(request: Request, background_tasks: BackgroundTasks):
     data = await request.json()
     with open(CONFIG_PATH, 'w', encoding='utf-8') as f:
         json.dump(data, f, indent=4)
-    return {"status": "ok"}
+    # On lance la synchro en tâche de fond pour ne pas faire ramer l'UI
+    background_tasks.add_task(sync_to_github)
+    return {"status": "ok", "github_sync": "started"}
 
 @app.get("/scan-disk")
 async def scan_disk():
@@ -50,7 +84,6 @@ async def scan_disk():
             for root, _, filenames in os.walk(base_path):
                 for f in filenames:
                     if any(f.endswith(ext) for ext in ALLOWED_EXTENSIONS):
-                        # On calcule le chemin relatif par rapport au dossier de base de la catégorie
                         rel_path = os.path.relpath(os.path.join(root, f), base_path)
                         files.append(rel_path.replace("\\", "/"))
         res[cat] = files
@@ -58,32 +91,24 @@ async def scan_disk():
 
 @app.get("/check-file")
 async def check_file(category: str, filename: str):
-    # Gère les sous-dossiers éventuels (ex: loras/Vyesna/mon_lora.safetensors)
     path = os.path.join(BASE_MODELS_PATH, category, filename)
     return {"exists": os.path.exists(path), "path": path}
 
 @app.post("/download")
 async def download(request: Request):
     data = await request.json()
-    url = data.get("url")
-    category = data.get("path") # Ex: "loras/Vyesna"
-    filename = data.get("filename")
-
+    url, category, filename = data.get("url"), data.get("path"), data.get("filename")
     target_dir = os.path.join(BASE_MODELS_PATH, category)
     os.makedirs(target_dir, exist_ok=True)
-    
     client = get_client()
     if not client: return {"status": "error", "message": "Aria2 non connecté"}
-
     options = {"dir": target_dir, "out": filename}
     if "huggingface.co" in url.lower() and HF_TOKEN:
         options["header"] = f"Authorization: Bearer {HF_TOKEN}"
-    
     try:
         client.add(url, options=options)
         return {"status": "ok"}
-    except Exception as e:
-        return {"status": "error", "message": str(e)}
+    except Exception as e: return {"status": "error", "message": str(e)}
 
 @app.get("/progress")
 async def progress():
@@ -91,13 +116,7 @@ async def progress():
     if not client: return []
     try:
         downloads = client.get_downloads()
-        return [{
-            "name": d.name,
-            "status": d.status,
-            "progress": d.progress,
-            "speed": d.download_speed_string,
-            "eta": d.eta_string
-        } for d in downloads]
+        return [{"name": d.name, "status": d.status, "progress": d.progress, "speed": d.download_speed_string, "eta": d.eta_string} for d in downloads]
     except: return []
 
 @app.post("/purge")
