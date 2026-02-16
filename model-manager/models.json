@@ -110,6 +110,12 @@
                 "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/aesthetic/Z-Image/lavampirenue_000002750.safetensors?download=true",
                 "path": "loras",
                 "filename": "lavampirenue_000002750.safetensors"
+            },
+            {
+                "name": "lavampirenue_000003000.safetensors",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/aesthetic/Z-Image/lavampirenue_000003000.safetensors?download=true",
+                "path": "loras",
+                "filename": "lavampirenue_000003000.safetensors"
             }
         ],
         "loras/Vyesna": [
