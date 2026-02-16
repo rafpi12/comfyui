@@ -527,6 +527,14 @@
                 "path": "model_patches",
                 "filename": "Z-Image-Turbo-Fun-Controlnet-Union-2.1-2601-8steps.safetensors"
             }
+        ],
+        "clip": [
+            {
+                "name": "qwen-4b-zimage-heretic-q8.gguf",
+                "url": "https://huggingface.co/Lockout/qwen3-4b-heretic-zimage/resolve/main/qwen-4b-zimage-heretic-q8.gguf?download=true",
+                "path": "clip",
+                "filename": "qwen-4b-zimage-heretic-q8.gguf"
+            }
         ]
     },
     "Flux": {
