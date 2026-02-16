@@ -104,6 +104,12 @@
                 "url": "https://civitai.com/api/download/models/2688332?type=Model&format=SafeTensor",
                 "path": "loras",
                 "filename": "DC Ancient Futurism Style 1 [Z-ImageBase][GPT4oTagged][Trigger=dcanchfutre.][32Rank] v1.safetensors"
+            },
+            {
+                "name": "lavampirenue_000002750.safetensors",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/aesthetic/Z-Image/lavampirenue_000002750.safetensors?download=true",
+                "path": "loras",
+                "filename": "lavampirenue_000002750.safetensors"
             }
         ],
         "loras/Vyesna": [
