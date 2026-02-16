@@ -128,6 +128,12 @@
                 "url": "https://civitai.com/api/download/models/2657506?type=Model&format=SafeTensor",
                 "path": "loras",
                 "filename": "Z-Image-Fun-Lora-Distill-8-Steps_ComfyUI.safetensors"
+            },
+            {
+                "name": "Z-Image-Fun-Lora-Distill-8-Steps-2602-ComfyUI.safetensors",
+                "url": "https://huggingface.co/alibaba-pai/Z-Image-Fun-Lora-Distill/resolve/main/Z-Image-Fun-Lora-Distill-8-Steps-2602-ComfyUI.safetensors?download=true",
+                "path": "loras",
+                "filename": "Z-Image-Fun-Lora-Distill-8-Steps-2602-ComfyUI.safetensors"
             }
         ],
         "loras/Vyesna": [
