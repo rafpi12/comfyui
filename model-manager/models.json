@@ -92,6 +92,12 @@
                 "url": "https://civitai.com/api/download/models/2691425?type=Model&format=SafeTensor",
                 "path": "loras",
                 "filename": "MisterMR_Anna_ZImageTurbo.safetensors"
+            },
+            {
+                "name": "DC Ancient Futurism Style 1 [Z-ImageBase][GPT4oTagged][Trigger=dcanchfutre.][32Rank] v1.safetensors",
+                "url": "https://civitai.com/api/download/models/2688332?type=Model&format=SafeTensor",
+                "path": "loras",
+                "filename": "DC Ancient Futurism Style 1 [Z-ImageBase][GPT4oTagged][Trigger=dcanchfutre.][32Rank] v1.safetensors"
             }
         ],
         "loras/Vyesna": [
