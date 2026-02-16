@@ -122,6 +122,12 @@
                 "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/aesthetic/Z-Image/lavampirenue_000003250.safetensors?download=true",
                 "path": "loras",
                 "filename": "lavampirenue_000003250.safetensors"
+            },
+            {
+                "name": "Z-Image-Fun-Lora-Distill-8-Steps_ComfyUI.safetensors",
+                "url": "https://civitai.com/api/download/models/2657506?type=Model&format=SafeTensor",
+                "path": "loras",
+                "filename": "Z-Image-Fun-Lora-Distill-8-Steps_ComfyUI.safetensors"
             }
         ],
         "loras/Vyesna": [
