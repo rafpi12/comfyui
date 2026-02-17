@@ -685,6 +685,14 @@
         "diffusion_models": [],
         "t2v": [],
         "i2v": [],
-        "loras": []
+        "loras": [],
+        "vae": [
+            {
+                "name": "wan_2.1_vae.safetensors",
+                "url": "https://huggingface.co/Comfy-Org/Wan_2.1_ComfyUI_repackaged/resolve/main/split_files/vae/wan_2.1_vae.safetensors?download=true",
+                "path": "vae",
+                "filename": "wan_2.1_vae.safetensors"
+            }
+        ]
     }
 }
