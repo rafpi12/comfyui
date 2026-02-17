@@ -740,6 +740,12 @@
                 "url": "https://huggingface.co/lightx2v/Wan2.2-Lightning/resolve/main/Wan2.2-T2V-A14B-4steps-lora-rank64-Seko-V1.1/high_noise_model.safetensors?download=true",
                 "path": "loras/Wan2.2-T2V-A14B-4steps-lora-rank64-Seko-V1.1",
                 "filename": "high_noise_model.safetensors"
+            },
+            {
+                "name": "low_noise_model.safetensors",
+                "url": "https://huggingface.co/lightx2v/Wan2.2-Lightning/resolve/main/Wan2.2-T2V-A14B-4steps-lora-rank64-Seko-V1.1/low_noise_model.safetensors?download=true",
+                "path": "loras/Wan2.2-T2V-A14B-4steps-lora-rank64-Seko-V1.1",
+                "filename": "low_noise_model.safetensors"
             }
         ],
         "vae": [
