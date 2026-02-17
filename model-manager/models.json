@@ -688,6 +688,12 @@
                 "url": "https://huggingface.co/FX-FeiHou/wan2.2-Remix/resolve/main/NSFW/Wan2.2_Remix_NSFW_i2v_14b_high_lighting_v2.0.safetensors?download=true",
                 "path": "diffusion_models",
                 "filename": "Wan2.2_Remix_NSFW_i2v_14b_high_lighting_v2.0.safetensors"
+            },
+            {
+                "name": "Wan2.2_Remix_NSFW_i2v_14b_low_lighting_v2.0.safetensors",
+                "url": "https://huggingface.co/FX-FeiHou/wan2.2-Remix/resolve/main/NSFW/Wan2.2_Remix_NSFW_i2v_14b_low_lighting_v2.0.safetensors?download=true",
+                "path": "diffusion_models",
+                "filename": "Wan2.2_Remix_NSFW_i2v_14b_low_lighting_v2.0.safetensors"
             }
         ],
         "t2v": [],
