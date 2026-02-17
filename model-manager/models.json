@@ -734,6 +734,12 @@
                 "url": "https://huggingface.co/ostris/wan22_i2v_14b_orbit_shot_lora/resolve/main/wan22_14b_i2v_orbit_low_noise.safetensors?download=true",
                 "path": "loras",
                 "filename": "wan22_14b_i2v_orbit_low_noise.safetensors"
+            },
+            {
+                "name": "high_noise_model.safetensors",
+                "url": "https://huggingface.co/lightx2v/Wan2.2-Lightning/resolve/main/Wan2.2-T2V-A14B-4steps-lora-rank64-Seko-V1.1/high_noise_model.safetensors?download=true",
+                "path": "loras/Wan2.2-T2V-A14B-4steps-lora-rank64-Seko-V1.1",
+                "filename": "high_noise_model.safetensors"
             }
         ],
         "vae": [
