@@ -710,6 +710,12 @@
                 "url": "https://huggingface.co/Aitrepreneur/FLX/resolve/main/Wan2.2-Lightning_I2V-A14B-4steps-lora_LOW_fp16.safetensors?download=true",
                 "path": "loras",
                 "filename": "Wan2.2-Lightning_I2V-A14B-4steps-lora_LOW_fp16.safetensors"
+            },
+            {
+                "name": "wan22_14b_i2v_orbit_high_noise.safetensors",
+                "url": "https://huggingface.co/ostris/wan22_i2v_14b_orbit_shot_lora/resolve/7b637fe0079bbf4ac0f977ff2c58971b8835b9c7/wan22_14b_i2v_orbit_high_noise.safetensors?download=true",
+                "path": "loras",
+                "filename": "wan22_14b_i2v_orbit_high_noise.safetensors"
             }
         ],
         "vae": [
