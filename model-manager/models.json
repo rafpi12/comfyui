@@ -759,7 +759,7 @@
         "text_encoders": [
             {
                 "name": "umt5_xxl_fp8_e4m3fn_scaled.safetensors",
-                "url": "https://huggingface.co/Comfy-Org/Wan_2.1_ComfyUI_repackaged/resolve/main/split_files/text_encoders/umt5_xxl_fp8_e4m3fn_scaled.safetensors?download=true",
+                "url": "https://huggingface.co/f5aiteam/CLIP/resolve/main/umt5_xxl_fp8_e4m3fn_scaled.safetensors?download=true",
                 "path": "text_encoders",
                 "filename": "umt5_xxl_fp8_e4m3fn_scaled.safetensors"
             },
