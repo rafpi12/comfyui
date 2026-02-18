@@ -646,6 +646,12 @@
                 "url": "https://civitai.com/api/download/models/2645238?type=Model&format=SafeTensor",
                 "path": "loras",
                 "filename": "pussydiffusion-f2-klein-9b_v2.safetensors"
+            },
+            {
+                "name": "busty-curvy.safetensors",
+                "url": "https://civitai.com/api/download/models/1732014?type=Model&format=SafeTensor",
+                "path": "loras",
+                "filename": "busty-curvy.safetensors"
             }
         ]
     },
