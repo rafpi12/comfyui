@@ -612,6 +612,12 @@
                 "url": "https://huggingface.co/black-forest-labs/FLUX.2-klein-base-9b-fp8/resolve/main/flux-2-klein-base-9b-fp8.safetensors?download=true",
                 "path": "unet",
                 "filename": "flux-2-klein-base-9b-fp8.safetensors"
+            },
+            {
+                "name": "flux1-krea-dev_fp8_scaled.safetensors",
+                "url": "https://huggingface.co/Comfy-Org/FLUX.1-Krea-dev_ComfyUI/resolve/main/split_files/diffusion_models/flux1-krea-dev_fp8_scaled.safetensors?download=true",
+                "path": "diffusion_models",
+                "filename": "flux1-krea-dev_fp8_scaled.safetensors"
             }
         ],
         "vae": [
