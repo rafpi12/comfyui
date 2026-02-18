@@ -721,6 +721,14 @@
                 "path": "upscale_models",
                 "filename": "8xNMKDFaces160000G_v10.pt"
             }
+        ],
+        "": [
+            {
+                "name": "sd_xl_base_1.0_0.9vae.safetensors",
+                "url": "https://huggingface.co/camenduru/SUPIR/resolve/main/sd_xl_base_1.0_0.9vae.safetensors?download=true",
+                "path": "checkpoints",
+                "filename": "sd_xl_base_1.0_0.9vae.safetensors"
+            }
         ]
     },
     "Qwen": {
