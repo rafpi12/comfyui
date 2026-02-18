@@ -679,7 +679,7 @@
             },
             {
                 "name": "Skintastic_Flux_v1.safetensors",
-                "url": " https://civitai.com/api/download/models/1523139?type=Model&format=SafeTensor",
+                "url": "https://civitai.com/api/download/models/1523139?type=Model&format=SafeTensor",
                 "path": "loras",
                 "filename": "Skintastic_Flux_v1.safetensors"
             }
