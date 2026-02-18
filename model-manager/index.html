@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Model Manager Pro</title>
+    <title>Model Manager Pro - Ultimate Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -12,7 +12,6 @@
         #models-ui { min-height: 400px; font-family: monospace; }
         #log-console { height: 120px; overflow-y: auto; background: #000; color: #4ade80; font-family: monospace; font-size: 0.8rem; padding: 10px; border-radius: 8px; border: 1px solid #334155; }
         .btn-action { transition: all 0.2s; font-weight: bold; padding: 12px; border-radius: 10px; text-transform: uppercase; }
-        .file-highlight { background: rgba(251, 191, 36, 0.1) !important; border-left: 4px solid #fbbf24 !important; }
         #github-toast { position: fixed; bottom: 20px; right: 20px; background: #16a34a; color: white; padding: 12px 20px; border-radius: 10px; display: flex; align-items: center; gap: 10px; transform: translateY(100px); transition: transform 0.3s ease; z-index: 1000; }
         #github-toast.show { transform: translateY(0); }
         #path-browser { position: absolute; width: 100%; top: 100%; left: 0; background: #1e293b; border: 1px solid #475569; border-radius: 8px; max-height: 150px; overflow-y: auto; z-index: 50; display: none; }
@@ -26,8 +25,8 @@
         <div class="flex justify-between items-center mb-8">
             <h1 class="text-2xl font-black text-blue-400 uppercase tracking-tighter">Model Manager Pro</h1>
             <div class="flex gap-3">
-                <button onclick="fetch('/purge',{method:'POST'})" class="bg-slate-800 px-5 py-2 rounded-lg text-xs font-bold">PURGER ARIA2</button>
-                <button onclick="location.reload()" class="bg-slate-800 px-5 py-2 rounded-lg text-xs font-bold">ACTUALISER</button>
+                <button onclick="fetch('/purge',{method:'POST'})" class="bg-slate-800 px-5 py-2 rounded-lg text-xs font-bold hover:bg-slate-700">PURGER ARIA2</button>
+                <button onclick="location.reload()" class="bg-slate-800 px-5 py-2 rounded-lg text-xs font-bold hover:bg-slate-700">ACTUALISER</button>
             </div>
         </div>
 
@@ -50,14 +49,14 @@
                 <div class="flex justify-between mb-4 items-center text-[10px]">
                     <div class="flex items-center gap-3">
                         <div id="diode-ui" class="w-3 h-3 rounded-full bg-red-500 transition-all duration-500"></div>
-                        <span id="status-text" class="uppercase text-gray-400 font-bold">Inconnu</span>
+                        <span id="status-text" class="uppercase text-gray-400 font-bold">Sélection multiple prête</span>
                     </div>
                     <div id="path-ui" class="text-gray-500 italic truncate max-w-md">Prêt.</div>
                 </div>
                 <select id="models-ui" class="w-full mb-6" multiple onclick="syncToEditor()" onchange="checkStatus()"></select>
                 <div class="grid grid-cols-2 gap-4">
-                    <button onclick="startSmartDownload()" class="btn-action bg-blue-600 hover:bg-blue-500 shadow-lg">Télécharger</button>
-                    <button id="delete-btn" onclick="deleteFromDisk()" class="btn-action bg-red-900/50 text-red-500 border border-red-500 opacity-20" disabled>Supprimer</button>
+                    <button onclick="startSmartDownload()" class="btn-action bg-blue-600 hover:bg-blue-500 shadow-lg">Télécharger la sélection</button>
+                    <button id="delete-btn" onclick="deleteFromDisk()" class="btn-action bg-red-900/50 text-red-500 border border-red-500 opacity-20" disabled>Supprimer la sélection</button>
                 </div>
             </div>
         </div>
@@ -66,8 +65,8 @@
 
         <div class="card p-8 shadow-xl border-t-4 border-yellow-600 mb-8">
             <div class="flex justify-between items-center mb-4">
-                <h2 class="text-xs font-bold text-yellow-500 uppercase tracking-widest">Éditeur</h2>
-                <button onclick="resetEditor()" class="text-[10px] bg-slate-700 px-2 py-1 rounded">VIDER</button>
+                <h2 class="text-xs font-bold text-yellow-500 uppercase tracking-widest">Éditeur Catalogue</h2>
+                <button onclick="resetEditor()" class="text-[10px] bg-slate-700 px-2 py-1 rounded hover:bg-slate-600">VIDER</button>
             </div>
             <div class="grid grid-cols-2 gap-8">
                 <div class="space-y-3 bg-black/20 p-5 rounded-xl">
@@ -100,34 +99,10 @@
         const BASE_PATH = "/workspace/ComfyUI/models/";
         let cfg = {}; let diskFiles = {}; let lastCompleteCount = 0;
 
-        function showGitHubToast() {
-            const t = document.getElementById('github-toast');
-            t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3000);
-        }
-
-        function resetEditor() { document.getElementById('edit-url').value = ""; document.getElementById('edit-file').value = ""; document.getElementById('edit-path').value = ""; hidePathBrowser(); }
-        function updatePathByCategory() { const cat = document.getElementById('edit-cat').value; document.getElementById('edit-path').value = BASE_PATH + cat; hidePathBrowser(); }
-        async function togglePathBrowser() {
-            const browser = document.getElementById('path-browser');
-            if (browser.style.display === "block") hidePathBrowser();
-            else {
-                const cat = document.getElementById('edit-cat').value;
-                const r = await fetch(`/list-subfolders?category=${cat}`);
-                const folders = await r.json();
-                browser.innerHTML = folders.map(f => `<div class="path-item flex items-center gap-2" onclick="setPath('${cat}', '${f}')">${f === "" ? '<span class="text-blue-400">⤴️</span> Dossier Racine' : '<i class="fas fa-folder text-yellow-500"></i> ' + f}</div>`).join('');
-                browser.style.display = "block";
-            }
-        }
-        function hidePathBrowser() { document.getElementById('path-browser').style.display = "none"; }
-        function setPath(cat, sub) { const cleanSub = sub === "" ? "" : (sub.startsWith('/') ? sub : '/' + sub); document.getElementById('edit-path').value = BASE_PATH + cat + cleanSub; hidePathBrowser(); }
-        async function autoFetchName(url) {
-            const fileInput = document.getElementById('edit-file'); if (!url) return;
-            fileInput.value = "⏳...";
-            if (url.includes('huggingface.co')) fileInput.value = url.split('/').pop().split('?')[0];
-            else if (url.includes('civitai.com')) {
-                const r = await fetch(`/fetch-civitai-name?url=${encodeURIComponent(url)}`);
-                const d = await r.json(); fileInput.value = d.filename || "";
-            }
+        function addLog(msg, isError = false) {
+            const con = document.getElementById('log-console');
+            con.innerHTML += `<div style="color:${isError ? '#ff4d4d' : '#4ade80'}">[${new Date().toLocaleTimeString()}] ${msg}</div>`;
+            con.scrollTop = con.scrollHeight;
         }
 
         async function start() {
@@ -178,33 +153,82 @@
         }
 
         async function checkStatus() {
-            const s = Array.from(document.getElementById('models-ui').selectedOptions); const delBtn = document.getElementById('delete-btn'); if(s.length === 0) return;
-            const o = s[0]; const name = o.value.replace(/^[●○]\s/, "");
-            const r = await fetch(`/check-file?category=${encodeURIComponent(o.dataset.cat)}&filename=${encodeURIComponent(name)}`);
-            const d = await r.json();
-            document.getElementById('diode-ui').className = `w-3 h-3 rounded-full ${d.exists ? 'bg-green-500 shadow-[0_0_10px_#22c55e]' : 'bg-red-500'}`;
-            document.getElementById('status-text').innerText = d.exists ? "Sur disque" : "Absent";
-            delBtn.disabled = !d.exists; delBtn.className = d.exists ? "btn-action bg-red-600 text-white" : "btn-action bg-red-900/50 text-red-500 opacity-20";
-            document.getElementById('path-ui').innerText = d.path;
+            const s = Array.from(document.getElementById('models-ui').selectedOptions); 
+            const delBtn = document.getElementById('delete-btn');
+            delBtn.disabled = s.length === 0;
+            delBtn.className = s.length > 0 ? "btn-action bg-red-600 text-white" : "btn-action bg-red-900/50 text-red-500 opacity-20";
         }
 
         function syncToEditor() {
-            const s = Array.from(document.getElementById('models-ui').selectedOptions); if(s.length === 0) return;
+            const s = Array.from(document.getElementById('models-ui').selectedOptions); if(s.length !== 1) return;
             const o = s[0]; const cleanName = o.value.replace(/^[●○]\s/, "");
             document.getElementById('edit-env').value = document.getElementById('env-ui').value;
             document.getElementById('edit-cat').value = o.dataset.cat.split('/')[0];
             document.getElementById('edit-path').value = BASE_PATH + o.dataset.cat;
             document.getElementById('edit-url').value = o.dataset.url;
-            document.getElementById('edit-file').value = cleanName; renderCatalogue(cleanName);
+            document.getElementById('edit-file').value = cleanName;
         }
 
         async function startSmartDownload() {
-            const url = document.getElementById('edit-url').value; const path = document.getElementById('edit-path').value.replace(BASE_PATH, "");
-            const file = document.getElementById('edit-file').value;
-            const r = await fetch('/download', { method:'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({url, path, filename: file}) });
-            if((await r.json()).status === "ok") addLog(`Téléchargement : ${file}`);
+            const s = Array.from(document.getElementById('models-ui').selectedOptions);
+            if(s.length === 0) {
+                const url = document.getElementById('edit-url').value;
+                const path = document.getElementById('edit-path').value.replace(BASE_PATH, "");
+                const file = document.getElementById('edit-file').value;
+                if(!url || !file) return;
+                await fetch('/download', { method:'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({url, path, filename: file}) });
+                addLog(`Lancement : ${file}`);
+            } else {
+                if(!confirm(`Lancer le téléchargement de ${s.length} fichier(s) ?`)) return;
+                for(let o of s) {
+                    const name = o.value.replace(/^[●○]\s/, "");
+                    await fetch('/download', { 
+                        method:'POST', 
+                        headers: {'Content-Type': 'application/json'}, 
+                        body: JSON.stringify({url: o.dataset.url, path: o.dataset.cat, filename: name}) 
+                    });
+                    addLog(`Ajout file d'attente : ${name}`);
+                }
+            }
         }
 
+        async function deleteFromDisk() {
+            const s = Array.from(document.getElementById('models-ui').selectedOptions);
+            if(s.length === 0) return;
+            if(!confirm(`Supprimer définitivement ${s.length} fichier(s) du disque ?`)) return;
+            for(let o of s) {
+                const name = o.value.replace(/^[●○]\s/, "");
+                await fetch(`/delete?cat=${encodeURIComponent(o.dataset.cat)}&file=${encodeURIComponent(name)}`, {method:'DELETE'});
+                addLog(`Supprimé : ${name}`);
+            }
+            await updateDiskState(); loadModels();
+        }
+
+        function showGitHubToast() { const t = document.getElementById('github-toast'); t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3000); }
+        function resetEditor() { document.getElementById('edit-url').value = ""; document.getElementById('edit-file').value = ""; document.getElementById('edit-path').value = ""; hidePathBrowser(); }
+        function updatePathByCategory() { const cat = document.getElementById('edit-cat').value; document.getElementById('edit-path').value = BASE_PATH + cat; hidePathBrowser(); }
+        async function togglePathBrowser() {
+            const browser = document.getElementById('path-browser');
+            if (browser.style.display === "block") hidePathBrowser();
+            else {
+                const cat = document.getElementById('edit-cat').value;
+                const r = await fetch(`/list-subfolders?category=${cat}`);
+                const folders = await r.json();
+                browser.innerHTML = folders.map(f => `<div class="path-item flex items-center gap-2" onclick="setPath('${cat}', '${f}')">${f === "" ? '<span class="text-blue-400">⤴️</span> Dossier Racine' : '<i class="fas fa-folder text-yellow-500"></i> ' + f}</div>`).join('');
+                browser.style.display = "block";
+            }
+        }
+        function hidePathBrowser() { document.getElementById('path-browser').style.display = "none"; }
+        function setPath(cat, sub) { const cleanSub = sub === "" ? "" : (sub.startsWith('/') ? sub : '/' + sub); document.getElementById('edit-path').value = BASE_PATH + cat + cleanSub; hidePathBrowser(); }
+        async function autoFetchName(url) {
+            const fileInput = document.getElementById('edit-file'); if (!url) return;
+            fileInput.value = "⏳...";
+            if (url.includes('huggingface.co')) fileInput.value = url.split('/').pop().split('?')[0];
+            else if (url.includes('civitai.com')) {
+                const r = await fetch(`/fetch-civitai-name?url=${encodeURIComponent(url)}`);
+                const d = await r.json(); fileInput.value = d.filename || "";
+            }
+        }
         async function loop() {
             try {
                 const tasks = await (await fetch('/progress')).json();
@@ -213,7 +237,6 @@
                 document.getElementById('tasks-ui').innerHTML = tasks.map(t => `<div class="bg-slate-900/80 p-3 rounded-xl border-l-4 ${t.status.includes('error') ? 'border-red-500' : (t.status === 'complete' ? 'border-green-500' : 'border-blue-500')}"><div class="flex justify-between text-[10px] mb-1 font-bold"><span>${t.name}</span><span class="text-blue-300">${t.status.toUpperCase()} ${t.status === 'active' ? '- ' + t.speed : ''}</span></div><div class="w-full bg-slate-800 h-1 rounded-full overflow-hidden"><div class="${t.status.includes('error') ? 'bg-red-500' : (t.status === 'complete' ? 'bg-green-500' : 'bg-blue-500')} h-1 transition-all" style="width:${t.progress}%"></div></div></div>`).join('');
             } catch(e) {}
         }
-
         async function saveToCatalogue() {
             const env = document.getElementById('edit-env').value; const cat = document.getElementById('edit-cat').value;
             const fullPath = document.getElementById('edit-path').value; const url = document.getElementById('edit-url').value;
@@ -225,7 +248,6 @@
             const r = await fetch('/save-config', { method: 'POST', body: JSON.stringify(cfg) });
             if((await r.json()).github_sync) showGitHubToast(); loadModels(file); renderCatalogue(file);
         }
-
         function renderCatalogue(filterFile = null) {
             const list = document.getElementById('catalogue-list'); list.innerHTML = "";
             Object.keys(cfg).forEach(env => Object.keys(cfg[env]).forEach(cat => cfg[env][cat].forEach((m, idx) => {
@@ -233,13 +255,8 @@
                 list.innerHTML += `<div class="flex justify-between items-center bg-black/40 p-2 mb-1 border border-white/5 rounded ${filterFile ? 'file-highlight' : ''}"><div class="flex flex-col"><span class="text-blue-400 font-bold uppercase" style="font-size:8px">${env} / ${cat}</span><span class="truncate italic text-slate-300">${m.filename}</span></div><button onclick="removeFromCatalogue('${env}','${cat}',${idx})" class="text-red-500 ml-2"><i class="fas fa-times"></i></button></div>`;
             })));
         }
-
         async function removeFromCatalogue(e,c,i) { if(confirm('Supprimer du JSON ?')) { cfg[e][c].splice(i, 1); await fetch('/save-config', { method: 'POST', body: JSON.stringify(cfg) }); renderCatalogue(); loadModels(); } }
-        async function deleteFromDisk() {
-            const s = Array.from(document.getElementById('models-ui').selectedOptions); if(s.length === 0) return;
-            const o = s[0]; const name = o.value.replace(/^[●○]\s/, "");
-            if(confirm(`Supprimer ${name} ?`)) { await fetch(`/delete?cat=${encodeURIComponent(o.dataset.cat)}&file=${encodeURIComponent(name)}`, {method:'DELETE'}); await updateDiskState(); loadModels(); }
-        }
+        
         start();
     </script>
 </body>
