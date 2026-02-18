@@ -700,7 +700,14 @@
                 "filename": "sd_xl_base_1.0.safetensors"
             }
         ],
-        "loras": [],
+        "loras": [
+            {
+                "name": "skin texture style v3.safetensors",
+                "url": "https://civitai.com/api/download/models/691191?type=Model&format=SafeTensor",
+                "path": "loras",
+                "filename": "skin texture style v3.safetensors"
+            }
+        ],
         "upscale_models": [
             {
                 "name": "8xNMKDFaces160000G_v10.pt",
