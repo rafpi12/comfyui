@@ -159,6 +159,14 @@ async def purge():
 
 if __name__ == "__main__":
     subprocess.run(["pkill", "-9", "aria2c"])
-    subprocess.Popen(["aria2c", "--enable-rpc", "--rpc-listen-all=true", "--rpc-allow-origin-all=true", "-D"])
+    # AJOUT DE --max-concurrent-downloads=3
+    subprocess.Popen([
+        "aria2c", 
+        "--enable-rpc", 
+        "--rpc-listen-all=true", 
+        "--rpc-allow-origin-all=true", 
+        "--max-concurrent-downloads=3", 
+        "-D"
+    ])
     time.sleep(1)
     uvicorn.run(app, host="0.0.0.0", port=8080)
