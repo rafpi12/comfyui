@@ -664,6 +664,12 @@
                 "url": "https://huggingface.co/marc8460/sienna-blaze-lora-v1/resolve/main/FC%20Flux%20Perfect%20Busts.safetensors?download=true",
                 "path": "loras",
                 "filename": "FC Flux Perfect Busts.safetensors"
+            },
+            {
+                "name": "olivia2025.safetensors",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/olivia2025.safetensors?download=true",
+                "path": "loras",
+                "filename": "olivia2025.safetensors"
             }
         ]
     },
