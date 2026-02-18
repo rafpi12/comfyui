@@ -728,6 +728,12 @@
                 "url": "https://huggingface.co/camenduru/SUPIR/resolve/main/sd_xl_base_1.0_0.9vae.safetensors?download=true",
                 "path": "checkpoints",
                 "filename": "sd_xl_base_1.0_0.9vae.safetensors"
+            },
+            {
+                "name": "sd_xl_base_1.0.safetensors",
+                "url": "https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0/resolve/main/sd_xl_base_1.0.safetensors?download=true",
+                "path": "checkpoints",
+                "filename": "sd_xl_base_1.0.safetensors"
             }
         ]
     },
