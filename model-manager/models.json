@@ -654,6 +654,12 @@
                 "filename": "busty-curvy.safetensors"
             },
             {
+                "name": "FC%20Flux%20Perfect%20Busts.safetensors",
+                "url": "https://huggingface.co/marc8460/sienna-blaze-lora-v1/resolve/main/FC%20Flux%20Perfect%20Busts.safetensors?download=true",
+                "path": "loras",
+                "filename": "FC%20Flux%20Perfect%20Busts.safetensors"
+            },
+            {
                 "name": "FC Flux Perfect Busts.safetensors",
                 "url": "https://huggingface.co/marc8460/sienna-blaze-lora-v1/resolve/main/FC%20Flux%20Perfect%20Busts.safetensors?download=true",
                 "path": "loras",
@@ -676,7 +682,15 @@
                 "filename": "jibMixIllustrious_v40Ascension.safetensors"
             }
         ],
-        "loras": []
+        "loras": [],
+        "upscale_models": [
+            {
+                "name": "8xNMKDFaces160000G_v10.pt",
+                "url": "https://civitai.com/api/download/models/158264?type=Model&format=PickleTensor",
+                "path": "upscale_models",
+                "filename": "8xNMKDFaces160000G_v10.pt"
+            }
+        ]
     },
     "Qwen": {
         "diffusion_models": [
