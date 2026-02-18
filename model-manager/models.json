@@ -692,6 +692,12 @@
                 "url": "https://civitai.com/api/download/models/2569079?type=Model&format=SafeTensor&size=full&fp=fp16",
                 "path": "checkpoints",
                 "filename": "jibMixIllustrious_v40Ascension.safetensors"
+            },
+            {
+                "name": "sd_xl_base_1.0.safetensors",
+                "url": "https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0/resolve/main/sd_xl_base_1.0.safetensors?download=true",
+                "path": "diffusion_models",
+                "filename": "sd_xl_base_1.0.safetensors"
             }
         ],
         "loras": [],
