@@ -658,12 +658,6 @@
                 "url": "https://huggingface.co/marc8460/sienna-blaze-lora-v1/resolve/main/FC%20Flux%20Perfect%20Busts.safetensors?download=true",
                 "path": "loras",
                 "filename": "FC%20Flux%20Perfect%20Busts.safetensors"
-            },
-            {
-                "name": "FC Flux Perfect Busts.safetensors",
-                "url": "https://huggingface.co/marc8460/sienna-blaze-lora-v1/resolve/main/FC%20Flux%20Perfect%20Busts.safetensors?download=true",
-                "path": "loras",
-                "filename": "FC Flux Perfect Busts.safetensors"
             }
         ]
     },
