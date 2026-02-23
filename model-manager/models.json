@@ -738,6 +738,12 @@
                 "url": "https://huggingface.co/drbaph/Qwen-Image-Edit-2511-FP8/resolve/main/qwen_image_edit_2511_fp8_e4m3fn.safetensors?download=true",
                 "path": "diffusion_models",
                 "filename": "qwen_image_edit_2511_fp8_e4m3fn.safetensors"
+            },
+            {
+                "name": "qwen_image_edit_2511_bf16.safetensors",
+                "url": "https://huggingface.co/Comfy-Org/Qwen-Image-Edit_ComfyUI/resolve/main/split_files/diffusion_models/qwen_image_edit_2511_bf16.safetensors",
+                "path": "diffusion_models",
+                "filename": "qwen_image_edit_2511_bf16.safetensors"
             }
         ],
         "text_encoders": [
