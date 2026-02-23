@@ -754,7 +754,14 @@
                 "filename": "qwen_2.5_vl_7b_fp8_scaled.safetensors"
             }
         ],
-        "loras": [],
+        "loras": [
+            {
+                "name": "Qwen-Image-Edit-2511-Lightning-4steps-V1.0-bf16.safetensors",
+                "url": "https://huggingface.co/lightx2v/Qwen-Image-Edit-2511-Lightning/resolve/main/Qwen-Image-Edit-2511-Lightning-4steps-V1.0-bf16.safetensors",
+                "path": "loras/Lightning",
+                "filename": "Qwen-Image-Edit-2511-Lightning-4steps-V1.0-bf16.safetensors"
+            }
+        ],
         "vae": [
             {
                 "name": "qwen_image_vae.safetensors",
