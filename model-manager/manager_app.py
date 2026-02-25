@@ -15,6 +15,7 @@ GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN", "")
 REPO_OWNER = "rafpi12"
 REPO_NAME = "comfyui"
 GITHUB_FILE_PATH = "model-manager/models.json"
+
 ALLOWED_EXTENSIONS = {'.safetensors', '.pth', '.pt', '.gguf', '.bin', '.ckpt', '.yaml'}
 
 def get_client():
@@ -24,19 +25,7 @@ def get_client():
         return api
     except: return None
 
-def sync_to_github():
-    if not GITHUB_TOKEN: return False
-    url = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/contents/{GITHUB_FILE_PATH}"
-    headers = {"Authorization": f"token {GITHUB_TOKEN}", "Accept": "application/vnd.github.v3+json"}
-    try:
-        r = requests.get(url, headers=headers)
-        sha = r.json().get('sha') if r.status_code == 200 else None
-        with open(CONFIG_PATH, "rb") as f:
-            content = base64.b64encode(f.read()).decode()
-        payload = {"message": "Update models.json via Model Manager Pro", "content": content, "sha": sha}
-        requests.put(url, headers=headers, json=payload)
-        return True
-    except: return False
+# --- ROUTES API ---
 
 @app.get("/list-subfolders")
 async def list_subfolders(category: str):
@@ -54,11 +43,8 @@ async def list_subfolders(category: str):
 async def fetch_civitai_name(url: str):
     try:
         if "civitai.com" in url:
-            # Extraction plus robuste de l'ID
             model_id_match = re.search(r'/models/(\d+)', url)
-            if not model_id_match:
-                model_id_match = re.search(r'models/(\d+)', url)
-            
+            if not model_id_match: model_id_match = re.search(r'models/(\d+)', url)
             if model_id_match:
                 model_id = model_id_match.group(1)
                 api_url = f"https://civitai.com/api/v1/model-versions/{model_id}"
@@ -84,12 +70,11 @@ async def get_config():
     return {}
 
 @app.post("/save-config")
-async def save_config(request: Request, background_tasks: BackgroundTasks):
+async def save_config(request: Request):
     data = await request.json()
     with open(CONFIG_PATH, 'w', encoding='utf-8') as f:
         json.dump(data, f, indent=4)
-    background_tasks.add_task(sync_to_github)
-    return {"status": "ok", "github_sync": "started"}
+    return {"status": "ok"}
 
 @app.get("/scan-disk")
 async def scan_disk():
@@ -111,7 +96,6 @@ async def scan_disk():
 async def download(request: Request):
     data = await request.json()
     url, category, filename = data.get("url"), data.get("path"), data.get("filename")
-    
     clean_cat = category.replace(BASE_MODELS_PATH, "").lstrip("/")
     target_dir = os.path.join(BASE_MODELS_PATH, clean_cat)
     os.makedirs(target_dir, exist_ok=True)
@@ -119,22 +103,22 @@ async def download(request: Request):
     client = get_client()
     if not client: return {"status": "error", "message": "Aria2 non connecté"}
 
-    # --- NETTOYAGE PREALABLE (Évite l'Error 22/13) ---
+    # Nettoyage des fichiers temporaires bloquants
     dest = os.path.join(target_dir, filename)
-    if os.path.exists(dest + ".aria2"): 
-        os.remove(dest + ".aria2") # On vire le fichier de lock d'une session ratée
+    if os.path.exists(dest + ".aria2"): os.remove(dest + ".aria2")
 
-    # --- OPTIONS ROBUSTES ---
+    is_civitai = "civitai.com" in url.lower()
+    
     options = {
         "dir": target_dir, 
         "out": filename, 
         "continue": "true",
-        "max-connection-per-server": "16", 
-        "split": "16", 
+        # 4 connexions pour Civitai pour éviter l'erreur 22, 16 pour le reste
+        "max-connection-per-server": "4" if is_civitai else "16",
+        "split": "4" if is_civitai else "16",
         "min-split-size": "1M",
         "header": [
-            "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
-            "Accept: */*"
+            "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36"
         ],
         "check-certificate": "false"
     }
@@ -142,17 +126,15 @@ async def download(request: Request):
     final_url = url
     if "huggingface.co" in url.lower():
         options["header"].append(f"Authorization: Bearer {HF_TOKEN}")
-    elif "civitai.com" in url.lower():
+    elif is_civitai:
         if "token=" not in url:
             sep = "&" if "?" in url else "?"
             final_url = f"{url}{sep}token={CIVITAI_TOKEN}"
 
     try:
         client.add(final_url, options=options)
-        print(f"✅ Download started: {filename}")
         return {"status": "ok"}
     except Exception as e: 
-        print(f"❌ Aria2 Error: {str(e)}")
         return {"status": "error", "message": str(e)}
 
 @app.get("/progress")
@@ -161,7 +143,7 @@ async def progress():
     if not client: return []
     try:
         downloads = client.get_downloads()
-        return [{"name": d.name, "status": f"{d.status} (Code: {d.error_code})" if d.status == 'error' else d.status, "progress": d.progress, "speed": d.download_speed_string, "eta": d.eta_string} for d in downloads]
+        return [{"name": d.name, "status": d.status, "progress": d.progress, "speed": d.download_speed_string, "eta": d.eta_string} for d in downloads]
     except: return []
 
 @app.delete("/delete")
@@ -179,21 +161,12 @@ async def purge():
     return {"status": "ok"}
 
 if __name__ == "__main__":
-    # On tue les instances orphelines
+    # Nettoyage Aria2 au démarrage
     subprocess.run(["pkill", "-9", "aria2c"], stderr=subprocess.DEVNULL)
     time.sleep(1)
-    
-    # Lancement d'Aria2 avec gestion des redirections et logs
     subprocess.Popen([
-        "aria2c", 
-        "--enable-rpc", 
-        "--rpc-listen-all=true", 
-        "--rpc-allow-origin-all=true", 
-        "--max-concurrent-downloads=3", 
-        "--follow-torrent=mem",
-        "--quiet=true",
-        "-D"
+        "aria2c", "--enable-rpc", "--rpc-listen-all=true", 
+        "--rpc-allow-origin-all=true", "--max-concurrent-downloads=3", 
+        "--follow-torrent=mem", "-D"
     ])
-    
-    print("🛰️ Model Manager Pro Server started on port 8080")
     uvicorn.run(app, host="0.0.0.0", port=8080)
