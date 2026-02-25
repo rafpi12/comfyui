@@ -116,16 +116,14 @@ async def download(request: Request):
     os.makedirs(target_dir, exist_ok=True)
     client = get_client()
     if not client: return {"status": "error", "message": "Aria2 non connecté"}
+    
+    # MODIFICATION DES OPTIONS ICI
     options = {
-        "dir": target_dir, 
-        "out": filename, 
-        "continue": "true",
-        "max-connection-per-server": "16", 
-        "split": "16", 
-        "min-split-size": "1M",
-        # AJOUT DU HEADER CI-DESSOUS
+        "dir": target_dir, "out": filename, "continue": "true",
+        "max-connection-per-server": "16", "split": "16", "min-split-size": "1M",
         "header": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
     }
+    
     final_url = url
     if "huggingface.co" in url.lower():
         options["header"] = f"Authorization: Bearer {HF_TOKEN}"
@@ -165,7 +163,6 @@ async def purge():
 
 if __name__ == "__main__":
     subprocess.run(["pkill", "-9", "aria2c"])
-    # AJOUT DE --max-concurrent-downloads=3
     subprocess.Popen([
         "aria2c", 
         "--enable-rpc", 
