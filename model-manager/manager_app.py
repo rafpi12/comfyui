@@ -113,30 +113,33 @@ async def download(request: Request):
     client = get_client()
     if not client: return {"status": "error", "message": "Aria2 non connecté"}
 
-    # --- FIX ULTIME : On nettoie l'URL et on force les headers ---
-    final_url = url
+    # Nettoyage préventif
+    dest = os.path.join(target_dir, filename)
+    if os.path.exists(dest + ".aria2"): os.remove(dest + ".aria2")
+
+    is_civitai = "civitai.com" in url.lower()
+    
+    # FORMAT DES HEADERS CRUCIAL POUR ARIA2
     headers = ["User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"]
 
-    if "civitai.com" in url.lower():
-        if "token=" not in url:
-            sep = "&" if "?" in url else "?"
-            final_url = f"{url}{sep}token={CIVITAI_TOKEN}"
-    elif "huggingface.co" in url.lower():
+    final_url = url
+    if is_civitai:
+        sep = "&" if "?" in url else "?"
+        final_url = f"{url}{sep}token={CIVITAI_TOKEN}"
+    elif "huggingface.co" in url.lower() and HF_TOKEN:
         headers.append(f"Authorization: Bearer {HF_TOKEN}")
 
     options = {
         "dir": target_dir, 
         "out": filename, 
         "continue": "true",
-        "max-connection-per-server": "8", # Équilibre entre 1 et 16
-        "split": "8",
-        "header": headers,
+        "max-connection-per-server": "4" if is_civitai else "16",
+        "split": "4" if is_civitai else "16",
+        "header": headers, # Liste de strings
         "check-certificate": "false"
     }
 
     try:
-        dest = os.path.join(target_dir, filename)
-        if os.path.exists(dest + ".aria2"): os.remove(dest + ".aria2")
         client.add(final_url, options=options)
         return {"status": "ok"}
     except Exception as e: 
@@ -148,8 +151,25 @@ async def progress():
     if not client: return []
     try:
         downloads = client.get_downloads()
-        return [{"name": d.name if d.name else "Initialisation...", "status": f"{d.status} (Error {d.error_code})" if d.status == 'error' else d.status, "progress": d.progress, "speed": d.download_speed_string, "eta": d.eta_string} for d in downloads]
+        res = []
+        for d in downloads:
+            # Sécurité pour éviter que le JS plante si le nom n'est pas encore résolu
+            name = d.name if (d.name and not d.name.startswith('http')) else filename_fallback(d)
+            res.append({
+                "name": name, 
+                "status": f"{d.status} (Code: {d.error_code})" if d.status == 'error' else d.status, 
+                "progress": d.progress, 
+                "speed": d.download_speed_string, 
+                "eta": d.eta_string
+            })
+        return res
     except: return []
+
+def filename_fallback(download):
+    try:
+        return download.files[0].path.split('/')[-1]
+    except:
+        return "Initialisation..."
 
 @app.delete("/delete")
 async def delete(cat: str, file: str):
@@ -166,11 +186,11 @@ async def purge():
 
 if __name__ == "__main__":
     subprocess.run(["pkill", "-9", "aria2c"])
-    # --follow-torrent=mem aide souvent sur les redirections complexes 307 de Civitai
+    time.sleep(1)
+    # Lancement avec rpc-save-upload-metadata pour aider la jauge
     subprocess.Popen([
         "aria2c", "--enable-rpc", "--rpc-listen-all=true", 
         "--rpc-allow-origin-all=true", "--max-concurrent-downloads=3", 
-        "--follow-torrent=mem", "-D"
+        "--follow-torrent=mem", "--rpc-save-upload-metadata=true", "-D"
     ])
-    time.sleep(1)
     uvicorn.run(app, host="0.0.0.0", port=8080)
