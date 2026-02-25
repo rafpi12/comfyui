@@ -210,16 +210,18 @@ async def progress():
             if status == "error":
                 status = f"Erreur (Code {d.error_code})"
 
-            # download_speed est en bytes/s (int), on formate manuellement
-            speed_bps = d.download_speed or 0
-            if speed_bps >= 1_048_576:
-                speed_str = f"{speed_bps / 1_048_576:.1f} MB/s"
-            elif speed_bps >= 1024:
-                speed_str = f"{speed_bps / 1024:.0f} KB/s"
-            else:
-                speed_str = f"{speed_bps} B/s"
+            # download_speed_string et eta_string sont des méthodes — appel avec ()
+            try:
+                speed_bps = d.download_speed or 0
+                if speed_bps >= 1_000_000:
+                    speed_str = f"{speed_bps / 1_000_000:.1f} Mo/s"
+                elif speed_bps >= 1000:
+                    speed_str = f"{speed_bps / 1000:.0f} Ko/s"
+                else:
+                    speed_str = f"{speed_bps} o/s"
+            except:
+                speed_str = "0 o/s"
 
-            # eta est un objet timedelta ou int (secondes)
             try:
                 eta_secs = int(d.eta.total_seconds()) if hasattr(d.eta, 'total_seconds') else int(d.eta or 0)
                 if eta_secs > 3600:
