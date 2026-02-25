@@ -8,8 +8,9 @@ app = FastAPI()
 BASE_MODELS_PATH = "/workspace/ComfyUI/models"
 CONFIG_PATH = "/workspace/model-manager/models.json"
 
+# RÉCUPÉRATION SÉCURISÉE DES TOKENS (Variables d'environnement RunPod)
 HF_TOKEN = os.environ.get("HF_TOKEN", "")
-CIVITAI_TOKEN = os.environ.get("CIVITAI_TOKEN", "") 
+CIVITAI_TOKEN = os.environ.get("CIVITAI_TOKEN", "") # Récupère la clé du Pod Template
 GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN", "")
 
 REPO_OWNER = "rafpi12"
@@ -41,6 +42,8 @@ async def list_subfolders(category: str):
 
 @app.get("/fetch-civitai-name")
 async def fetch_civitai_name(url: str):
+    if not CIVITAI_TOKEN:
+        return {"filename": "ERREUR: Token Civitai manquant"}
     try:
         if "civitai.com" in url:
             model_id_match = re.search(r'/models/(\d+)', url)
@@ -48,7 +51,7 @@ async def fetch_civitai_name(url: str):
             if model_id_match:
                 model_id = model_id_match.group(1)
                 api_url = f"https://civitai.com/api/v1/model-versions/{model_id}"
-                headers = {"Authorization": f"Bearer {CIVITAI_TOKEN}"} if CIVITAI_TOKEN else {}
+                headers = {"Authorization": f"Bearer {CIVITAI_TOKEN}"}
                 resp = requests.get(api_url, headers=headers, timeout=5)
                 if resp.status_code == 200:
                     data = resp.json()
@@ -96,6 +99,10 @@ async def scan_disk():
 async def download(request: Request):
     data = await request.json()
     url, category, filename = data.get("url"), data.get("path"), data.get("filename")
+    
+    if "civitai.com" in url.lower() and not CIVITAI_TOKEN:
+        return {"status": "error", "message": "Variable CIVITAI_TOKEN non définie dans le Pod"}
+
     clean_cat = category.replace(BASE_MODELS_PATH, "").lstrip("/")
     target_dir = os.path.join(BASE_MODELS_PATH, clean_cat)
     os.makedirs(target_dir, exist_ok=True)
@@ -103,7 +110,6 @@ async def download(request: Request):
     client = get_client()
     if not client: return {"status": "error", "message": "Aria2 non connecté"}
 
-    # Nettoyage des fichiers temporaires bloquants
     dest = os.path.join(target_dir, filename)
     if os.path.exists(dest + ".aria2"): os.remove(dest + ".aria2")
 
@@ -113,18 +119,15 @@ async def download(request: Request):
         "dir": target_dir, 
         "out": filename, 
         "continue": "true",
-        # 4 connexions pour Civitai pour éviter l'erreur 22, 16 pour le reste
         "max-connection-per-server": "4" if is_civitai else "16",
         "split": "4" if is_civitai else "16",
         "min-split-size": "1M",
-        "header": [
-            "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36"
-        ],
-        "check-certificate": "false"
+        "check-certificate": "false",
+        "header": ["User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"]
     }
 
     final_url = url
-    if "huggingface.co" in url.lower():
+    if "huggingface.co" in url.lower() and HF_TOKEN:
         options["header"].append(f"Authorization: Bearer {HF_TOKEN}")
     elif is_civitai:
         if "token=" not in url:
@@ -132,6 +135,7 @@ async def download(request: Request):
             final_url = f"{url}{sep}token={CIVITAI_TOKEN}"
 
     try:
+        print(f"DEBUG: Download start -> {filename}")
         client.add(final_url, options=options)
         return {"status": "ok"}
     except Exception as e: 
@@ -161,12 +165,12 @@ async def purge():
     return {"status": "ok"}
 
 if __name__ == "__main__":
-    # Nettoyage Aria2 au démarrage
+    print(f"STAUTS: Civitai Token trouvé : {'OUI' if CIVITAI_TOKEN else 'NON'}")
     subprocess.run(["pkill", "-9", "aria2c"], stderr=subprocess.DEVNULL)
     time.sleep(1)
     subprocess.Popen([
         "aria2c", "--enable-rpc", "--rpc-listen-all=true", 
         "--rpc-allow-origin-all=true", "--max-concurrent-downloads=3", 
-        "--follow-torrent=mem", "-D"
+        "--follow-torrent=mem", "--quiet=true", "-D"
     ])
     uvicorn.run(app, host="0.0.0.0", port=8080)
