@@ -39,17 +39,6 @@ def sync_to_github():
         return True
     except: return False
 
-def run_wget(url, dest_path, filename):
-    print(f"🚀 [WGET] Lancement pour : {filename}")
-    try:
-        cmd = ["wget", "-c", "-O", dest_path, url]
-        subprocess.run(cmd, check=True)
-        print(f"✅ [WGET] Terminé : {filename}")
-    except Exception as e:
-        print(f"❌ [WGET] Erreur sur {filename}: {e}")
-
-# --- ROUTES API ---
-
 @app.get("/list-subfolders")
 async def list_subfolders(category: str):
     base = os.path.join(BASE_MODELS_PATH, category)
@@ -114,73 +103,59 @@ async def scan_disk():
     return res
 
 @app.post("/download")
-async def download(request: Request, background_tasks: BackgroundTasks):
+async def download(request: Request):
     data = await request.json()
     url, category, filename = data.get("url"), data.get("path"), data.get("filename")
     clean_cat = category.replace(BASE_MODELS_PATH, "").lstrip("/")
     target_dir = os.path.join(BASE_MODELS_PATH, clean_cat)
     os.makedirs(target_dir, exist_ok=True)
-    dest = os.path.join(target_dir, filename)
-
-    is_civitai = "civitai.com" in url.lower()
-    # Déclencheur hybride : Civitai + (Dossier Diffusion/Checkpoints OU mots-clés Error 22)
-    is_problematic = is_civitai and ("diffusion_models" in category.lower() or "checkpoints" in category.lower() or any(x in filename.lower() for x in ["dark", "beast", "moody"]))
-
-    final_url = url
-    if is_civitai:
-        sep = "&" if "?" in url else "?"
-        final_url = f"{url}{sep}token={CIVITAI_TOKEN}"
-
-    if is_problematic:
-        background_tasks.add_task(run_wget, final_url, dest, filename)
-        return {"status": "ok", "message": "Mode Wget activé pour ce fichier"}
-
-    client = get_client()
-    if client:
-        options = {
-            "dir": target_dir, "out": filename, "continue": "true",
-            "max-connection-per-server": "16", "split": "16"
-        }
-        if "huggingface.co" in url.lower():
-            options["header"] = f"Authorization: Bearer {HF_TOKEN}"
-        elif is_civitai:
-            options["header"] = "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
-
-        try:
-            if os.path.exists(dest + ".aria2"): os.remove(dest + ".aria2")
-            client.add(final_url, options=options)
-            return {"status": "ok"}
-        except Exception as e: return {"status": "error", "message": str(e)}
     
-    return {"status": "error", "message": "Aria2 non disponible"}
+    client = get_client()
+    if not client: return {"status": "error", "message": "Aria2 non connecté"}
+
+    # --- FIX ULTIME : On nettoie l'URL et on force les headers ---
+    final_url = url
+    headers = ["User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"]
+
+    if "civitai.com" in url.lower():
+        if "token=" not in url:
+            sep = "&" if "?" in url else "?"
+            final_url = f"{url}{sep}token={CIVITAI_TOKEN}"
+    elif "huggingface.co" in url.lower():
+        headers.append(f"Authorization: Bearer {HF_TOKEN}")
+
+    options = {
+        "dir": target_dir, 
+        "out": filename, 
+        "continue": "true",
+        "max-connection-per-server": "8", # Équilibre entre 1 et 16
+        "split": "8",
+        "header": headers,
+        "check-certificate": "false"
+    }
+
+    try:
+        dest = os.path.join(target_dir, filename)
+        if os.path.exists(dest + ".aria2"): os.remove(dest + ".aria2")
+        client.add(final_url, options=options)
+        return {"status": "ok"}
+    except Exception as e: 
+        return {"status": "error", "message": str(e)}
 
 @app.get("/progress")
 async def progress():
-    res = []
     client = get_client()
-    if client:
-        try:
-            for d in client.get_downloads():
-                name = d.name if (d.name and not d.name.startswith('http')) else "Initialisation..."
-                res.append({"name": name, "status": d.status, "progress": d.progress, "speed": d.download_speed_string, "eta": d.eta_string})
-        except: pass
-    
-    for proc in psutil.process_iter(['name', 'cmdline']):
-        try:
-            if proc.info['name'] == 'wget':
-                cmd = proc.info['cmdline']
-                if "-O" in cmd:
-                    fname = cmd[cmd.index("-O") + 1].split('/')[-1]
-                    res.append({"name": fname, "status": "active (wget)", "progress": 50, "speed": "Busy", "eta": "..."})
-        except: pass
-    return res
+    if not client: return []
+    try:
+        downloads = client.get_downloads()
+        return [{"name": d.name if d.name else "Initialisation...", "status": f"{d.status} (Error {d.error_code})" if d.status == 'error' else d.status, "progress": d.progress, "speed": d.download_speed_string, "eta": d.eta_string} for d in downloads]
+    except: return []
 
 @app.delete("/delete")
 async def delete(cat: str, file: str):
     clean_cat = cat.replace(BASE_MODELS_PATH, "").lstrip("/")
     p = os.path.join(BASE_MODELS_PATH, clean_cat, file)
     if os.path.exists(p): os.remove(p)
-    if os.path.exists(p + ".aria2"): os.remove(p + ".aria2")
     return {"status": "ok"}
 
 @app.post("/purge")
@@ -191,6 +166,11 @@ async def purge():
 
 if __name__ == "__main__":
     subprocess.run(["pkill", "-9", "aria2c"])
-    subprocess.Popen(["aria2c", "--enable-rpc", "--rpc-listen-all=true", "--rpc-allow-origin-all=true", "--max-concurrent-downloads=3", "-D"])
+    # --follow-torrent=mem aide souvent sur les redirections complexes 307 de Civitai
+    subprocess.Popen([
+        "aria2c", "--enable-rpc", "--rpc-listen-all=true", 
+        "--rpc-allow-origin-all=true", "--max-concurrent-downloads=3", 
+        "--follow-torrent=mem", "-D"
+    ])
     time.sleep(1)
     uvicorn.run(app, host="0.0.0.0", port=8080)
