@@ -30,6 +30,12 @@
                 "url": "https://civitai.com/api/download/models/2699886?type=Model&format=SafeTensor&size=pruned&fp=bf16",
                 "path": "diffusion_models",
                 "filename": "darkBeastFeb2226Latest_darkblitz6Beyondnsfw.safetensors"
+            },
+            {
+                "name": "redcraftFeb1926Latest_zibDistilledDX3Lucis.safetensors",
+                "url": "https://civitai.com/api/download/models/2680424?type=Model&format=SafeTensor&size=pruned&fp=bf16",
+                "path": "diffusion_models",
+                "filename": "redcraftFeb1926Latest_zibDistilledDX3Lucis.safetensors"
             }
         ],
         "unet": [
