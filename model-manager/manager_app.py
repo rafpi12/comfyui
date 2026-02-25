@@ -116,31 +116,36 @@ async def download(request: Request):
     os.makedirs(target_dir, exist_ok=True)
     client = get_client()
     if not client: return {"status": "error", "message": "Aria2 non connecté"}
-    
+
+    # --- FIX ERROR 22 : Headers & Connexions ---
     is_civitai = "civitai.com" in url.lower()
+    
+    # On prépare une LISTE de headers (format correct pour Aria2)
+    headers_list = [
+        "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+        "Accept: */*"
+    ]
     
     options = {
         "dir": target_dir, 
         "out": filename, 
         "continue": "true",
-        "max-connection-per-server": "4" if is_civitai else "16",
-        "split": "4" if is_civitai else "16",
-        "min-split-size": "1M",
-        "header": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
+        "max-connection-per-server": "4" if is_civitai else "16", # Plus doux pour Civitai
+        "split": "4" if is_civitai else "16"
     }
-    
+
     final_url = url
-    if "huggingface.co" in url.lower():
-        options["header"] = f"Authorization: Bearer {HF_TOKEN}"
+    if "huggingface.co" in url.lower() and HF_TOKEN:
+        headers_list.append(f"Authorization: Bearer {HF_TOKEN}")
     elif is_civitai:
         sep = "&" if "?" in url else "?"
         final_url = f"{url}{sep}token={CIVITAI_TOKEN}"
-        
+    
+    options["header"] = headers_list # On injecte la liste complète
+
     try:
         dest = os.path.join(target_dir, filename)
-        # Nettoyage des résidus d'erreurs précédentes
-        if os.path.exists(dest + ".aria2"): os.remove(dest + ".aria2")
-        
+        if os.path.exists(dest + ".aria2"): os.remove(dest + ".aria2") # Nettoyage lock
         client.add(final_url, options=options)
         return {"status": "ok"}
     except Exception as e: return {"status": "error", "message": str(e)}
@@ -151,7 +156,18 @@ async def progress():
     if not client: return []
     try:
         downloads = client.get_downloads()
-        return [{"name": d.name, "status": f"{d.status} (Code: {d.error_code})" if d.status == 'error' else d.status, "progress": d.progress, "speed": d.download_speed_string, "eta": d.eta_string} for d in downloads]
+        res = []
+        for d in downloads:
+            # --- FIX JAUGE : On force un nom et on s'assure que progress est un nombre ---
+            name = d.name if (d.name and not d.name.startswith('http')) else "Initialisation..."
+            res.append({
+                "name": name, 
+                "status": f"{d.status} (Code: {d.error_code})" if d.status == 'error' else d.status, 
+                "progress": d.progress if d.progress is not None else 0, 
+                "speed": d.download_speed_string, 
+                "eta": d.eta_string
+            })
+        return res
     except: return []
 
 @app.delete("/delete")
