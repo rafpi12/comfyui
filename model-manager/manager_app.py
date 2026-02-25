@@ -168,6 +168,8 @@ async def download(request: Request):
         "dir": target_dir,
         "out": filename,
         "continue": "true",
+        "allow-overwrite": "true",
+        "auto-file-renaming": "false",
         "max-connection-per-server": connections,
         "split": split,
         "min-split-size": "10M",
