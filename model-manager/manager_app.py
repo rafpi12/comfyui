@@ -117,24 +117,30 @@ async def download(request: Request):
     client = get_client()
     if not client: return {"status": "error", "message": "Aria2 non connecté"}
     
-    # MODIFICATION DES OPTIONS ICI
+    is_civitai = "civitai.com" in url.lower()
+    
     options = {
-        "dir": target_dir, "out": filename, "continue": "true",
-        "max-connection-per-server": "16", "split": "16", "min-split-size": "1M",
+        "dir": target_dir, 
+        "out": filename, 
+        "continue": "true",
+        "max-connection-per-server": "4" if is_civitai else "16",
+        "split": "4" if is_civitai else "16",
+        "min-split-size": "1M",
         "header": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
     }
     
     final_url = url
     if "huggingface.co" in url.lower():
         options["header"] = f"Authorization: Bearer {HF_TOKEN}"
-    elif "civitai.com" in url.lower():
+    elif is_civitai:
         sep = "&" if "?" in url else "?"
         final_url = f"{url}{sep}token={CIVITAI_TOKEN}"
+        
     try:
         dest = os.path.join(target_dir, filename)
-        if os.path.exists(dest) and os.path.getsize(dest) < 1024*1024:
-             os.remove(dest)
-             if os.path.exists(dest + ".aria2"): os.remove(dest + ".aria2")
+        # Nettoyage des résidus d'erreurs précédentes
+        if os.path.exists(dest + ".aria2"): os.remove(dest + ".aria2")
+        
         client.add(final_url, options=options)
         return {"status": "ok"}
     except Exception as e: return {"status": "error", "message": str(e)}
@@ -153,6 +159,7 @@ async def delete(cat: str, file: str):
     clean_cat = cat.replace(BASE_MODELS_PATH, "").lstrip("/")
     p = os.path.join(BASE_MODELS_PATH, clean_cat, file)
     if os.path.exists(p): os.remove(p)
+    if os.path.exists(p + ".aria2"): os.remove(p + ".aria2")
     return {"status": "ok"}
 
 @app.post("/purge")
@@ -168,7 +175,8 @@ if __name__ == "__main__":
         "--enable-rpc", 
         "--rpc-listen-all=true", 
         "--rpc-allow-origin-all=true", 
-        "--max-concurrent-downloads=3", 
+        "--max-concurrent-downloads=3",
+        "--follow-torrent=mem",
         "-D"
     ])
     time.sleep(1)
