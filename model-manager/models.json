@@ -152,6 +152,12 @@
                 "url": "https://civitai.com/api/download/models/2604982?type=Model&format=SafeTensor",
                 "path": "loras",
                 "filename": "Famegid_Z-Image_Spice_V1.safetensors"
+            },
+            {
+                "name": "nicegirls_zimagebase.safetensors",
+                "url": "https://civitai.com/api/download/models/2683561?type=Model&format=SafeTensor",
+                "path": "loras",
+                "filename": "nicegirls_zimagebase.safetensors"
             }
         ],
         "loras/Vyesna": [
