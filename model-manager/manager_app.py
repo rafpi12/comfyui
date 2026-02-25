@@ -15,7 +15,6 @@ GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN", "")
 REPO_OWNER = "rafpi12"
 REPO_NAME = "comfyui"
 GITHUB_FILE_PATH = "model-manager/models.json"
-
 ALLOWED_EXTENSIONS = {'.safetensors', '.pth', '.pt', '.gguf', '.bin', '.ckpt', '.yaml'}
 
 def get_client():
@@ -55,15 +54,21 @@ async def list_subfolders(category: str):
 async def fetch_civitai_name(url: str):
     try:
         if "civitai.com" in url:
-            model_id = url.split('/models/')[1].split('?')[0]
-            api_url = f"https://civitai.com/api/v1/model-versions/{model_id}"
-            headers = {"Authorization": f"Bearer {CIVITAI_TOKEN}"} if CIVITAI_TOKEN else {}
-            resp = requests.get(api_url, headers=headers, timeout=5)
-            if resp.status_code == 200:
-                data = resp.json()
-                for file in data.get('files', []):
-                    if file.get('primary'): return {"filename": file.get('name')}
-                if data.get('files'): return {"filename": data['files'][0].get('name')}
+            # Extraction plus robuste de l'ID
+            model_id_match = re.search(r'/models/(\d+)', url)
+            if not model_id_match:
+                model_id_match = re.search(r'models/(\d+)', url)
+            
+            if model_id_match:
+                model_id = model_id_match.group(1)
+                api_url = f"https://civitai.com/api/v1/model-versions/{model_id}"
+                headers = {"Authorization": f"Bearer {CIVITAI_TOKEN}"} if CIVITAI_TOKEN else {}
+                resp = requests.get(api_url, headers=headers, timeout=5)
+                if resp.status_code == 200:
+                    data = resp.json()
+                    for file in data.get('files', []):
+                        if file.get('primary'): return {"filename": file.get('name')}
+                    if data.get('files'): return {"filename": data['files'][0].get('name')}
         return {"filename": ""}
     except: return {"filename": ""}
 
@@ -102,38 +107,53 @@ async def scan_disk():
                 res[cat_name] = files
     return res
 
-@app.get("/check-file")
-async def check_file(category: str, filename: str):
-    path = os.path.join(BASE_MODELS_PATH, category, filename)
-    return {"exists": os.path.exists(path), "path": path}
-
 @app.post("/download")
 async def download(request: Request):
     data = await request.json()
     url, category, filename = data.get("url"), data.get("path"), data.get("filename")
+    
     clean_cat = category.replace(BASE_MODELS_PATH, "").lstrip("/")
     target_dir = os.path.join(BASE_MODELS_PATH, clean_cat)
     os.makedirs(target_dir, exist_ok=True)
+    
     client = get_client()
     if not client: return {"status": "error", "message": "Aria2 non connecté"}
+
+    # --- NETTOYAGE PREALABLE (Évite l'Error 22/13) ---
+    dest = os.path.join(target_dir, filename)
+    if os.path.exists(dest + ".aria2"): 
+        os.remove(dest + ".aria2") # On vire le fichier de lock d'une session ratée
+
+    # --- OPTIONS ROBUSTES ---
     options = {
-        "dir": target_dir, "out": filename, "continue": "true",
-        "max-connection-per-server": "16", "split": "16", "min-split-size": "1M"
+        "dir": target_dir, 
+        "out": filename, 
+        "continue": "true",
+        "max-connection-per-server": "16", 
+        "split": "16", 
+        "min-split-size": "1M",
+        "header": [
+            "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
+            "Accept: */*"
+        ],
+        "check-certificate": "false"
     }
+
     final_url = url
     if "huggingface.co" in url.lower():
-        options["header"] = f"Authorization: Bearer {HF_TOKEN}"
+        options["header"].append(f"Authorization: Bearer {HF_TOKEN}")
     elif "civitai.com" in url.lower():
-        sep = "&" if "?" in url else "?"
-        final_url = f"{url}{sep}token={CIVITAI_TOKEN}"
+        if "token=" not in url:
+            sep = "&" if "?" in url else "?"
+            final_url = f"{url}{sep}token={CIVITAI_TOKEN}"
+
     try:
-        dest = os.path.join(target_dir, filename)
-        if os.path.exists(dest) and os.path.getsize(dest) < 1024*1024:
-             os.remove(dest)
-             if os.path.exists(dest + ".aria2"): os.remove(dest + ".aria2")
         client.add(final_url, options=options)
+        print(f"✅ Download started: {filename}")
         return {"status": "ok"}
-    except Exception as e: return {"status": "error", "message": str(e)}
+    except Exception as e: 
+        print(f"❌ Aria2 Error: {str(e)}")
+        return {"status": "error", "message": str(e)}
 
 @app.get("/progress")
 async def progress():
@@ -149,6 +169,7 @@ async def delete(cat: str, file: str):
     clean_cat = cat.replace(BASE_MODELS_PATH, "").lstrip("/")
     p = os.path.join(BASE_MODELS_PATH, clean_cat, file)
     if os.path.exists(p): os.remove(p)
+    if os.path.exists(p + ".aria2"): os.remove(p + ".aria2")
     return {"status": "ok"}
 
 @app.post("/purge")
@@ -158,15 +179,21 @@ async def purge():
     return {"status": "ok"}
 
 if __name__ == "__main__":
-    subprocess.run(["pkill", "-9", "aria2c"])
-    # AJOUT DE --max-concurrent-downloads=3
+    # On tue les instances orphelines
+    subprocess.run(["pkill", "-9", "aria2c"], stderr=subprocess.DEVNULL)
+    time.sleep(1)
+    
+    # Lancement d'Aria2 avec gestion des redirections et logs
     subprocess.Popen([
         "aria2c", 
         "--enable-rpc", 
         "--rpc-listen-all=true", 
         "--rpc-allow-origin-all=true", 
         "--max-concurrent-downloads=3", 
+        "--follow-torrent=mem",
+        "--quiet=true",
         "-D"
     ])
-    time.sleep(1)
+    
+    print("🛰️ Model Manager Pro Server started on port 8080")
     uvicorn.run(app, host="0.0.0.0", port=8080)
