@@ -1,6 +1,7 @@
 import os, json, aria2p, subprocess, time, uvicorn, shutil, psutil, requests, base64, re
 from fastapi import FastAPI, Request, BackgroundTasks
 from fastapi.responses import HTMLResponse
+from urllib.parse import urlparse, unquote
 
 app = FastAPI()
 
@@ -118,25 +119,42 @@ async def download(request: Request):
     if os.path.exists(dest + ".aria2"): os.remove(dest + ".aria2")
 
     is_civitai = "civitai.com" in url.lower()
-    
-    # FORMAT DES HEADERS CRUCIAL POUR ARIA2
-    headers = ["User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"]
+    is_hf = "huggingface.co" in url.lower()
+
+    headers = [
+        "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+        "(KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
+    ]
 
     final_url = url
     if is_civitai:
-        sep = "&" if "?" in url else "?"
-        final_url = f"{url}{sep}token={CIVITAI_TOKEN}"
-    elif "huggingface.co" in url.lower() and HF_TOKEN:
-        headers.append(f"Authorization: Bearer {HF_TOKEN}")
+        # Header Auth > query param : moins susceptible de déclencher les filtres anti-bot
+        if CIVITAI_TOKEN:
+            headers.append(f"Authorization: Bearer {CIVITAI_TOKEN}")
+        # 1 seule connexion pour éviter l'Error 22 sur les fichiers restreints/lourds
+        connections = "1"
+        split = "1"
+    elif is_hf:
+        if HF_TOKEN:
+            headers.append(f"Authorization: Bearer {HF_TOKEN}")
+        connections = "16"
+        split = "16"
+    else:
+        connections = "16"
+        split = "16"
 
     options = {
-        "dir": target_dir, 
-        "out": filename, 
+        "dir": target_dir,
+        "out": filename,
         "continue": "true",
-        "max-connection-per-server": "4" if is_civitai else "16",
-        "split": "4" if is_civitai else "16",
-        "header": headers, # Liste de strings
-        "check-certificate": "false"
+        "max-connection-per-server": connections,
+        "split": split,
+        "min-split-size": "10M",
+        "header": headers,
+        "check-certificate": "false",
+        # Retry patient pour absorber les timeouts transitoires de Civitai
+        "max-tries": "10",
+        "retry-wait": "5",
     }
 
     try:
@@ -153,14 +171,33 @@ async def progress():
         downloads = client.get_downloads()
         res = []
         for d in downloads:
-            # Sécurité pour éviter que le JS plante si le nom n'est pas encore résolu
-            name = d.name if (d.name and not d.name.startswith('http')) else filename_fallback(d)
+            # Pendant l'init, d.name contient l'URL — on extrait le vrai nom de fichier
+            raw_name = d.name or ""
+            if raw_name.startswith("http"):
+                # Fallback 1 : chemin du fichier sur disque
+                name = filename_fallback(d)
+            else:
+                name = raw_name
+
+            # Fallback 2 : extraire depuis l'URI Aria2 si toujours vide
+            if not name or name == "Initialisation...":
+                try:
+                    parsed = urlparse(d.files[0].uris[0]["uri"] if d.files else "")
+                    name = unquote(parsed.path.split("/")[-1]) or "Initialisation..."
+                except:
+                    name = "Initialisation..."
+
+            status = d.status
+            if status == "error":
+                status = f"Erreur (Code {d.error_code})"
+
             res.append({
-                "name": name, 
-                "status": f"{d.status} (Code: {d.error_code})" if d.status == 'error' else d.status, 
-                "progress": d.progress, 
-                "speed": d.download_speed_string, 
-                "eta": d.eta_string
+                "name": name,
+                "status": status,
+                "progress": d.progress,
+                "speed": d.download_speed_string,
+                "eta": d.eta_string,
+                "gid": d.gid,
             })
         return res
     except: return []
@@ -187,7 +224,6 @@ async def purge():
 if __name__ == "__main__":
     subprocess.run(["pkill", "-9", "aria2c"])
     time.sleep(1)
-    # Lancement avec rpc-save-upload-metadata pour aider la jauge
     subprocess.Popen([
         "aria2c", "--enable-rpc", "--rpc-listen-all=true", 
         "--rpc-allow-origin-all=true", "--max-concurrent-downloads=3", 
