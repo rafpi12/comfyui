@@ -158,6 +158,12 @@
                 "url": "https://civitai.com/api/download/models/2683561?type=Model&format=SafeTensor",
                 "path": "loras",
                 "filename": "nicegirls_zimagebase.safetensors"
+            },
+            {
+                "name": "nicegirls_Zimage.safetensors",
+                "url": "https://civitai.com/api/download/models/2465980?type=Model&format=SafeTensor",
+                "path": "loras",
+                "filename": "nicegirls_Zimage.safetensors"
             }
         ],
         "loras/Vyesna": [
