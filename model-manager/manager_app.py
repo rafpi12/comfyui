@@ -210,12 +210,35 @@ async def progress():
             if status == "error":
                 status = f"Erreur (Code {d.error_code})"
 
+            # download_speed est en bytes/s (int), on formate manuellement
+            speed_bps = d.download_speed or 0
+            if speed_bps >= 1_048_576:
+                speed_str = f"{speed_bps / 1_048_576:.1f} MB/s"
+            elif speed_bps >= 1024:
+                speed_str = f"{speed_bps / 1024:.0f} KB/s"
+            else:
+                speed_str = f"{speed_bps} B/s"
+
+            # eta est un objet timedelta ou int (secondes)
+            try:
+                eta_secs = int(d.eta.total_seconds()) if hasattr(d.eta, 'total_seconds') else int(d.eta or 0)
+                if eta_secs > 3600:
+                    eta_str = f"{eta_secs // 3600}h{(eta_secs % 3600) // 60}m"
+                elif eta_secs > 60:
+                    eta_str = f"{eta_secs // 60}m{eta_secs % 60}s"
+                elif eta_secs > 0:
+                    eta_str = f"{eta_secs}s"
+                else:
+                    eta_str = ""
+            except:
+                eta_str = ""
+
             res.append({
                 "name": name,
                 "status": status,
-                "progress": d.progress,
-                "speed": d.download_speed_string,
-                "eta": d.eta_string,
+                "progress": round(d.progress, 1),
+                "speed": speed_str,
+                "eta": eta_str,
                 "gid": d.gid,
             })
         return res
