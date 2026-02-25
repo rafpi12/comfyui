@@ -24,6 +24,12 @@
                 "url": "https://huggingface.co/tewea/z_image_turbo_bf16_nsfw/resolve/main/z_image_turbo_bf16_nsfw_v2.safetensors?download=true",
                 "path": "diffusion_models",
                 "filename": "z_image_turbo_bf16_nsfw_v2.safetensors"
+            },
+            {
+                "name": "darkBeastFeb2226Latest_darkblitz6Beyondnsfw.safetensors",
+                "url": "https://civitai.com/api/download/models/2699886?type=Model&format=SafeTensor&size=pruned&fp=bf16",
+                "path": "diffusion_models",
+                "filename": "darkBeastFeb2226Latest_darkblitz6Beyondnsfw.safetensors"
             }
         ],
         "unet": [
