@@ -114,38 +114,32 @@ async def download(request: Request):
     clean_cat = category.replace(BASE_MODELS_PATH, "").lstrip("/")
     target_dir = os.path.join(BASE_MODELS_PATH, clean_cat)
     os.makedirs(target_dir, exist_ok=True)
+    
     client = get_client()
     if not client: return {"status": "error", "message": "Aria2 non connecté"}
 
-    # --- FIX ERROR 22 : Headers & Connexions ---
     is_civitai = "civitai.com" in url.lower()
     
-    # On prépare une LISTE de headers (format correct pour Aria2)
-    headers_list = [
-        "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
-        "Accept: */*"
-    ]
-    
+    # Configuration optimisée pour éviter l'Error 22 sur Civitai
     options = {
         "dir": target_dir, 
         "out": filename, 
         "continue": "true",
-        "max-connection-per-server": "4" if is_civitai else "16", # Plus doux pour Civitai
-        "split": "4" if is_civitai else "16"
+        "max-connection-per-server": "1" if is_civitai else "16",
+        "split": "1" if is_civitai else "16",
+        "header": ["User-Agent: Wget/1.21.2", "Accept: */*"]
     }
 
     final_url = url
-    if "huggingface.co" in url.lower() and HF_TOKEN:
-        headers_list.append(f"Authorization: Bearer {HF_TOKEN}")
+    if "huggingface.co" in url.lower():
+        options["header"].append(f"Authorization: Bearer {HF_TOKEN}")
     elif is_civitai:
         sep = "&" if "?" in url else "?"
         final_url = f"{url}{sep}token={CIVITAI_TOKEN}"
-    
-    options["header"] = headers_list # On injecte la liste complète
 
     try:
         dest = os.path.join(target_dir, filename)
-        if os.path.exists(dest + ".aria2"): os.remove(dest + ".aria2") # Nettoyage lock
+        if os.path.exists(dest + ".aria2"): os.remove(dest + ".aria2")
         client.add(final_url, options=options)
         return {"status": "ok"}
     except Exception as e: return {"status": "error", "message": str(e)}
@@ -158,10 +152,10 @@ async def progress():
         downloads = client.get_downloads()
         res = []
         for d in downloads:
-            # --- FIX JAUGE : On force un nom et on s'assure que progress est un nombre ---
-            name = d.name if (d.name and not d.name.startswith('http')) else "Initialisation..."
+            # Sécurité pour le nom du fichier au début du téléchargement
+            display_name = d.name if (d.name and not d.name.startswith('http')) else "Initialisation..."
             res.append({
-                "name": name, 
+                "name": display_name, 
                 "status": f"{d.status} (Code: {d.error_code})" if d.status == 'error' else d.status, 
                 "progress": d.progress if d.progress is not None else 0, 
                 "speed": d.download_speed_string, 
@@ -175,7 +169,6 @@ async def delete(cat: str, file: str):
     clean_cat = cat.replace(BASE_MODELS_PATH, "").lstrip("/")
     p = os.path.join(BASE_MODELS_PATH, clean_cat, file)
     if os.path.exists(p): os.remove(p)
-    if os.path.exists(p + ".aria2"): os.remove(p + ".aria2")
     return {"status": "ok"}
 
 @app.post("/purge")
