@@ -99,7 +99,9 @@ async def scan_disk():
                     for f in filenames:
                         if any(f.endswith(ext) for ext in ALLOWED_EXTENSIONS):
                             rel_path = os.path.relpath(os.path.join(root, f), entry.path)
-                            files.append(rel_path.replace("\\", "/"))
+                            full_path = os.path.join(root, f)
+                            size = os.path.getsize(full_path)
+                            files.append({"path": rel_path.replace("\\", "/"), "size": size})
                 res[cat_name] = files
     return res
 
