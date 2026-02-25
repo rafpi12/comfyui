@@ -140,6 +140,12 @@
                 "url": "https://civitai.com/api/download/models/2678174?type=Model&format=SafeTensor",
                 "path": "loras",
                 "filename": "deedee_amateur_photography_zimage_base_and_turbo_v1.safetensors"
+            },
+            {
+                "name": "Famegrid_Z_Image_V0.5_Beta.safetensors",
+                "url": "https://civitai.com/api/download/models/2504549?type=Model&format=SafeTensor",
+                "path": "loras",
+                "filename": "Famegrid_Z_Image_V0.5_Beta.safetensors"
             }
         ],
         "loras/Vyesna": [
