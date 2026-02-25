@@ -10,7 +10,7 @@ BASE_MODELS_PATH = "/workspace/ComfyUI/models"
 CONFIG_PATH = "/workspace/model-manager/models.json"
 
 HF_TOKEN = os.environ.get("HF_TOKEN", "")
-CIVITAI_TOKEN = os.environ.get("CIVITAI_TOKEN", "") 
+CIVITAI_TOKEN = os.environ.get("CIVITAI_TOKEN", "")
 GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN", "")
 
 REPO_OWNER = "rafpi12"
@@ -69,7 +69,7 @@ async def fetch_civitai_name(url: str):
     except: return {"filename": ""}
 
 @app.get("/", response_class=HTMLResponse)
-async def index(): 
+async def index():
     if os.path.exists("index.html"): return open("index.html").read()
     return "Fichier index.html introuvable."
 
@@ -110,7 +110,7 @@ async def download(request: Request):
     clean_cat = category.replace(BASE_MODELS_PATH, "").lstrip("/")
     target_dir = os.path.join(BASE_MODELS_PATH, clean_cat)
     os.makedirs(target_dir, exist_ok=True)
-    
+
     client = get_client()
     if not client: return {"status": "error", "message": "Aria2 non connecté"}
 
@@ -127,13 +127,34 @@ async def download(request: Request):
     ]
 
     final_url = url
+
     if is_civitai:
-        # Header Auth > query param : moins susceptible de déclencher les filtres anti-bot
-        if CIVITAI_TOKEN:
-            headers.append(f"Authorization: Bearer {CIVITAI_TOKEN}")
-        # 1 seule connexion pour éviter l'Error 22 sur les fichiers restreints/lourds
-        connections = "1"
-        split = "1"
+        # Résoudre la redirection 307 côté Python AVANT de passer à Aria2.
+        # Civitai renvoie une URL Backblaze B2 signée (token temporaire dans la query).
+        # Si Aria2 suit lui-même la redirection, il transmet le header Authorization
+        # sur b2.civitai.com, ce qui invalide le token signé → Error 22.
+        # En résolvant ici, Aria2 appelle directement l'URL signée sans header d'auth.
+        try:
+            resolve_headers = {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+                              "(KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+                "Authorization": f"Bearer {CIVITAI_TOKEN}"
+            }
+            r = requests.get(url, headers=resolve_headers, allow_redirects=False, timeout=10)
+            if r.status_code in (301, 302, 307, 308) and "location" in r.headers:
+                final_url = r.headers["location"]
+            elif r.status_code != 200:
+                # Fallback : token en query param
+                sep = "&" if "?" in url else "?"
+                final_url = f"{url}{sep}token={CIVITAI_TOKEN}"
+        except Exception as e:
+            return {"status": "error", "message": f"Impossible de résoudre l'URL Civitai : {e}"}
+
+        # L'URL B2 signée est publique — pas de header Authorization à envoyer
+        # On peut utiliser toutes les connexions pour la vitesse maximale
+        connections = "16"
+        split = "16"
+
     elif is_hf:
         if HF_TOKEN:
             headers.append(f"Authorization: Bearer {HF_TOKEN}")
@@ -152,15 +173,14 @@ async def download(request: Request):
         "min-split-size": "10M",
         "header": headers,
         "check-certificate": "false",
-        # Retry patient pour absorber les timeouts transitoires de Civitai
-        "max-tries": "10",
-        "retry-wait": "5",
+        "max-tries": "5",
+        "retry-wait": "3",
     }
 
     try:
         client.add(final_url, options=options)
         return {"status": "ok"}
-    except Exception as e: 
+    except Exception as e:
         return {"status": "error", "message": str(e)}
 
 @app.get("/progress")
@@ -171,15 +191,14 @@ async def progress():
         downloads = client.get_downloads()
         res = []
         for d in downloads:
-            # Pendant l'init, d.name contient l'URL — on extrait le vrai nom de fichier
+            # Pendant l'init, d.name peut contenir l'URL — on extrait le vrai nom
             raw_name = d.name or ""
             if raw_name.startswith("http"):
-                # Fallback 1 : chemin du fichier sur disque
                 name = filename_fallback(d)
             else:
                 name = raw_name
 
-            # Fallback 2 : extraire depuis l'URI Aria2 si toujours vide
+            # Fallback : extraire depuis l'URI Aria2 si toujours vide
             if not name or name == "Initialisation...":
                 try:
                     parsed = urlparse(d.files[0].uris[0]["uri"] if d.files else "")
@@ -225,8 +244,8 @@ if __name__ == "__main__":
     subprocess.run(["pkill", "-9", "aria2c"])
     time.sleep(1)
     subprocess.Popen([
-        "aria2c", "--enable-rpc", "--rpc-listen-all=true", 
-        "--rpc-allow-origin-all=true", "--max-concurrent-downloads=3", 
+        "aria2c", "--enable-rpc", "--rpc-listen-all=true",
+        "--rpc-allow-origin-all=true", "--max-concurrent-downloads=3",
         "--follow-torrent=mem", "--rpc-save-upload-metadata=true", "-D"
     ])
     uvicorn.run(app, host="0.0.0.0", port=8080)
