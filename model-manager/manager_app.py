@@ -228,14 +228,14 @@ async def progress():
 
             try:
                 eta_secs = int(d.eta.total_seconds()) if hasattr(d.eta, 'total_seconds') else int(d.eta or 0)
-                if eta_secs > 3600:
+                if eta_secs <= 0 or eta_secs > 2_592_000:
+                    eta_str = ""
+                elif eta_secs > 3600:
                     eta_str = f"{eta_secs // 3600}h{(eta_secs % 3600) // 60}m"
                 elif eta_secs > 60:
                     eta_str = f"{eta_secs // 60}m{eta_secs % 60}s"
-                elif eta_secs > 0:
-                    eta_str = f"{eta_secs}s"
                 else:
-                    eta_str = ""
+                    eta_str = f"{eta_secs}s"
             except:
                 eta_str = ""
 
