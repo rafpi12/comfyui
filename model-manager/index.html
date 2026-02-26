@@ -1,283 +1,344 @@
-import os, json, aria2p, subprocess, time, uvicorn, shutil, psutil, requests, base64, re
-from fastapi import FastAPI, Request, BackgroundTasks
-from fastapi.responses import HTMLResponse
-from urllib.parse import urlparse, unquote
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Model Manager Pro - Ultimate Edition</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { background: #0f172a; color: white; font-family: sans-serif; }
+        .card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; }
+        select, input { background: #111827 !important; color: white !important; border: 1px solid #475569 !important; padding: 10px !important; border-radius: 8px; font-size: 0.9rem !important; }
+        #models-ui { min-height: 400px; font-family: monospace; }
+        #log-console { height: 120px; overflow-y: auto; background: #000; color: #4ade80; font-family: monospace; font-size: 0.8rem; padding: 10px; border-radius: 8px; border: 1px solid #334155; }
+        .btn-action { transition: all 0.2s; font-weight: bold; padding: 12px; border-radius: 10px; text-transform: uppercase; }
+        #github-toast { position: fixed; bottom: 20px; right: 20px; background: #16a34a; color: white; padding: 12px 20px; border-radius: 10px; display: flex; align-items: center; gap: 10px; transform: translateY(100px); transition: transform 0.3s ease; z-index: 1000; }
+        #github-toast.show { transform: translateY(0); }
+        #path-browser { position: absolute; width: 100%; top: 100%; left: 0; background: #1e293b; border: 1px solid #475569; border-radius: 8px; max-height: 150px; overflow-y: auto; z-index: 50; display: none; }
+        .path-item { padding: 8px 12px; font-size: 11px; cursor: pointer; border-bottom: 1px solid #334155; }
+        .path-item:hover { background: #334155; color: #60a5fa; }
+    </style>
+</head>
+<body class="p-8">
+    <div id="github-toast"><i class="fab fa-github"></i><span>Catalogue synchronisé !</span></div>
+    <div class="max-w-6xl mx-auto">
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-2xl font-black text-blue-400 uppercase tracking-tighter">Model Manager Pro</h1>
+            <div class="flex gap-3">
+                <button onclick="fetch('/purge',{method:'POST'})" class="bg-slate-800 px-5 py-2 rounded-lg text-xs font-bold hover:bg-slate-700">PURGER ARIA2</button>
+                <button onclick="location.reload()" class="bg-slate-800 px-5 py-2 rounded-lg text-xs font-bold hover:bg-slate-700">ACTUALISER</button>
+            </div>
+        </div>
 
-app = FastAPI()
+        <div class="card p-8 mb-8 shadow-2xl border-t-4 border-blue-500">
+            <div class="flex gap-4 mb-6">
+                <select id="env-ui" class="w-1/4" onchange="loadModels()"></select>
+                <select id="type-ui" class="w-1/4" onchange="loadModels()">
+                    <option value="all">TOUTES CATÉGORIES</option>
+                    <option value="diffusion_models">DIFFUSION MODELS</option>
+                    <option value="loras">LORAS</option>
+                    <option value="vae">VAE</option>
+                    <option value="clip">CLIP / TEXT ENCODERS</option>
+                    <option value="unet">UNET / GGUF</option>
+                    <option value="upscale_models">UPSCALERS</option>
+                    <option value="controlnet">CONTROLNET</option>
+                </select>
+                <input id="search-ui" type="text" placeholder="Rechercher..." class="flex-1" onkeyup="loadModels()">
+            </div>
+            <div class="bg-black/40 p-6 rounded-xl border border-slate-700">
+                <div class="flex justify-between mb-4 items-center text-[10px]">
+                    <div class="flex items-center gap-3">
+                        <div id="diode-ui" class="w-3 h-3 rounded-full bg-red-500 transition-all duration-500"></div>
+                        <span id="status-text" class="uppercase text-gray-400 font-bold">Sélection multiple prête</span>
+                    </div>
+                    <div id="path-ui" class="text-gray-500 italic truncate max-w-md">Prêt.</div>
+                </div>
+                <div class="mb-6">
+                    <div class="flex text-[9px] font-bold uppercase text-slate-500 px-2 mb-1 select-none">
+                        <div class="flex-1 cursor-pointer hover:text-blue-400 flex items-center gap-1" onclick="setSortAndReload('name')" id="sort-name">
+                            Fichier <span id="sort-name-icon">↕</span>
+                        </div>
+                        <div class="w-20 text-right cursor-pointer hover:text-blue-400 flex items-center justify-end gap-1" onclick="setSortAndReload('size')" id="sort-size">
+                            <span id="sort-size-icon">↕</span> Taille
+                        </div>
+                    </div>
+                    <select id="models-ui" class="w-full" style="height:180px" multiple onclick="syncToEditor()" onchange="checkStatus()"></select>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <button onclick="startSmartDownload()" class="btn-action bg-blue-600 hover:bg-blue-500 shadow-lg">Télécharger la sélection</button>
+                    <button id="delete-btn" onclick="deleteFromDisk()" class="btn-action bg-red-900/50 text-red-500 border border-red-500 opacity-20" disabled>Supprimer la sélection</button>
+                </div>
+            </div>
+        </div>
 
-# --- CONFIGURATION ---
-BASE_MODELS_PATH = "/workspace/ComfyUI/models"
-CONFIG_PATH = "/workspace/model-manager/models.json"
+        <div id="tasks-ui" class="space-y-3 mb-8"></div>
 
-HF_TOKEN = os.environ.get("HF_TOKEN", "")
-CIVITAI_TOKEN = os.environ.get("CIVITAI_TOKEN", "")
-GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN", "")
+        <div class="card p-8 shadow-xl border-t-4 border-yellow-600 mb-8">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xs font-bold text-yellow-500 uppercase tracking-widest">Éditeur Catalogue</h2>
+                <button onclick="resetEditor()" class="text-[10px] bg-slate-700 px-2 py-1 rounded hover:bg-slate-600">VIDER</button>
+            </div>
+            <div class="grid grid-cols-2 gap-8">
+                <div class="space-y-3 bg-black/20 p-5 rounded-xl">
+                    <div class="grid grid-cols-2 gap-3">
+                        <select id="edit-env" class="w-full">
+                            <option value="Z-Image">Z-Image</option><option value="Flux">Flux</option><option value="SDXL">SDXL</option><option value="Qwen">Qwen</option><option value="Wan">Wan</option>
+                        </select>
+                        <select id="edit-cat" class="w-full" onchange="updatePathByCategory()">
+                            <option value="diffusion_models">diffusion_models</option><option value="loras">loras</option><option value="vae">vae</option><option value="clip">clip</option><option value="unet">unet</option><option value="text_encoders">text_encoders</option><option value="upscale_models">upscale_models</option><option value="controlnet">controlnet</option><option value="model_patches">model_patches</option>
+                        </select>
+                    </div>
+                    <div class="relative">
+                        <div class="flex items-center gap-2">
+                            <input id="edit-path" placeholder="Chemin" class="flex-1 text-[10px]">
+                            <button onclick="togglePathBrowser()" class="bg-slate-800 p-2 rounded hover:bg-slate-700"><i class="fas fa-folder-open text-blue-400"></i></button>
+                        </div>
+                        <div id="path-browser"></div>
+                    </div>
+                    <input id="edit-url" placeholder="URL" class="w-full text-xs" oninput="autoFetchName(this.value)">
+                    <input id="edit-file" placeholder="Fichier" class="w-full bg-slate-900 text-xs font-bold">
+                    <button onclick="saveToCatalogue()" class="w-full bg-yellow-600 py-2 rounded-lg font-bold text-sm">ENREGISTRER</button>
+                </div>
+                <div id="catalogue-list" class="space-y-1 text-[10px] bg-black/30 p-4 rounded-xl overflow-y-auto max-h-[250px]"></div>
+            </div>
+        </div>
+        <div id="log-console"></div>
+    </div>
 
-REPO_OWNER = "rafpi12"
-REPO_NAME = "comfyui"
-GITHUB_FILE_PATH = "model-manager/models.json"
+    <script>
+        const BASE_PATH = "/workspace/ComfyUI/models/";
+        let cfg = {}; let diskFiles = {}; let lastCompleteCount = 0;
+        let sortState = { key: 'name', dir: 1 };
 
-ALLOWED_EXTENSIONS = {'.safetensors', '.pth', '.pt', '.gguf', '.bin', '.ckpt', '.yaml'}
+        function formatSize(bytes) {
+            if (!bytes) return '—';
+            if (bytes >= 1_073_741_824) return (bytes / 1_073_741_824).toFixed(2) + ' Go';
+            if (bytes >= 1_048_576) return (bytes / 1_048_576).toFixed(0) + ' Mo';
+            return (bytes / 1024).toFixed(0) + ' Ko';
+        }
 
-def get_client():
-    try:
-        client = aria2p.Client(host="http://127.0.0.1", port=6800, secret="")
-        api = aria2p.API(client)
-        return api
-    except: return None
+        function addLog(msg, isError = false) {
+            const con = document.getElementById('log-console');
+            con.innerHTML += `<div style="color:${isError ? '#ff4d4d' : '#4ade80'}">[${new Date().toLocaleTimeString()}] ${msg}</div>`;
+            con.scrollTop = con.scrollHeight;
+        }
 
-def sync_to_github():
-    if not GITHUB_TOKEN: return False
-    url = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/contents/{GITHUB_FILE_PATH}"
-    headers = {"Authorization": f"token {GITHUB_TOKEN}", "Accept": "application/vnd.github.v3+json"}
-    try:
-        r = requests.get(url, headers=headers)
-        sha = r.json().get('sha') if r.status_code == 200 else None
-        with open(CONFIG_PATH, "rb") as f:
-            content = base64.b64encode(f.read()).decode()
-        payload = {"message": "Update models.json via Model Manager Pro", "content": content, "sha": sha}
-        requests.put(url, headers=headers, json=payload)
-        return True
-    except: return False
+        async function start() {
+            try {
+                const r = await fetch('/config'); cfg = await r.json();
+                const envSelector = document.getElementById('env-ui'); envSelector.innerHTML = "";
+                const environments = Object.keys(cfg);
+                if (environments.length > 0) {
+                    environments.forEach(env => envSelector.add(new Option(env, env)));
+                    envSelector.value = environments.includes("Flux") ? "Flux" : environments[0];
+                }
+                await updateDiskState(); loadModels(); renderCatalogue(); setInterval(loop, 2000);
+            } catch(e) { }
+        }
 
-@app.get("/list-subfolders")
-async def list_subfolders(category: str):
-    base = os.path.join(BASE_MODELS_PATH, category)
-    subdirs = [""]
-    if os.path.exists(base):
-        for root, dirs, _ in os.walk(base):
-            dirs[:] = [d for d in dirs if not d.startswith('.')]
-            for d in dirs:
-                rel = os.path.relpath(os.path.join(root, d), base)
-                subdirs.append(rel.replace("\\", "/"))
-    return sorted(list(set(subdirs)))
+        async function updateDiskState() { const r = await fetch('/scan-disk'); diskFiles = await r.json(); }
 
-@app.get("/fetch-civitai-name")
-async def fetch_civitai_name(url: str):
-    try:
-        if "civitai.com" in url:
-            model_id = url.split('/models/')[1].split('?')[0]
-            api_url = f"https://civitai.com/api/v1/model-versions/{model_id}"
-            headers = {"Authorization": f"Bearer {CIVITAI_TOKEN}"} if CIVITAI_TOKEN else {}
-            resp = requests.get(api_url, headers=headers, timeout=5)
-            if resp.status_code == 200:
-                data = resp.json()
-                for file in data.get('files', []):
-                    if file.get('primary'): return {"filename": file.get('name')}
-                if data.get('files'): return {"filename": data['files'][0].get('name')}
-        return {"filename": ""}
-    except: return {"filename": ""}
+        function loadModels(targetFilename = null) {
+            const m = document.getElementById('models-ui'); const env = document.getElementById('env-ui').value;
+            const type = document.getElementById('type-ui').value; const search = document.getElementById('search-ui').value.toLowerCase();
+            const savedScroll = m.scrollTop; const selectedValues = targetFilename ? [targetFilename] : Array.from(m.selectedOptions).map(o => o.value);
+            m.innerHTML = ""; if (!cfg[env]) return;
 
-@app.get("/", response_class=HTMLResponse)
-async def index():
-    if os.path.exists("index.html"): return open("index.html").read()
-    return "Fichier index.html introuvable."
+            let allModels = [];
 
-@app.get("/config")
-async def get_config():
-    if os.path.exists(CONFIG_PATH):
-        with open(CONFIG_PATH, 'r', encoding='utf-8') as f: return json.load(f)
-    return {}
+            // Filtrage des modèles
+            Object.keys(cfg[env]).forEach(cat => {
+                let matchType = (type === 'all');
+                if (!matchType) {
+                    if (type === 'clip') matchType = (cat.includes('clip') || cat.includes('text_encoders'));
+                    else if (type === 'unet') matchType = (cat.includes('unet') || cat.includes('diffusion_models'));
+                    else matchType = cat.toLowerCase().includes(type.toLowerCase());
+                }
+                if (matchType) {
+                    cfg[env][cat].forEach(model => {
+                        if(model.filename.toLowerCase().includes(search)) {
+                            allModels.push(model);
+                        }
+                    });
+                }
+            });
 
-@app.post("/save-config")
-async def save_config(request: Request, background_tasks: BackgroundTasks):
-    data = await request.json()
-    with open(CONFIG_PATH, 'w', encoding='utf-8') as f:
-        json.dump(data, f, indent=4)
-    background_tasks.add_task(sync_to_github)
-    return {"status": "ok", "github_sync": "started"}
+            // TRI DYNAMIQUE
+            allModels.sort((a, b) => {
+                if (sortState.key === 'size') {
+                    return ((a._size || 0) - (b._size || 0)) * sortState.dir;
+                }
+                return a.filename.localeCompare(b.filename) * sortState.dir;
+            });
 
-@app.get("/scan-disk")
-async def scan_disk():
-    res = {}
-    if os.path.exists(BASE_MODELS_PATH):
-        for entry in os.scandir(BASE_MODELS_PATH):
-            if entry.is_dir():
-                cat_name = entry.name
-                files = []
-                for root, _, filenames in os.walk(entry.path):
-                    for f in filenames:
-                        if any(f.endswith(ext) for ext in ALLOWED_EXTENSIONS):
-                            rel_path = os.path.relpath(os.path.join(root, f), entry.path)
-                            full_path = os.path.join(root, f)
-                            size = os.path.getsize(full_path)
-                            files.append({"path": rel_path.replace("\\", "/"), "size": size})
-                res[cat_name] = files
-    return res
+            // Remplissage du select
+            allModels.forEach(model => {
+                const catKey = model.path.split('/')[0];
+                const sub = model.path.includes('/') ? model.path.split('/').slice(1).join('/') : '';
+                const diskCategoryFiles = diskFiles[catKey] || [];
+                const fullModelPath = (sub ? sub + '/' : '') + model.filename;
+                const diskEntry = diskCategoryFiles.find(f => (f.path || f).toLowerCase() === fullModelPath.toLowerCase());
+                const isPresent = !!diskEntry;
+                const fileSize = diskEntry ? diskEntry.size : null;
+                model._size = fileSize || 0;
 
-@app.post("/download")
-async def download(request: Request):
-    data = await request.json()
-    url, category, filename = data.get("url"), data.get("path"), data.get("filename")
-    clean_cat = category.replace(BASE_MODELS_PATH, "").lstrip("/")
-    target_dir = os.path.join(BASE_MODELS_PATH, clean_cat)
-    os.makedirs(target_dir, exist_ok=True)
+                const label = (isPresent ? "● " : "○ ") + model.filename + (isPresent && fileSize ? "  [" + formatSize(fileSize) + "]" : "");
+                let o = new Option(label, model.filename);
+                o.dataset.url = model.url;
+                o.dataset.cat = model.path;
+                o.dataset.size = fileSize || 0;
+                if(isPresent) o.style.color = "#4ade80";
+                if (selectedValues.includes(model.filename)) o.selected = true;
+                m.add(o);
+            });
+            
+            m.scrollTop = targetFilename ? (Array.from(m.options).findIndex(o => o.selected) * 24) : savedScroll;
+        }
 
-    client = get_client()
-    if not client: return {"status": "error", "message": "Aria2 non connecté"}
+        async function checkStatus() {
+            const s = Array.from(document.getElementById('models-ui').selectedOptions); 
+            const delBtn = document.getElementById('delete-btn');
+            delBtn.disabled = s.length === 0;
+            delBtn.className = s.length > 0 ? "btn-action bg-red-600 text-white" : "btn-action bg-red-900/50 text-red-500 opacity-20";
+        }
 
-    # Nettoyage préventif
-    dest = os.path.join(target_dir, filename)
-    if os.path.exists(dest + ".aria2"): os.remove(dest + ".aria2")
+        function syncToEditor() {
+            const s = Array.from(document.getElementById('models-ui').selectedOptions); if(s.length !== 1) return;
+            const o = s[0]; const cleanName = o.value.replace(/^[●○]\s/, "");
+            document.getElementById('edit-env').value = document.getElementById('env-ui').value;
+            document.getElementById('edit-cat').value = o.dataset.cat.split('/')[0];
+            document.getElementById('edit-path').value = BASE_PATH + o.dataset.cat;
+            document.getElementById('edit-url').value = o.dataset.url;
+            document.getElementById('edit-file').value = cleanName;
+        }
 
-    is_civitai = "civitai.com" in url.lower()
-    is_hf = "huggingface.co" in url.lower()
-
-    headers = [
-        "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
-        "(KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
-    ]
-
-    final_url = url
-
-    if is_civitai:
-        # Résoudre la redirection 307 côté Python AVANT de passer à Aria2.
-        # Civitai renvoie une URL Backblaze B2 signée (token temporaire dans la query).
-        # Si Aria2 suit lui-même la redirection, il transmet le header Authorization
-        # sur b2.civitai.com, ce qui invalide le token signé → Error 22.
-        # En résolvant ici, Aria2 appelle directement l'URL signée sans header d'auth.
-        try:
-            resolve_headers = {
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
-                              "(KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
-                "Authorization": f"Bearer {CIVITAI_TOKEN}"
+        async function startSmartDownload() {
+            const s = Array.from(document.getElementById('models-ui').selectedOptions);
+            if(s.length === 0) {
+                const url = document.getElementById('edit-url').value;
+                const path = document.getElementById('edit-path').value.replace(BASE_PATH, "");
+                const file = document.getElementById('edit-file').value;
+                if(!url || !file) return;
+                await fetch('/download', { method:'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({url, path, filename: file}) });
+                addLog(`Lancement : ${file}`);
+            } else {
+                if(!confirm(`Lancer le téléchargement de ${s.length} fichier(s) ?`)) return;
+                for(let o of s) {
+                    const name = o.value.replace(/^[●○]\s/, "");
+                    await fetch('/download', { 
+                        method:'POST', 
+                        headers: {'Content-Type': 'application/json'}, 
+                        body: JSON.stringify({url: o.dataset.url, path: o.dataset.cat, filename: name}) 
+                    });
+                    addLog(`Ajout file d'attente : ${name}`);
+                }
             }
-            r = requests.get(url, headers=resolve_headers, allow_redirects=False, timeout=10)
-            if r.status_code in (301, 302, 307, 308) and "location" in r.headers:
-                final_url = r.headers["location"]
-            elif r.status_code != 200:
-                # Fallback : token en query param
-                sep = "&" if "?" in url else "?"
-                final_url = f"{url}{sep}token={CIVITAI_TOKEN}"
-        except Exception as e:
-            return {"status": "error", "message": f"Impossible de résoudre l'URL Civitai : {e}"}
+        }
 
-        # L'URL B2 signée est publique — pas de header Authorization à envoyer
-        # On peut utiliser toutes les connexions pour la vitesse maximale
-        connections = "16"
-        split = "16"
+        async function deleteFromDisk() {
+            const s = Array.from(document.getElementById('models-ui').selectedOptions);
+            if(s.length === 0) return;
+            if(!confirm(`Supprimer définitivement ${s.length} fichier(s) du disque ?`)) return;
+            for(let o of s) {
+                const name = o.value.replace(/^[●○]\s/, "");
+                await fetch(`/delete?cat=${encodeURIComponent(o.dataset.cat)}&file=${encodeURIComponent(name)}`, {method:'DELETE'});
+                addLog(`Supprimé : ${name}`);
+            }
+            await updateDiskState(); loadModels();
+        }
 
-    elif is_hf:
-        if HF_TOKEN:
-            headers.append(f"Authorization: Bearer {HF_TOKEN}")
-        connections = "16"
-        split = "16"
-    else:
-        connections = "16"
-        split = "16"
-
-    options = {
-        "dir": target_dir,
-        "out": filename,
-        "continue": "true",
-        "allow-overwrite": "true",
-        "auto-file-renaming": "false",
-        "max-connection-per-server": connections,
-        "split": split,
-        "min-split-size": "5M",       # morceaux plus petits = démarrage plus rapide
-        "piece-length": "1M",          # granularité fine pour meilleur parallélisme
-        "header": headers,
-        "check-certificate": "false",
-        "max-tries": "5",
-        "retry-wait": "3",
-        "stream-piece-selector": "geom", # sélection géométrique = meilleure perf réseau
-        "optimize-concurrent-downloads": "true",
-    }
-
-    try:
-        client.add(final_url, options=options)
-        return {"status": "ok"}
-    except Exception as e:
-        return {"status": "error", "message": str(e)}
-
-@app.get("/progress")
-async def progress():
-    client = get_client()
-    if not client: return []
-    try:
-        downloads = client.get_downloads()
-        res = []
-        for d in downloads:
-            # Pendant l'init, d.name peut contenir l'URL — on extrait le vrai nom
-            raw_name = d.name or ""
-            if raw_name.startswith("http"):
-                name = filename_fallback(d)
-            else:
-                name = raw_name
-
-            # Fallback : extraire depuis l'URI Aria2 si toujours vide
-            if not name or name == "Initialisation...":
-                try:
-                    parsed = urlparse(d.files[0].uris[0]["uri"] if d.files else "")
-                    name = unquote(parsed.path.split("/")[-1]) or "Initialisation..."
-                except:
-                    name = "Initialisation..."
-
-            status = d.status
-            if status == "error":
-                status = f"Erreur (Code {d.error_code})"
-
-            # download_speed_string et eta_string sont des méthodes — appel avec ()
-            try:
-                speed_bps = d.download_speed or 0
-                if speed_bps >= 1_000_000:
-                    speed_str = f"{speed_bps / 1_000_000:.1f} Mo/s"
-                elif speed_bps >= 1000:
-                    speed_str = f"{speed_bps / 1000:.0f} Ko/s"
-                else:
-                    speed_str = f"{speed_bps} o/s"
-            except:
-                speed_str = "0 o/s"
-
-            try:
-                eta_secs = int(d.eta.total_seconds()) if hasattr(d.eta, 'total_seconds') else int(d.eta or 0)
-                if eta_secs <= 0 or eta_secs > 2_592_000:
-                    eta_str = ""
-                elif eta_secs > 3600:
-                    eta_str = f"{eta_secs // 3600}h{(eta_secs % 3600) // 60}m"
-                elif eta_secs > 60:
-                    eta_str = f"{eta_secs // 60}m{eta_secs % 60}s"
-                else:
-                    eta_str = f"{eta_secs}s"
-            except:
-                eta_str = ""
-
-            res.append({
-                "name": name,
-                "status": status,
-                "progress": round(d.progress, 1),
-                "speed": speed_str,
-                "eta": eta_str,
-                "gid": d.gid,
-            })
-        return res
-    except: return []
-
-def filename_fallback(download):
-    try:
-        return download.files[0].path.split('/')[-1]
-    except:
-        return "Initialisation..."
-
-@app.delete("/delete")
-async def delete(cat: str, file: str):
-    clean_cat = cat.replace(BASE_MODELS_PATH, "").lstrip("/")
-    p = os.path.join(BASE_MODELS_PATH, clean_cat, file)
-    if os.path.exists(p): os.remove(p)
-    return {"status": "ok"}
-
-@app.post("/purge")
-async def purge():
-    client = get_client()
-    if client: client.purge()
-    return {"status": "ok"}
-
-if __name__ == "__main__":
-    subprocess.run(["pkill", "-9", "aria2c"])
-    time.sleep(1)
-    subprocess.Popen([
-        "aria2c", "--enable-rpc", "--rpc-listen-all=true",
-        "--rpc-allow-origin-all=true", "--max-concurrent-downloads=6",
-        "--follow-torrent=mem", "--rpc-save-upload-metadata=true", "-D"
-    ])
-    uvicorn.run(app, host="0.0.0.0", port=8080)
+        function showGitHubToast() { const t = document.getElementById('github-toast'); t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3000); }
+        function resetEditor() { document.getElementById('edit-url').value = ""; document.getElementById('edit-file').value = ""; document.getElementById('edit-path').value = ""; hidePathBrowser(); }
+        function updatePathByCategory() { const cat = document.getElementById('edit-cat').value; document.getElementById('edit-path').value = BASE_PATH + cat; hidePathBrowser(); }
+        async function togglePathBrowser() {
+            const browser = document.getElementById('path-browser');
+            if (browser.style.display === "block") hidePathBrowser();
+            else {
+                const cat = document.getElementById('edit-cat').value;
+                const r = await fetch(`/list-subfolders?category=${cat}`);
+                const folders = await r.json();
+                browser.innerHTML = folders.map(f => `<div class="path-item flex items-center gap-2" onclick="setPath('${cat}', '${f}')">${f === "" ? '<span class="text-blue-400">⤴️</span> Dossier Racine' : '<i class="fas fa-folder text-yellow-500"></i> ' + f}</div>`).join('');
+                browser.style.display = "block";
+            }
+        }
+        function hidePathBrowser() { document.getElementById('path-browser').style.display = "none"; }
+        function setPath(cat, sub) { const cleanSub = sub === "" ? "" : (sub.startsWith('/') ? sub : '/' + sub); document.getElementById('edit-path').value = BASE_PATH + cat + cleanSub; hidePathBrowser(); }
+        async function autoFetchName(url) {
+            const fileInput = document.getElementById('edit-file'); if (!url) return;
+            fileInput.value = "⏳...";
+            if (url.includes('huggingface.co')) fileInput.value = url.split('/').pop().split('?')[0];
+            else if (url.includes('civitai.com')) {
+                const r = await fetch(`/fetch-civitai-name?url=${encodeURIComponent(url)}`);
+                const d = await r.json(); fileInput.value = d.filename || "";
+            }
+        }
+        async function loop() {
+            try {
+                const tasks = await (await fetch('/progress')).json();
+                const completeCount = tasks.filter(t => t.status.includes('complete')).length;
+                if (completeCount !== lastCompleteCount) { lastCompleteCount = completeCount; await updateDiskState(); loadModels(); }
+                document.getElementById('tasks-ui').innerHTML = tasks.length === 0 ? '' : tasks.map(t => {
+                    const isError = t.status.includes('error') || t.status.includes('Erreur');
+                    const isDone = t.status === 'complete';
+                    const isActive = t.status === 'active';
+                    const isWaiting = isActive && t.progress === 0 && t.speed === '0 o/s';
+                    const borderColor = isError ? 'border-red-500' : (isDone ? 'border-green-500' : 'border-blue-500');
+                    const barColor = isError ? 'bg-red-500' : (isDone ? 'bg-green-500' : 'bg-blue-500');
+                    const pct = Math.round(t.progress || 0);
+                    const statusLabel = isError ? t.status : (isDone ? 'TERMINÉ' : (isActive ? 'EN COURS' : t.status.toUpperCase()));
+                    const bar = isWaiting
+                        ? `<div class="h-2 rounded-full bg-slate-600 animate-pulse" style="width:100%"></div>`
+                        : `<div class="${barColor} h-2 rounded-full transition-all duration-500" style="width:${pct}%"></div>`;
+                    const speedLabel = isWaiting ? '⏳ En attente...' : (isActive ? '⚡ ' + t.speed : (isDone ? '✅ Terminé' : ''));
+                    const pctLabel = isWaiting ? '' : (pct + '%' + (isActive && t.eta ? ' · ETA ' + t.eta : ''));
+                    return `<div class="bg-slate-900/80 p-4 rounded-xl border-l-4 ${borderColor}">
+                        <div class="flex justify-between text-[11px] mb-2 font-bold">
+                            <span class="truncate max-w-[60%] text-white">${t.name}</span>
+                            <span class="${isError ? 'text-red-400' : (isDone ? 'text-green-400' : 'text-blue-300')}">${statusLabel}</span>
+                        </div>
+                        <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden mb-2">${bar}</div>
+                        <div class="flex justify-between text-[10px] text-slate-400">
+                            <span>${speedLabel}</span>
+                            <span class="font-mono font-bold ${isDone ? 'text-green-400' : 'text-white'}">${pctLabel}</span>
+                        </div>
+                    </div>`;
+                }).join('');
+            } catch(e) {}
+        }
+        async function saveToCatalogue() {
+            const env = document.getElementById('edit-env').value; const cat = document.getElementById('edit-cat').value;
+            const fullPath = document.getElementById('edit-path').value; const url = document.getElementById('edit-url').value;
+            const file = document.getElementById('edit-file').value; const relPath = fullPath.replace(BASE_PATH, "").replace(/^\/+/, "");
+            const obj = { name: file, url: url, path: relPath, filename: file };
+            if(!cfg[env]) cfg[env] = {}; if(!cfg[env][cat]) cfg[env][cat] = [];
+            const idx = cfg[env][cat].findIndex(m => m.filename === file);
+            if (idx > -1) cfg[env][cat][idx] = obj; else cfg[env][cat].push(obj);
+            const r = await fetch('/save-config', { method: 'POST', body: JSON.stringify(cfg) });
+            if((await r.json()).github_sync) showGitHubToast(); loadModels(file); renderCatalogue(file);
+        }
+        function renderCatalogue(filterFile = null) {
+            const list = document.getElementById('catalogue-list'); list.innerHTML = "";
+            Object.keys(cfg).forEach(env => Object.keys(cfg[env]).forEach(cat => cfg[env][cat].forEach((m, idx) => {
+                if (filterFile && m.filename !== filterFile) return;
+                list.innerHTML += `<div class="flex justify-between items-center bg-black/40 p-2 mb-1 border border-white/5 rounded ${filterFile ? 'file-highlight' : ''}"><div class="flex flex-col"><span class="text-blue-400 font-bold uppercase" style="font-size:8px">${env} / ${cat}</span><span class="truncate italic text-slate-300">${m.filename}</span></div><button onclick="removeFromCatalogue('${env}','${cat}',${idx})" class="text-red-500 ml-2"><i class="fas fa-times"></i></button></div>`;
+            })));
+        }
+        async function removeFromCatalogue(e,c,i) { if(confirm('Supprimer du JSON ?')) { cfg[e][c].splice(i, 1); await fetch('/save-config', { method: 'POST', body: JSON.stringify(cfg) }); renderCatalogue(); loadModels(); } }
+        
+        function setSortAndReload(key) {
+            if (sortState.key === key) sortState.dir *= -1;
+            else { sortState.key = key; sortState.dir = 1; }
+            updateSortIcons();
+            loadModels();
+        }
+        function updateSortIcons() {
+            const arrow = sortState.dir === 1 ? '↑' : '↓';
+            document.getElementById('sort-name-icon').textContent = sortState.key === 'name' ? arrow : '↕';
+            document.getElementById('sort-size-icon').textContent = sortState.key === 'size' ? arrow : '↕';
+            document.getElementById('sort-name').className = `flex-1 cursor-pointer flex items-center gap-1 ${sortState.key === 'name' ? 'text-blue-400' : 'text-slate-500 hover:text-blue-400'}`;
+            document.getElementById('sort-size').className = `w-20 text-right cursor-pointer flex items-center justify-end gap-1 ${sortState.key === 'size' ? 'text-blue-400' : 'text-slate-500 hover:text-blue-400'}`;
+        }
+        start();
+    </script>
+</body>
+</html>
