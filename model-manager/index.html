@@ -108,7 +108,7 @@
     <script>
         const BASE_PATH = "/workspace/ComfyUI/models/";
         let cfg = {}; let diskFiles = {}; let lastCompleteCount = 0;
-        let sortState = { key: 'name', dir: 1 }; // 'name' ou 'size', 1=asc -1=desc
+        let sortState = { key: 'name', dir: 1 };
 
         function formatSize(bytes) {
             if (!bytes) return '—';
@@ -166,9 +166,7 @@
             // TRI DYNAMIQUE
             allModels.sort((a, b) => {
                 if (sortState.key === 'size') {
-                    const sA = parseInt(a._size || 0);
-                    const sB = parseInt(b._size || 0);
-                    return (sA - sB) * sortState.dir;
+                    return ((a._size || 0) - (b._size || 0)) * sortState.dir;
                 }
                 return a.filename.localeCompare(b.filename) * sortState.dir;
             });
@@ -182,16 +180,13 @@
                 const diskEntry = diskCategoryFiles.find(f => (f.path || f).toLowerCase() === fullModelPath.toLowerCase());
                 const isPresent = !!diskEntry;
                 const fileSize = diskEntry ? diskEntry.size : null;
-                
-                let o = new Option((isPresent ? "● " : "○ ") + model.filename, model.filename);
-                o.dataset.url = model.url; 
+                model._size = fileSize || 0;
+
+                const label = (isPresent ? "● " : "○ ") + model.filename + (isPresent && fileSize ? "  [" + formatSize(fileSize) + "]" : "");
+                let o = new Option(label, model.filename);
+                o.dataset.url = model.url;
                 o.dataset.cat = model.path;
                 o.dataset.size = fileSize || 0;
-                model._size = fileSize || 0;
-                // Afficher la taille alignée à droite dans l'option
-                if (isPresent && fileSize) {
-                    o.text = (isPresent ? "● " : "○ ") + model.filename + "  [" + formatSize(fileSize) + "]";
-                }
                 if(isPresent) o.style.color = "#4ade80";
                 if (selectedValues.includes(model.filename)) o.selected = true;
                 m.add(o);
@@ -282,7 +277,32 @@
                 const tasks = await (await fetch('/progress')).json();
                 const completeCount = tasks.filter(t => t.status.includes('complete')).length;
                 if (completeCount !== lastCompleteCount) { lastCompleteCount = completeCount; await updateDiskState(); loadModels(); }
-                document.getElementById('tasks-ui').innerHTML = tasks.map(t => `<div class="bg-slate-900/80 p-3 rounded-xl border-l-4 ${t.status.includes('error') ? 'border-red-500' : (t.status === 'complete' ? 'border-green-500' : 'border-blue-500')}"><div class="flex justify-between text-[10px] mb-1 font-bold"><span>${t.name}</span><span class="text-blue-300">${t.status.toUpperCase()} ${t.status === 'active' ? '- ' + t.speed : ''}</span></div><div class="w-full bg-slate-800 h-1 rounded-full overflow-hidden"><div class="${t.status.includes('error') ? 'bg-red-500' : (t.status === 'complete' ? 'bg-green-500' : 'border-blue-500')} h-1 transition-all" style="width:${t.progress}%"></div></div></div>`).join('');
+                document.getElementById('tasks-ui').innerHTML = tasks.length === 0 ? '' : tasks.map(t => {
+                    const isError = t.status.includes('error') || t.status.includes('Erreur');
+                    const isDone = t.status === 'complete';
+                    const isActive = t.status === 'active';
+                    const isWaiting = isActive && t.progress === 0 && t.speed === '0 o/s';
+                    const borderColor = isError ? 'border-red-500' : (isDone ? 'border-green-500' : 'border-blue-500');
+                    const barColor = isError ? 'bg-red-500' : (isDone ? 'bg-green-500' : 'bg-blue-500');
+                    const pct = Math.round(t.progress || 0);
+                    const statusLabel = isError ? t.status : (isDone ? 'TERMINÉ' : (isActive ? 'EN COURS' : t.status.toUpperCase()));
+                    const bar = isWaiting
+                        ? `<div class="h-2 rounded-full bg-slate-600 animate-pulse" style="width:100%"></div>`
+                        : `<div class="${barColor} h-2 rounded-full transition-all duration-500" style="width:${pct}%"></div>`;
+                    const speedLabel = isWaiting ? '⏳ En attente...' : (isActive ? '⚡ ' + t.speed : (isDone ? '✅ Terminé' : ''));
+                    const pctLabel = isWaiting ? '' : (pct + '%' + (isActive && t.eta ? ' · ETA ' + t.eta : ''));
+                    return `<div class="bg-slate-900/80 p-4 rounded-xl border-l-4 ${borderColor}">
+                        <div class="flex justify-between text-[11px] mb-2 font-bold">
+                            <span class="truncate max-w-[60%] text-white">${t.name}</span>
+                            <span class="${isError ? 'text-red-400' : (isDone ? 'text-green-400' : 'text-blue-300')}">${statusLabel}</span>
+                        </div>
+                        <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden mb-2">${bar}</div>
+                        <div class="flex justify-between text-[10px] text-slate-400">
+                            <span>${speedLabel}</span>
+                            <span class="font-mono font-bold ${isDone ? 'text-green-400' : 'text-white'}">${pctLabel}</span>
+                        </div>
+                    </div>`;
+                }).join('');
             } catch(e) {}
         }
         async function saveToCatalogue() {
@@ -306,16 +326,11 @@
         async function removeFromCatalogue(e,c,i) { if(confirm('Supprimer du JSON ?')) { cfg[e][c].splice(i, 1); await fetch('/save-config', { method: 'POST', body: JSON.stringify(cfg) }); renderCatalogue(); loadModels(); } }
         
         function setSortAndReload(key) {
-            if (sortState.key === key) {
-                sortState.dir *= -1;
-            } else {
-                sortState.key = key;
-                sortState.dir = 1;
-            }
+            if (sortState.key === key) sortState.dir *= -1;
+            else { sortState.key = key; sortState.dir = 1; }
             updateSortIcons();
             loadModels();
         }
-
         function updateSortIcons() {
             const arrow = sortState.dir === 1 ? '↑' : '↓';
             document.getElementById('sort-name-icon').textContent = sortState.key === 'name' ? arrow : '↕';
@@ -323,7 +338,6 @@
             document.getElementById('sort-name').className = `flex-1 cursor-pointer flex items-center gap-1 ${sortState.key === 'name' ? 'text-blue-400' : 'text-slate-500 hover:text-blue-400'}`;
             document.getElementById('sort-size').className = `w-20 text-right cursor-pointer flex items-center justify-end gap-1 ${sortState.key === 'size' ? 'text-blue-400' : 'text-slate-500 hover:text-blue-400'}`;
         }
-
         start();
     </script>
 </body>
