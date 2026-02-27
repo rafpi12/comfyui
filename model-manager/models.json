@@ -13,7 +13,7 @@
                 "url": "https://huggingface.co/Comfy-Org/z_image/resolve/main/split_files/diffusion_models/z_image_bf16.safetensors?download=true",
                 "path": "diffusion_models",
                 "filename": "z_image_bf16.safetensors",
-                "_size": 12309866400
+                "_size": 0
             },
             {
                 "name": "Z-Image Turbo BF16",
@@ -34,7 +34,7 @@
                 "url": "https://civitai.com/api/download/models/2699886?type=Model&format=SafeTensor&size=pruned&fp=bf16",
                 "path": "diffusion_models",
                 "filename": "darkBeastFeb2226Latest_darkblitz6Beyondnsfw.safetensors",
-                "_size": 0
+                "_size": 12309878608
             },
             {
                 "name": "redcraftFeb1926Latest_zibDistilledDX3Lucis.safetensors",
@@ -54,7 +54,14 @@
                 "name": "zimageTurboNSFWBy_2602NSFWBF16.safetensors",
                 "url": "https://civitai.com/api/download/models/2668773?type=Model&format=SafeTensor&size=full&fp=bf16",
                 "path": "diffusion_models",
-                "filename": "zimageTurboNSFWBy_2602NSFWBF16.safetensors"
+                "filename": "zimageTurboNSFWBy_2602NSFWBF16.safetensors",
+                "_size": 0
+            },
+            {
+                "name": "redcraftFeb2626LatestZib_zibDistilledDPOVeris.safetensors",
+                "url": "https://civitai.com/api/download/models/2726064?type=Model&format=SafeTensor&size=pruned&fp=bf16",
+                "path": "diffusion_models",
+                "filename": "redcraftFeb2626LatestZib_zibDistilledDPOVeris.safetensors"
             }
         ],
         "unet": [
