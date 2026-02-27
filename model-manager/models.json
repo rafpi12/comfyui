@@ -244,7 +244,14 @@
                 "name": "zit_fdpo_v1.safetensors",
                 "url": "https://huggingface.co/F16/z-image-turbo-flow-dpo/resolve/main/zit_fdpo_v1.safetensors?download=true",
                 "path": "loras",
-                "filename": "zit_fdpo_v1.safetensors"
+                "filename": "zit_fdpo_v1.safetensors",
+                "_size": 169691320
+            },
+            {
+                "name": "RedCraft-RedZDX-v3-ZIB-Distilled-Lucis-LoRA-r256.safetensors",
+                "url": "https://huggingface.co/GuangyuanSD/Z-Image-Distilled/resolve/main/RedCraft-RedZDX-v3-ZIB-Distilled-Lucis-LoRA-r256.safetensors?download=true",
+                "path": "loras",
+                "filename": "RedCraft-RedZDX-v3-ZIB-Distilled-Lucis-LoRA-r256.safetensors"
             }
         ],
         "loras/Vyesna": [
