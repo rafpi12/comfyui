@@ -53,9 +53,8 @@
             {
                 "name": "zimageTurboNSFWBy_2602NSFWBF16.safetensors",
                 "url": "https://civitai.com/api/download/models/2668773?type=Model&format=SafeTensor&size=full&fp=bf16",
-                "path": "",
-                "filename": "zimageTurboNSFWBy_2602NSFWBF16.safetensors",
-                "_size": 0
+                "path": "diffusion_models",
+                "filename": "zimageTurboNSFWBy_2602NSFWBF16.safetensors"
             }
         ],
         "unet": [
@@ -230,7 +229,8 @@
                 "name": "RealisticSnapshot-Zimage-Turbov5.safetensors",
                 "url": "https://civitai.com/api/download/models/2617751?type=Model&format=SafeTensor",
                 "path": "loras",
-                "filename": "RealisticSnapshot-Zimage-Turbov5.safetensors"
+                "filename": "RealisticSnapshot-Zimage-Turbov5.safetensors",
+                "_size": 0
             }
         ],
         "loras/Vyesna": [
