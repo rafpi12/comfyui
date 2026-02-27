@@ -34,7 +34,7 @@
                 "url": "https://civitai.com/api/download/models/2699886?type=Model&format=SafeTensor&size=pruned&fp=bf16",
                 "path": "diffusion_models",
                 "filename": "darkBeastFeb2226Latest_darkblitz6Beyondnsfw.safetensors",
-                "_size": 12309878608
+                "_size": 0
             },
             {
                 "name": "redcraftFeb1926Latest_zibDistilledDX3Lucis.safetensors",
@@ -61,7 +61,8 @@
                 "name": "redcraftFeb2626LatestZib_zibDistilledDPOVeris.safetensors",
                 "url": "https://civitai.com/api/download/models/2726064?type=Model&format=SafeTensor&size=pruned&fp=bf16",
                 "path": "diffusion_models",
-                "filename": "redcraftFeb2626LatestZib_zibDistilledDPOVeris.safetensors"
+                "filename": "redcraftFeb2626LatestZib_zibDistilledDPOVeris.safetensors",
+                "_size": 12309878664
             }
         ],
         "unet": [
@@ -238,6 +239,12 @@
                 "path": "loras",
                 "filename": "RealisticSnapshot-Zimage-Turbov5.safetensors",
                 "_size": 0
+            },
+            {
+                "name": "zit_fdpo_v1.safetensors",
+                "url": "https://huggingface.co/F16/z-image-turbo-flow-dpo/resolve/main/zit_fdpo_v1.safetensors?download=true",
+                "path": "loras",
+                "filename": "zit_fdpo_v1.safetensors"
             }
         ],
         "loras/Vyesna": [
