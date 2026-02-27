@@ -54,7 +54,8 @@
                 "name": "zimageTurboNSFWBy_2602NSFWBF16.safetensors",
                 "url": "https://civitai.com/api/download/models/2668773?type=Model&format=SafeTensor&size=full&fp=bf16",
                 "path": "",
-                "filename": "zimageTurboNSFWBy_2602NSFWBF16.safetensors"
+                "filename": "zimageTurboNSFWBy_2602NSFWBF16.safetensors",
+                "_size": 0
             }
         ],
         "unet": [
@@ -224,6 +225,12 @@
                 "path": "loras",
                 "filename": "bw_slider3_000000075.safetensors",
                 "_size": 21319224
+            },
+            {
+                "name": "RealisticSnapshot-Zimage-Turbov5.safetensors",
+                "url": "https://civitai.com/api/download/models/2617751?type=Model&format=SafeTensor",
+                "path": "loras",
+                "filename": "RealisticSnapshot-Zimage-Turbov5.safetensors"
             }
         ],
         "loras/Vyesna": [
