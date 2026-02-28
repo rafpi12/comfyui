@@ -1074,14 +1074,13 @@
                 "url": "https://huggingface.co/Comfy-Org/ace_step_1.5_ComfyUI_files/resolve/main/checkpoints/ace_step_1.5_turbo_aio.safetensors",
                 "path": "checkpoints",
                 "filename": "ace_step_1.5_turbo_aio.safetensors",
-                "_size": 10025478736
+                "_size": 0
             },
             {
                 "name": "acestep_v1.5_turbo.safetensors",
                 "url": "https://huggingface.co/Comfy-Org/ace_step_1.5_ComfyUI_files/resolve/main/split_files/diffusion_models/acestep_v1.5_turbo.safetensors",
-                "path": "checkpoints",
-                "filename": "acestep_v1.5_turbo.safetensors",
-                "_size": 0
+                "path": "diffusion_models",
+                "filename": "acestep_v1.5_turbo.safetensors"
             }
         ],
         "checkpoints": [],
@@ -1092,14 +1091,14 @@
                 "url": "https://huggingface.co/Comfy-Org/ace_step_1.5_ComfyUI_files/resolve/main/split_files/text_encoders/qwen_0.6b_ace15.safetensors",
                 "path": "text_encoders",
                 "filename": "qwen_0.6b_ace15.safetensors",
-                "_size": 0
+                "_size": 1191588248
             },
             {
                 "name": "qwen_1.7b_ace15.safetensors",
                 "url": "https://huggingface.co/Comfy-Org/ace_step_1.5_ComfyUI_files/resolve/main/split_files/text_encoders/qwen_1.7b_ace15.safetensors",
                 "path": "text_encoders",
                 "filename": "qwen_1.7b_ace15.safetensors",
-                "_size": 0
+                "_size": 3708523360
             }
         ],
         "vae": [
@@ -1107,7 +1106,8 @@
                 "name": "ace_1.5_vae.safetensors",
                 "url": "https://huggingface.co/Comfy-Org/ace_step_1.5_ComfyUI_files/resolve/main/split_files/vae/ace_1.5_vae.safetensors",
                 "path": "vae",
-                "filename": "ace_1.5_vae.safetensors"
+                "filename": "ace_1.5_vae.safetensors",
+                "_size": 337431732
             }
         ]
     }
