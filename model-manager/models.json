@@ -1073,7 +1073,14 @@
                 "name": "ace_step_1.5_turbo_aio.safetensors",
                 "url": "https://huggingface.co/Comfy-Org/ace_step_1.5_ComfyUI_files/resolve/main/checkpoints/ace_step_1.5_turbo_aio.safetensors",
                 "path": "checkpoints",
-                "filename": "ace_step_1.5_turbo_aio.safetensors"
+                "filename": "ace_step_1.5_turbo_aio.safetensors",
+                "_size": 10025478736
+            },
+            {
+                "name": "acestep_v1.5_turbo.safetensors",
+                "url": "https://huggingface.co/Comfy-Org/ace_step_1.5_ComfyUI_files/resolve/main/split_files/diffusion_models/acestep_v1.5_turbo.safetensors",
+                "path": "checkpoints",
+                "filename": "acestep_v1.5_turbo.safetensors"
             }
         ],
         "checkpoints": [],
