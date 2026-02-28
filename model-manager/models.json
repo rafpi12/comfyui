@@ -1121,5 +1121,10 @@
                 "_size": 337431732
             }
         ]
+    },
+    "Anima": {
+        "diffusion_models": [],
+        "checkpoints": [],
+        "unet": []
     }
 }
