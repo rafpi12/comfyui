@@ -1139,7 +1139,16 @@
                 "name": "qwen_3_06b_base.safetensors",
                 "url": "https://huggingface.co/circlestone-labs/Anima/resolve/main/split_files/text_encoders/qwen_3_06b_base.safetensors?download=true",
                 "path": "text_encoders",
-                "filename": "qwen_3_06b_base.safetensors"
+                "filename": "qwen_3_06b_base.safetensors",
+                "_size": 0
+            }
+        ],
+        "vae": [
+            {
+                "name": "qwen_image_vae.safetensors",
+                "url": "https://huggingface.co/circlestone-labs/Anima/resolve/main/split_files/vae/qwen_image_vae.safetensors?download=true",
+                "path": "vae",
+                "filename": "qwen_image_vae.safetensors"
             }
         ]
     }
