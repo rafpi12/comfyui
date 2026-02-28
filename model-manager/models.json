@@ -1068,7 +1068,14 @@
         ]
     },
     "ACE-Step": {
-        "diffusion_models": [],
+        "diffusion_models": [
+            {
+                "name": "ace_step_1.5_turbo_aio.safetensors",
+                "url": "https://huggingface.co/Comfy-Org/ace_step_1.5_ComfyUI_files/resolve/main/checkpoints/ace_step_1.5_turbo_aio.safetensors",
+                "path": "checkpoints",
+                "filename": "ace_step_1.5_turbo_aio.safetensors"
+            }
+        ],
         "checkpoints": [],
         "unet": []
     }
