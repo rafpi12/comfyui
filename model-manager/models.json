@@ -1123,7 +1123,14 @@
         ]
     },
     "Anima": {
-        "diffusion_models": [],
+        "diffusion_models": [
+            {
+                "name": "anima-preview.safetensors",
+                "url": "https://huggingface.co/circlestone-labs/Anima/resolve/main/split_files/diffusion_models/anima-preview.safetensors?download=true",
+                "path": "diffusion_models",
+                "filename": "anima-preview.safetensors"
+            }
+        ],
         "checkpoints": [],
         "unet": []
     }
