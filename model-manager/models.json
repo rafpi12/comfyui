@@ -1128,10 +1128,19 @@
                 "name": "anima-preview.safetensors",
                 "url": "https://huggingface.co/circlestone-labs/Anima/resolve/main/split_files/diffusion_models/anima-preview.safetensors?download=true",
                 "path": "diffusion_models",
-                "filename": "anima-preview.safetensors"
+                "filename": "anima-preview.safetensors",
+                "_size": 0
             }
         ],
         "checkpoints": [],
-        "unet": []
+        "unet": [],
+        "text_encoders": [
+            {
+                "name": "qwen_3_06b_base.safetensors",
+                "url": "https://huggingface.co/circlestone-labs/Anima/resolve/main/split_files/text_encoders/qwen_3_06b_base.safetensors?download=true",
+                "path": "text_encoders",
+                "filename": "qwen_3_06b_base.safetensors"
+            }
+        ]
     }
 }
