@@ -1080,10 +1080,19 @@
                 "name": "acestep_v1.5_turbo.safetensors",
                 "url": "https://huggingface.co/Comfy-Org/ace_step_1.5_ComfyUI_files/resolve/main/split_files/diffusion_models/acestep_v1.5_turbo.safetensors",
                 "path": "checkpoints",
-                "filename": "acestep_v1.5_turbo.safetensors"
+                "filename": "acestep_v1.5_turbo.safetensors",
+                "_size": 0
             }
         ],
         "checkpoints": [],
-        "unet": []
+        "unet": [],
+        "text_encoders": [
+            {
+                "name": "qwen_0.6b_ace15.safetensors",
+                "url": "https://huggingface.co/Comfy-Org/ace_step_1.5_ComfyUI_files/resolve/main/split_files/text_encoders/qwen_0.6b_ace15.safetensors",
+                "path": "text_encoders",
+                "filename": "qwen_0.6b_ace15.safetensors"
+            }
+        ]
     }
 }
