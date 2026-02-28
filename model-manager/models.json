@@ -1066,5 +1066,10 @@
                 "filename": "nsfw_wan_umt5-xxl_fp8_scaled.safetensors"
             }
         ]
+    },
+    "ACE-Step": {
+        "diffusion_models": [],
+        "checkpoints": [],
+        "unet": []
     }
 }
