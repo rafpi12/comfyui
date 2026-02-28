@@ -783,7 +783,7 @@
                 "url": "https://huggingface.co/QuanSun/EVA-CLIP/resolve/main/EVA02_CLIP_L_336_psz14_s6B.pt?download=true",
                 "path": "clip",
                 "filename": "EVA02_CLIP_L_336_psz14_s6B.pt",
-                "_size": 856461210
+                "_size": 0
             }
         ],
         "diffusion_models": [
@@ -829,7 +829,7 @@
                 "url": "https://huggingface.co/modelzpalace/ae.safetensors/resolve/main/ae.safetensors?download=true",
                 "path": "vae",
                 "filename": "ae.safetensors",
-                "_size": 335304388
+                "_size": 0
             },
             {
                 "name": "flux2-vae.safetensors",
@@ -943,7 +943,8 @@
                 "name": "qwen_image_edit_2511_fp8_e4m3fn.safetensors",
                 "url": "https://huggingface.co/drbaph/Qwen-Image-Edit-2511-FP8/resolve/main/qwen_image_edit_2511_fp8_e4m3fn.safetensors?download=true",
                 "path": "diffusion_models",
-                "filename": "qwen_image_edit_2511_fp8_e4m3fn.safetensors"
+                "filename": "qwen_image_edit_2511_fp8_e4m3fn.safetensors",
+                "_size": 20430635136
             },
             {
                 "name": "qwen_image_edit_2511_bf16.safetensors",
@@ -957,7 +958,8 @@
                 "name": "qwen_2.5_vl_7b_fp8_scaled.safetensors",
                 "url": "https://huggingface.co/Comfy-Org/Qwen-Image_ComfyUI/resolve/main/split_files/text_encoders/qwen_2.5_vl_7b_fp8_scaled.safetensors?download=true",
                 "path": "text_encoders",
-                "filename": "qwen_2.5_vl_7b_fp8_scaled.safetensors"
+                "filename": "qwen_2.5_vl_7b_fp8_scaled.safetensors",
+                "_size": 9384670680
             }
         ],
         "loras": [
@@ -965,7 +967,8 @@
                 "name": "Qwen-Image-Edit-2511-Lightning-4steps-V1.0-bf16.safetensors",
                 "url": "https://huggingface.co/lightx2v/Qwen-Image-Edit-2511-Lightning/resolve/main/Qwen-Image-Edit-2511-Lightning-4steps-V1.0-bf16.safetensors",
                 "path": "loras/Lightning",
-                "filename": "Qwen-Image-Edit-2511-Lightning-4steps-V1.0-bf16.safetensors"
+                "filename": "Qwen-Image-Edit-2511-Lightning-4steps-V1.0-bf16.safetensors",
+                "_size": 849608296
             }
         ],
         "vae": [
@@ -973,7 +976,8 @@
                 "name": "qwen_image_vae.safetensors",
                 "url": "https://huggingface.co/Comfy-Org/Qwen-Image_ComfyUI/resolve/main/split_files/vae/qwen_image_vae.safetensors?download=true",
                 "path": "vae",
-                "filename": "qwen_image_vae.safetensors"
+                "filename": "qwen_image_vae.safetensors",
+                "_size": 253806246
             }
         ]
     },
