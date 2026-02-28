@@ -1080,7 +1080,14 @@
                 "name": "acestep_v1.5_turbo.safetensors",
                 "url": "https://huggingface.co/Comfy-Org/ace_step_1.5_ComfyUI_files/resolve/main/split_files/diffusion_models/acestep_v1.5_turbo.safetensors",
                 "path": "diffusion_models",
-                "filename": "acestep_v1.5_turbo.safetensors"
+                "filename": "acestep_v1.5_turbo.safetensors",
+                "_size": 4787825604
+            },
+            {
+                "name": "ace_step_v1_3.5b.safetensors",
+                "url": "https://huggingface.co/Comfy-Org/ACE-Step_ComfyUI_repackaged/resolve/main/all_in_one/ace_step_v1_3.5b.safetensors?download=true",
+                "path": "checkpoints",
+                "filename": "ace_step_v1_3.5b.safetensors"
             }
         ],
         "checkpoints": [],
