@@ -13,21 +13,21 @@
                 "url": "https://huggingface.co/Comfy-Org/z_image/resolve/main/split_files/diffusion_models/z_image_bf16.safetensors?download=true",
                 "path": "diffusion_models",
                 "filename": "z_image_bf16.safetensors",
-                "_size": 0
+                "_size": 12309866400
             },
             {
                 "name": "Z-Image Turbo BF16",
                 "url": "https://huggingface.co/Comfy-Org/z_image_turbo/resolve/main/split_files/diffusion_models/z_image_turbo_bf16.safetensors?download=true",
                 "path": "diffusion_models",
                 "filename": "z_image_turbo_bf16.safetensors",
-                "_size": 0
+                "_size": 12309866400
             },
             {
                 "name": "Z-Image Turbo BF16 NSFW V2",
                 "url": "https://huggingface.co/tewea/z_image_turbo_bf16_nsfw/resolve/main/z_image_turbo_bf16_nsfw_v2.safetensors?download=true",
                 "path": "diffusion_models",
                 "filename": "z_image_turbo_bf16_nsfw_v2.safetensors",
-                "_size": 12566033952
+                "_size": 0
             },
             {
                 "name": "darkBeastFeb2226Latest_darkblitz6Beyondnsfw.safetensors",
@@ -62,7 +62,7 @@
                 "url": "https://civitai.com/api/download/models/2726064?type=Model&format=SafeTensor&size=pruned&fp=bf16",
                 "path": "diffusion_models",
                 "filename": "redcraftFeb2626LatestZib_zibDistilledDPOVeris.safetensors",
-                "_size": 12309878664
+                "_size": 0
             }
         ],
         "unet": [
@@ -251,7 +251,14 @@
                 "name": "RedCraft-RedZDX-v3-ZIB-Distilled-Lucis-LoRA-r256.safetensors",
                 "url": "https://huggingface.co/GuangyuanSD/Z-Image-Distilled/resolve/main/RedCraft-RedZDX-v3-ZIB-Distilled-Lucis-LoRA-r256.safetensors?download=true",
                 "path": "loras",
-                "filename": "RedCraft-RedZDX-v3-ZIB-Distilled-Lucis-LoRA-r256.safetensors"
+                "filename": "RedCraft-RedZDX-v3-ZIB-Distilled-Lucis-LoRA-r256.safetensors",
+                "_size": 1136437632
+            },
+            {
+                "name": "FameGrid_Revolution_ZIB.safetensors",
+                "url": "https://civitai.com/api/download/models/2733658?type=Model&format=SafeTensor",
+                "path": "loras",
+                "filename": "FameGrid_Revolution_ZIB.safetensors"
             }
         ],
         "loras/Vyesna": [
