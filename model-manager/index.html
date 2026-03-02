@@ -150,23 +150,22 @@
             const envsToScan = env === "__ALL__" ? Object.keys(cfg) : [env];
 
             envsToScan.forEach(e => {
-                // Filtrage des modèles
-                Object.keys(cfg[e]).forEach(cat => {
-                    let matchType = (type === 'all');
-                    if (!matchType) {
-                        if (type === 'clip') matchType = (cat.includes('clip') || cat.includes('text_encoders'));
-                        else if (type === 'unet') matchType = (cat.includes('unet') || cat.includes('diffusion_models'));
-                        else matchType = cat.toLowerCase().includes(type.toLowerCase());
-                    }
-                    if (matchType) {
-                        cfg[e][cat].forEach(model => {
-                            if(model.filename.toLowerCase().includes(search)) {
-                                allModels.push(model);
-                            }
-                        });
-                    }
-                });
+    Object.keys(cfg[e]).forEach(cat => {
+        let matchType = (type === 'all');
+        if (!matchType) {
+            if (type === 'clip') matchType = (cat.includes('clip') || cat.includes('text_encoders'));
+            else if (type === 'unet') matchType = (cat.includes('unet') || cat.includes('diffusion_models'));
+            else matchType = cat.toLowerCase().includes(type.toLowerCase());
+        }
+        if (matchType) {
+            cfg[e][cat].forEach(model => {
+                if(model.filename.toLowerCase().includes(search)) {
+                    allModels.push({ ...model, _env: e });  // ← on copie le modèle avec son env
+                }
             });
+        }
+    });
+});
 
             // TRI DYNAMIQUE
             allModels.sort((a, b) => {
@@ -193,7 +192,7 @@
                 o.dataset.url = model.url;
                 o.dataset.cat = model.path;       // chemin disque pour téléchargement
                 o.dataset.category = displayCat;  // catégorie d'affichage
-				o.dataset.env = e;  // "e" est la variable de la boucle envsToScan.forEach(e => {...})
+				o.dataset.env = model._env || ""; // "e" est la variable de la boucle envsToScan.forEach(e => {...})
                 o.dataset.size = fileSize || 0;
                 if(isPresent) o.style.color = "#4ade80";
                 if (selectedValues.includes(model.filename)) o.selected = true;
