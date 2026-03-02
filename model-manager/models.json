@@ -106,8 +106,7 @@
                 "url": "https://huggingface.co/Comfy-Org/z_image_turbo/resolve/main/split_files/vae/ae.safetensors?download=true",
                 "path": "vae",
                 "category": "vae",
-                "filename": "ae.safetensors",
-                "_size": 0
+                "filename": "ae.safetensors"
             }
         ],
         "text_encoders": [
@@ -1566,7 +1565,8 @@
                 "url": "https://huggingface.co/Comfy-Org/z_image_turbo/resolve/main/split_files/vae/ae.safetensors?download=true",
                 "path": "vae",
                 "category": "vae",
-                "filename": "ae.safetensors"
+                "filename": "ae.safetensors",
+                "_size": 0
             }
         ]
     }
