@@ -86,7 +86,8 @@
                 "url": "https://huggingface.co/SeeSee21/Z-Image-Turbo-AIO/resolve/main/z-image-turbo-bf16-aio.safetensors?download=true",
                 "path": "diffusion_models",
                 "filename": "z-image-turbo-bf16-aio.safetensors",
-                "category": "diffusion_models"
+                "category": "diffusion_models",
+                "_size": 20522566986
             }
         ],
         "unet": [
@@ -105,16 +106,15 @@
                 "url": "https://huggingface.co/Comfy-Org/z_image_turbo/resolve/main/split_files/vae/ae.safetensors?download=true",
                 "path": "vae",
                 "filename": "ae.safetensors",
-                "_size": 0,
+                "_size": 335304388,
                 "category": "vae"
             },
             {
                 "name": "ultrafluxvae.safetensors",
                 "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/VAE/Z-Image/ultrafluxvae.safetensors?download=true",
                 "path": "vae",
-                "filename": "ultrafluxvae.safetensors",
-                "_size": 0,
-                "category": "vae"
+                "category": "vae",
+                "filename": "ultrafluxvae.safetensors"
             }
         ],
         "text_encoders": [
@@ -123,7 +123,7 @@
                 "url": "https://huggingface.co/Comfy-Org/z_image_turbo/resolve/main/split_files/text_encoders/qwen_3_4b.safetensors?download=true",
                 "path": "text_encoders",
                 "filename": "qwen_3_4b.safetensors",
-                "_size": 0,
+                "_size": 8044982048,
                 "category": "text_encoders"
             },
             {
@@ -131,7 +131,7 @@
                 "url": "https://huggingface.co/Triangle104/Josiefied-Qwen3-4B-abliterated-v2-Q8_0-GGUF/resolve/main/josiefied-qwen3-4b-abliterated-v2-q8_0.gguf?download=true",
                 "path": "text_encoders",
                 "filename": "josiefied-qwen3-4b-abliterated-v2-q8_0.gguf",
-                "_size": 0,
+                "_size": 4280405248,
                 "category": "text_encoders"
             }
         ],
@@ -141,7 +141,7 @@
                 "url": "https://huggingface.co/Danrisi/GrainScape_UltraReal_ZImage/resolve/main/grainscape_zimage.safetensors",
                 "path": "loras",
                 "filename": "grainscape_zimage.safetensors",
-                "_size": 0,
+                "_size": 85094848,
                 "category": "loras"
             },
             {
@@ -149,7 +149,7 @@
                 "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/tmblr0ne_minimalism_000002250.safetensors?download=true",
                 "path": "loras",
                 "filename": "tmblr0ne_minimalism_000002250.safetensors",
-                "_size": 0,
+                "_size": 170128312,
                 "category": "loras"
             },
             {
@@ -157,7 +157,7 @@
                 "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/tmblr0ne_minimalism_000002750.safetensors?download=true",
                 "path": "loras",
                 "filename": "tmblr0ne_minimalism_000002750.safetensors",
-                "_size": 0,
+                "_size": 170128312,
                 "category": "loras"
             },
             {
@@ -181,7 +181,7 @@
                 "url": "https://civitai.com/api/download/models/2691425?type=Model&format=SafeTensor",
                 "path": "loras",
                 "filename": "MisterMR_Anna_ZImageTurbo.safetensors",
-                "_size": 0,
+                "_size": 170128208,
                 "category": "loras"
             },
             {
@@ -189,7 +189,7 @@
                 "url": "https://civitai.com/api/download/models/2688332?type=Model&format=SafeTensor",
                 "path": "loras",
                 "filename": "DC Ancient Futurism Style 1 [Z-ImageBase][GPT4oTagged][Trigger=dcanchfutre.][32Rank] v1.safetensors",
-                "_size": 0,
+                "_size": 170128440,
                 "category": "loras"
             },
             {
@@ -197,7 +197,7 @@
                 "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/aesthetic/Z-Image/lavampirenue_000002750.safetensors?download=true",
                 "path": "loras",
                 "filename": "lavampirenue_000002750.safetensors",
-                "_size": 0,
+                "_size": 170128280,
                 "category": "loras"
             },
             {
@@ -205,7 +205,7 @@
                 "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/aesthetic/Z-Image/lavampirenue_000003000.safetensors?download=true",
                 "path": "loras",
                 "filename": "lavampirenue_000003000.safetensors",
-                "_size": 0,
+                "_size": 170128288,
                 "category": "loras"
             },
             {
@@ -213,7 +213,7 @@
                 "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/aesthetic/Z-Image/lavampirenue_000003250.safetensors?download=true",
                 "path": "loras",
                 "filename": "lavampirenue_000003250.safetensors",
-                "_size": 0,
+                "_size": 170128288,
                 "category": "loras"
             },
             {
@@ -221,7 +221,7 @@
                 "url": "https://civitai.com/api/download/models/2657506?type=Model&format=SafeTensor",
                 "path": "loras",
                 "filename": "Z-Image-Fun-Lora-Distill-8-Steps_ComfyUI.safetensors",
-                "_size": 0,
+                "_size": 200578740,
                 "category": "loras"
             },
             {
@@ -229,7 +229,7 @@
                 "url": "https://huggingface.co/alibaba-pai/Z-Image-Fun-Lora-Distill/resolve/main/Z-Image-Fun-Lora-Distill-8-Steps-2602-ComfyUI.safetensors?download=true",
                 "path": "loras",
                 "filename": "Z-Image-Fun-Lora-Distill-8-Steps-2602-ComfyUI.safetensors",
-                "_size": 0,
+                "_size": 568275120,
                 "category": "loras"
             },
             {
@@ -237,7 +237,7 @@
                 "url": "https://civitai.com/api/download/models/2678174?type=Model&format=SafeTensor",
                 "path": "loras",
                 "filename": "deedee_amateur_photography_zimage_base_and_turbo_v1.safetensors",
-                "_size": 0,
+                "_size": 340193560,
                 "category": "loras"
             },
             {
@@ -245,7 +245,7 @@
                 "url": "https://civitai.com/api/download/models/2504549?type=Model&format=SafeTensor",
                 "path": "loras",
                 "filename": "Famegrid_Z_Image_V0.5_Beta.safetensors",
-                "_size": 0,
+                "_size": 170127824,
                 "category": "loras"
             },
             {
@@ -261,7 +261,7 @@
                 "url": "https://civitai.com/api/download/models/2683561?type=Model&format=SafeTensor",
                 "path": "loras",
                 "filename": "nicegirls_zimagebase.safetensors",
-                "_size": 0,
+                "_size": 340194456,
                 "category": "loras"
             },
             {
@@ -269,7 +269,7 @@
                 "url": "https://civitai.com/api/download/models/2465980?type=Model&format=SafeTensor",
                 "path": "loras",
                 "filename": "nicegirls_Zimage.safetensors",
-                "_size": 0,
+                "_size": 170127768,
                 "category": "loras"
             },
             {
@@ -277,7 +277,7 @@
                 "url": "https://civitai.com/api/download/models/2489956",
                 "path": "loras",
                 "filename": "bw_slider3_000000075.safetensors",
-                "_size": 0,
+                "_size": 21319224,
                 "category": "loras"
             },
             {
@@ -293,7 +293,7 @@
                 "url": "https://huggingface.co/F16/z-image-turbo-flow-dpo/resolve/main/zit_fdpo_v1.safetensors?download=true",
                 "path": "loras",
                 "filename": "zit_fdpo_v1.safetensors",
-                "_size": 0,
+                "_size": 169691320,
                 "category": "loras"
             },
             {
@@ -301,7 +301,7 @@
                 "url": "https://huggingface.co/GuangyuanSD/Z-Image-Distilled/resolve/main/RedCraft-RedZDX-v3-ZIB-Distilled-Lucis-LoRA-r256.safetensors?download=true",
                 "path": "loras",
                 "filename": "RedCraft-RedZDX-v3-ZIB-Distilled-Lucis-LoRA-r256.safetensors",
-                "_size": 0,
+                "_size": 1136437632,
                 "category": "loras"
             },
             {
@@ -309,7 +309,7 @@
                 "url": "https://civitai.com/api/download/models/2733658?type=Model&format=SafeTensor",
                 "path": "loras",
                 "filename": "FameGrid_Revolution_ZIB.safetensors",
-                "_size": 0,
+                "_size": 280243408,
                 "category": "loras"
             }
         ],
@@ -779,7 +779,7 @@
                 "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Upscalers/4x-UltraSharp.pth?download=true",
                 "path": "upscale_models",
                 "filename": "4x-UltraSharp.pth",
-                "_size": 0,
+                "_size": 66961958,
                 "category": "upscale_models"
             },
             {
@@ -787,7 +787,7 @@
                 "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Upscalers/4x-UltraSharpV2.safetensors?download=true",
                 "path": "upscale_models",
                 "filename": "4x-UltraSharpV2.safetensors",
-                "_size": 0,
+                "_size": 139792588,
                 "category": "upscale_models"
             },
             {
@@ -795,7 +795,7 @@
                 "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Upscalers/4xFFHQDAT.pth?download=true",
                 "path": "upscale_models",
                 "filename": "4xFFHQDAT.pth",
-                "_size": 0,
+                "_size": 154679777,
                 "category": "upscale_models"
             },
             {
@@ -803,7 +803,7 @@
                 "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Upscalers/4xPurePhoto-RealPLSKR.pth?download=true",
                 "path": "upscale_models",
                 "filename": "4xPurePhoto-RealPLSKR.pth",
-                "_size": 0,
+                "_size": 29663426,
                 "category": "upscale_models"
             },
             {
@@ -811,7 +811,7 @@
                 "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Upscalers/4x_NMKD-Superscale-SP_178000_G.pth?download=true",
                 "path": "upscale_models",
                 "filename": "4x_NMKD-Superscale-SP_178000_G.pth",
-                "_size": 0,
+                "_size": 66958607,
                 "category": "upscale_models"
             },
             {
@@ -819,7 +819,7 @@
                 "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Upscalers/4x_Nickelback_70000G.safetensors?download=true",
                 "path": "upscale_models",
                 "filename": "4x_Nickelback_70000G.safetensors",
-                "_size": 0,
+                "_size": 66864028,
                 "category": "upscale_models"
             },
             {
@@ -827,7 +827,7 @@
                 "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Upscalers/4x_foolhardy_Remacri.safetensors?download=true",
                 "path": "upscale_models",
                 "filename": "4x_foolhardy_Remacri.safetensors",
-                "_size": 0,
+                "_size": 33467822,
                 "category": "upscale_models"
             },
             {
@@ -835,7 +835,7 @@
                 "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Upscalers/RealESRGAN_x4plus.pth?download=true",
                 "path": "upscale_models",
                 "filename": "RealESRGAN_x4plus.pth",
-                "_size": 0,
+                "_size": 67040989,
                 "category": "upscale_models"
             },
             {
@@ -843,7 +843,7 @@
                 "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Upscalers/remacri_original.safetensors?download=true",
                 "path": "upscale_models",
                 "filename": "remacri_original.safetensors",
-                "_size": 0,
+                "_size": 66864028,
                 "category": "upscale_models"
             }
         ],
@@ -879,7 +879,7 @@
                 "url": "https://huggingface.co/Lockout/qwen3-4b-heretic-zimage/resolve/main/qwen-4b-zimage-heretic-q8.gguf?download=true",
                 "path": "clip",
                 "filename": "qwen-4b-zimage-heretic-q8.gguf",
-                "_size": 0,
+                "_size": 4280404896,
                 "category": "clip"
             }
         ]
@@ -915,7 +915,7 @@
                 "url": "https://huggingface.co/QuanSun/EVA-CLIP/resolve/main/EVA02_CLIP_L_336_psz14_s6B.pt?download=true",
                 "path": "clip",
                 "filename": "EVA02_CLIP_L_336_psz14_s6B.pt",
-                "_size": 856461210,
+                "_size": 0,
                 "category": "text_encoders"
             }
         ],
@@ -1135,7 +1135,7 @@
                 "url": "https://huggingface.co/drbaph/Qwen-Image-Edit-2511-FP8/resolve/main/qwen_image_edit_2511_fp8_e4m3fn.safetensors?download=true",
                 "path": "diffusion_models",
                 "filename": "qwen_image_edit_2511_fp8_e4m3fn.safetensors",
-                "_size": 20430635136,
+                "_size": 0,
                 "category": "diffusion_models"
             },
             {
@@ -1143,7 +1143,8 @@
                 "url": "https://huggingface.co/Comfy-Org/Qwen-Image-Edit_ComfyUI/resolve/main/split_files/diffusion_models/qwen_image_edit_2511_bf16.safetensors",
                 "path": "diffusion_models",
                 "filename": "qwen_image_edit_2511_bf16.safetensors",
-                "category": "diffusion_models"
+                "category": "diffusion_models",
+                "_size": 0
             }
         ],
         "text_encoders": [
@@ -1152,7 +1153,7 @@
                 "url": "https://huggingface.co/Comfy-Org/Qwen-Image_ComfyUI/resolve/main/split_files/text_encoders/qwen_2.5_vl_7b_fp8_scaled.safetensors?download=true",
                 "path": "text_encoders",
                 "filename": "qwen_2.5_vl_7b_fp8_scaled.safetensors",
-                "_size": 9384670680,
+                "_size": 0,
                 "category": "text_encoders"
             }
         ],
@@ -1162,7 +1163,7 @@
                 "url": "https://huggingface.co/lightx2v/Qwen-Image-Edit-2511-Lightning/resolve/main/Qwen-Image-Edit-2511-Lightning-4steps-V1.0-bf16.safetensors",
                 "path": "loras/Lightning",
                 "filename": "Qwen-Image-Edit-2511-Lightning-4steps-V1.0-bf16.safetensors",
-                "_size": 849608296,
+                "_size": 0,
                 "category": "loras"
             }
         ],
@@ -1172,7 +1173,7 @@
                 "url": "https://huggingface.co/Comfy-Org/Qwen-Image_ComfyUI/resolve/main/split_files/vae/qwen_image_vae.safetensors?download=true",
                 "path": "vae",
                 "filename": "qwen_image_vae.safetensors",
-                "_size": 253806246,
+                "_size": 0,
                 "category": "vae"
             }
         ]
@@ -1184,28 +1185,32 @@
                 "url": "https://huggingface.co/FX-FeiHou/wan2.2-Remix/resolve/main/NSFW/Wan2.2_Remix_NSFW_i2v_14b_high_lighting_v2.0.safetensors?download=true",
                 "path": "diffusion_models",
                 "filename": "Wan2.2_Remix_NSFW_i2v_14b_high_lighting_v2.0.safetensors",
-                "category": "diffusion_models"
+                "category": "diffusion_models",
+                "_size": 0
             },
             {
                 "name": "Wan2.2_Remix_NSFW_i2v_14b_low_lighting_v2.0.safetensors",
                 "url": "https://huggingface.co/FX-FeiHou/wan2.2-Remix/resolve/main/NSFW/Wan2.2_Remix_NSFW_i2v_14b_low_lighting_v2.0.safetensors?download=true",
                 "path": "diffusion_models",
                 "filename": "Wan2.2_Remix_NSFW_i2v_14b_low_lighting_v2.0.safetensors",
-                "category": "diffusion_models"
+                "category": "diffusion_models",
+                "_size": 0
             },
             {
                 "name": "wan2.2_t2v_high_noise_14B_fp8_scaled.safetensors",
                 "url": "https://huggingface.co/Comfy-Org/Wan_2.2_ComfyUI_Repackaged/resolve/main/split_files/diffusion_models/wan2.2_t2v_high_noise_14B_fp8_scaled.safetensors?download=true",
                 "path": "diffusion_models",
                 "filename": "wan2.2_t2v_high_noise_14B_fp8_scaled.safetensors",
-                "category": "diffusion_models"
+                "category": "diffusion_models",
+                "_size": 0
             },
             {
                 "name": "wan2.2_t2v_low_noise_14B_fp8_scaled.safetensors",
                 "url": "https://huggingface.co/Comfy-Org/Wan_2.2_ComfyUI_Repackaged/resolve/main/split_files/diffusion_models/wan2.2_t2v_low_noise_14B_fp8_scaled.safetensors?download=true",
                 "path": "diffusion_models",
                 "filename": "wan2.2_t2v_low_noise_14B_fp8_scaled.safetensors",
-                "category": "diffusion_models"
+                "category": "diffusion_models",
+                "_size": 0
             }
         ],
         "t2v": [],
@@ -1216,42 +1221,48 @@
                 "url": "https://huggingface.co/Aitrepreneur/FLX/resolve/main/Wan2.2-Lightning_I2V-A14B-4steps-lora_HIGH_fp16.safetensors?download=true",
                 "path": "loras",
                 "filename": "Wan2.2-Lightning_I2V-A14B-4steps-lora_HIGH_fp16.safetensors",
-                "category": "loras"
+                "category": "loras",
+                "_size": 0
             },
             {
                 "name": "Wan2.2-Lightning_I2V-A14B-4steps-lora_LOW_fp16.safetensors",
                 "url": "https://huggingface.co/Aitrepreneur/FLX/resolve/main/Wan2.2-Lightning_I2V-A14B-4steps-lora_LOW_fp16.safetensors?download=true",
                 "path": "loras",
                 "filename": "Wan2.2-Lightning_I2V-A14B-4steps-lora_LOW_fp16.safetensors",
-                "category": "loras"
+                "category": "loras",
+                "_size": 0
             },
             {
                 "name": "wan22_14b_i2v_orbit_high_noise.safetensors",
                 "url": "https://huggingface.co/ostris/wan22_i2v_14b_orbit_shot_lora/resolve/7b637fe0079bbf4ac0f977ff2c58971b8835b9c7/wan22_14b_i2v_orbit_high_noise.safetensors?download=true",
                 "path": "loras",
                 "filename": "wan22_14b_i2v_orbit_high_noise.safetensors",
-                "category": "loras"
+                "category": "loras",
+                "_size": 0
             },
             {
                 "name": "wan22_14b_i2v_orbit_low_noise.safetensors",
                 "url": "https://huggingface.co/ostris/wan22_i2v_14b_orbit_shot_lora/resolve/main/wan22_14b_i2v_orbit_low_noise.safetensors?download=true",
                 "path": "loras",
                 "filename": "wan22_14b_i2v_orbit_low_noise.safetensors",
-                "category": "loras"
+                "category": "loras",
+                "_size": 0
             },
             {
                 "name": "high_noise_model.safetensors",
                 "url": "https://huggingface.co/lightx2v/Wan2.2-Lightning/resolve/main/Wan2.2-T2V-A14B-4steps-lora-rank64-Seko-V1.1/high_noise_model.safetensors?download=true",
                 "path": "loras/Wan2.2-T2V-A14B-4steps-lora-rank64-Seko-V1.1",
                 "filename": "high_noise_model.safetensors",
-                "category": "loras"
+                "category": "loras",
+                "_size": 0
             },
             {
                 "name": "low_noise_model.safetensors",
                 "url": "https://huggingface.co/lightx2v/Wan2.2-Lightning/resolve/main/Wan2.2-T2V-A14B-4steps-lora-rank64-Seko-V1.1/low_noise_model.safetensors?download=true",
                 "path": "loras/Wan2.2-T2V-A14B-4steps-lora-rank64-Seko-V1.1",
                 "filename": "low_noise_model.safetensors",
-                "category": "loras"
+                "category": "loras",
+                "_size": 0
             }
         ],
         "vae": [
@@ -1260,7 +1271,8 @@
                 "url": "https://huggingface.co/Comfy-Org/Wan_2.1_ComfyUI_repackaged/resolve/main/split_files/vae/wan_2.1_vae.safetensors?download=true",
                 "path": "vae",
                 "filename": "wan_2.1_vae.safetensors",
-                "category": "vae"
+                "category": "vae",
+                "_size": 0
             }
         ],
         "text_encoders": [
@@ -1269,14 +1281,16 @@
                 "url": "https://huggingface.co/f5aiteam/CLIP/resolve/main/umt5_xxl_fp8_e4m3fn_scaled.safetensors?download=true",
                 "path": "text_encoders",
                 "filename": "umt5_xxl_fp8_e4m3fn_scaled.safetensors",
-                "category": "text_encoders"
+                "category": "text_encoders",
+                "_size": 0
             },
             {
                 "name": "nsfw_wan_umt5-xxl_fp8_scaled.safetensors",
                 "url": "https://huggingface.co/NSFW-API/NSFW-Wan-UMT5-XXL/resolve/main/nsfw_wan_umt5-xxl_fp8_scaled.safetensors?download=true",
                 "path": "text_encoders",
                 "filename": "nsfw_wan_umt5-xxl_fp8_scaled.safetensors",
-                "category": "text_encoders"
+                "category": "text_encoders",
+                "_size": 0
             }
         ]
     },
@@ -1295,7 +1309,7 @@
                 "url": "https://huggingface.co/Comfy-Org/ace_step_1.5_ComfyUI_files/resolve/main/split_files/diffusion_models/acestep_v1.5_turbo.safetensors",
                 "path": "diffusion_models",
                 "filename": "acestep_v1.5_turbo.safetensors",
-                "_size": 4787825604,
+                "_size": 0,
                 "category": "diffusion_models"
             },
             {
@@ -1303,7 +1317,8 @@
                 "url": "https://huggingface.co/Comfy-Org/ACE-Step_ComfyUI_repackaged/resolve/main/all_in_one/ace_step_v1_3.5b.safetensors?download=true",
                 "path": "checkpoints",
                 "filename": "ace_step_v1_3.5b.safetensors",
-                "category": "diffusion_models"
+                "category": "diffusion_models",
+                "_size": 0
             }
         ],
         "checkpoints": [],
@@ -1314,7 +1329,7 @@
                 "url": "https://huggingface.co/Comfy-Org/ace_step_1.5_ComfyUI_files/resolve/main/split_files/text_encoders/qwen_0.6b_ace15.safetensors",
                 "path": "text_encoders",
                 "filename": "qwen_0.6b_ace15.safetensors",
-                "_size": 1191588248,
+                "_size": 0,
                 "category": "text_encoders"
             },
             {
@@ -1322,7 +1337,7 @@
                 "url": "https://huggingface.co/Comfy-Org/ace_step_1.5_ComfyUI_files/resolve/main/split_files/text_encoders/qwen_1.7b_ace15.safetensors",
                 "path": "text_encoders",
                 "filename": "qwen_1.7b_ace15.safetensors",
-                "_size": 3708523360,
+                "_size": 0,
                 "category": "text_encoders"
             }
         ],
@@ -1332,7 +1347,7 @@
                 "url": "https://huggingface.co/Comfy-Org/ace_step_1.5_ComfyUI_files/resolve/main/split_files/vae/ace_1.5_vae.safetensors",
                 "path": "vae",
                 "filename": "ace_1.5_vae.safetensors",
-                "_size": 337431732,
+                "_size": 0,
                 "category": "vae"
             }
         ]
@@ -1366,7 +1381,8 @@
                 "url": "https://huggingface.co/circlestone-labs/Anima/resolve/main/split_files/vae/qwen_image_vae.safetensors?download=true",
                 "path": "vae",
                 "filename": "qwen_image_vae.safetensors",
-                "category": "vae"
+                "category": "vae",
+                "_size": 0
             }
         ]
     },
@@ -1402,7 +1418,7 @@
                 "path": "SEEDVR2",
                 "category": "upscale_models",
                 "filename": "seedvr2_ema_7b_fp16.safetensors",
-                "_size": 0
+                "_size": 16479334424
             },
             {
                 "name": "seedvr2_ema_7b_fp8_e4m3fn",
@@ -1442,7 +1458,7 @@
                 "path": "SEEDVR2",
                 "category": "upscale_models",
                 "filename": "seedvr2_ema_3b-Q4_K_M.gguf",
-                "_size": 0
+                "_size": 1995344224
             },
             {
                 "name": "seedvr2_ema_3b-Q5_K_M",
