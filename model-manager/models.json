@@ -106,7 +106,15 @@
                 "url": "https://huggingface.co/Comfy-Org/z_image_turbo/resolve/main/split_files/vae/ae.safetensors?download=true",
                 "path": "vae",
                 "category": "vae",
-                "filename": "ae.safetensors"
+                "filename": "ae.safetensors",
+                "_size": 335304388
+            },
+            {
+                "name": "ultrafluxvae.safetensors",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/VAE/Z-Image/ultrafluxvae.safetensors?download=true",
+                "path": "vae",
+                "category": "vae",
+                "filename": "ultrafluxvae.safetensors"
             }
         ],
         "text_encoders": [
@@ -959,7 +967,7 @@
                 "url": "https://huggingface.co/modelzpalace/ae.safetensors/resolve/main/ae.safetensors?download=true",
                 "path": "vae",
                 "filename": "ae.safetensors",
-                "_size": 0,
+                "_size": 335304388,
                 "category": "vae"
             },
             {
@@ -1566,7 +1574,7 @@
                 "path": "vae",
                 "category": "vae",
                 "filename": "ae.safetensors",
-                "_size": 0
+                "_size": 335304388
             }
         ]
     }
