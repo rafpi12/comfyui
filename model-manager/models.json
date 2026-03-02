@@ -1375,16 +1375,7 @@
                 "category": "text_encoders"
             }
         ],
-        "vae": [
-            {
-                "name": "qwen_image_vae.safetensors",
-                "url": "https://huggingface.co/circlestone-labs/Anima/resolve/main/split_files/vae/qwen_image_vae.safetensors?download=true",
-                "path": "vae",
-                "filename": "qwen_image_vae.safetensors",
-                "category": "vae",
-                "_size": 0
-            }
-        ]
+        "vae": []
     },
     "SeedVR": {
         "upscale_models": [
