@@ -921,6 +921,12 @@
                 "path": "checkpoints/SUPIR",
                 "filename": "SUPIR-v0Q.ckpt",
                 "_size": 0
+            },
+            {
+                "name": "lustifySDXLNSFW_oltINPAINTING.safetensors",
+                "url": "https://civitai.com/api/download/models/1588039?type=Model&format=SafeTensor&size=pruned&fp=fp16",
+                "path": "checkpoints",
+                "filename": "lustifySDXLNSFW_oltINPAINTING.safetensors"
             }
         ],
         "loras": [
