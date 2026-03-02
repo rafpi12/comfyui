@@ -173,10 +173,11 @@
 
             // Remplissage du select
             allModels.forEach(model => {
-                const catKey = model.path.split('/')[0];
-                const sub = model.path.includes('/') ? model.path.split('/').slice(1).join('/') : '';
-                const diskCategoryFiles = diskFiles[catKey] || [];
-                const fullModelPath = (sub ? sub + '/' : '') + model.filename;
+                // category = affichage dans le browser, path = dossier disque réel
+                const displayCat = model.category || model.path.split('/')[0];
+                const diskKey = model.path.split('/')[0];
+                const diskCategoryFiles = diskFiles[diskKey] || [];
+                const fullModelPath = model.filename;
                 const diskEntry = diskCategoryFiles.find(f => (f.path || f).toLowerCase() === fullModelPath.toLowerCase());
                 const isPresent = !!diskEntry;
                 const fileSize = diskEntry ? diskEntry.size : null;
@@ -185,7 +186,8 @@
                 const label = (isPresent ? "● " : "○ ") + model.filename + (isPresent && fileSize ? "  [" + formatSize(fileSize) + "]" : "");
                 let o = new Option(label, model.filename);
                 o.dataset.url = model.url;
-                o.dataset.cat = model.path;
+                o.dataset.cat = model.path;       // chemin disque pour téléchargement
+                o.dataset.category = displayCat;  // catégorie d'affichage
                 o.dataset.size = fileSize || 0;
                 if(isPresent) o.style.color = "#4ade80";
                 if (selectedValues.includes(model.filename)) o.selected = true;
@@ -206,7 +208,7 @@
             const s = Array.from(document.getElementById('models-ui').selectedOptions); if(s.length !== 1) return;
             const o = s[0]; const cleanName = o.value.replace(/^[●○]\s/, "");
             document.getElementById('edit-env').value = document.getElementById('env-ui').value;
-            document.getElementById('edit-cat').value = o.dataset.cat.split('/')[0];
+            document.getElementById('edit-cat').value = o.dataset.category || o.dataset.cat.split('/')[0];
             document.getElementById('edit-path').value = BASE_PATH + o.dataset.cat;
             document.getElementById('edit-url').value = o.dataset.url;
             document.getElementById('edit-file').value = cleanName;
@@ -309,7 +311,7 @@
             const env = document.getElementById('edit-env').value; const cat = document.getElementById('edit-cat').value;
             const fullPath = document.getElementById('edit-path').value; const url = document.getElementById('edit-url').value;
             const file = document.getElementById('edit-file').value; const relPath = fullPath.replace(BASE_PATH, "").replace(/^\/+/, "");
-            const obj = { name: file, url: url, path: relPath, filename: file };
+            const obj = { name: file, url: url, path: relPath, category: cat, filename: file };
             if(!cfg[env]) cfg[env] = {}; if(!cfg[env][cat]) cfg[env][cat] = [];
             const idx = cfg[env][cat].findIndex(m => m.filename === file);
             if (idx > -1) cfg[env][cat][idx] = obj; else cfg[env][cat].push(obj);
