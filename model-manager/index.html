@@ -315,16 +315,29 @@
             } catch(e) {}
         }
         async function saveToCatalogue() {
-            const env = document.getElementById('edit-env').value; const cat = document.getElementById('edit-cat').value;
-            const fullPath = document.getElementById('edit-path').value; const url = document.getElementById('edit-url').value;
-            const file = document.getElementById('edit-file').value; const relPath = fullPath.replace(BASE_PATH, "").replace(/^\/+/, "");
-            const obj = { name: file, url: url, path: relPath, category: cat, filename: file };
-            if(!cfg[env]) cfg[env] = {}; if(!cfg[env][cat]) cfg[env][cat] = [];
-            const idx = cfg[env][cat].findIndex(m => m.filename === file);
-            if (idx > -1) cfg[env][cat][idx] = obj; else cfg[env][cat].push(obj);
-            const r = await fetch('/save-config', { method: 'POST', body: JSON.stringify(cfg) });
-            if((await r.json()).github_sync) showGitHubToast(); loadModels(file); renderCatalogue(file);
-        }
+    const env = document.getElementById('edit-env').value;
+    const cat = document.getElementById('edit-cat').value;
+    const fullPath = document.getElementById('edit-path').value;
+    const url = document.getElementById('edit-url').value;
+    const file = document.getElementById('edit-file').value;
+
+    // Validation : bloquer toute sauvegarde incomplète
+    if (!env || !cat || !file || !url) {
+        addLog('⚠️ Environnement, catégorie, fichier et URL sont obligatoires.', true);
+        return;
+    }
+
+    const relPath = fullPath.replace(BASE_PATH, "").replace(/^\/+/, "");
+    const obj = { name: file, url: url, path: relPath, category: cat, filename: file };
+    if (!cfg[env]) cfg[env] = {};
+    if (!cfg[env][cat]) cfg[env][cat] = [];
+    const idx = cfg[env][cat].findIndex(m => m.filename === file);
+    if (idx > -1) cfg[env][cat][idx] = obj; else cfg[env][cat].push(obj);
+    const r = await fetch('/save-config', { method: 'POST', body: JSON.stringify(cfg) });
+    if ((await r.json()).github_sync) showGitHubToast();
+    loadModels(file);
+    renderCatalogue(file);
+}
         function renderCatalogue(filterFile = null) {
             const list = document.getElementById('catalogue-list'); list.innerHTML = "";
             Object.keys(cfg).forEach(env => Object.keys(cfg[env]).forEach(cat => cfg[env][cat].forEach((m, idx) => {
