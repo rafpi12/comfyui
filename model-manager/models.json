@@ -106,7 +106,8 @@
                 "url": "https://huggingface.co/Comfy-Org/z_image_turbo/resolve/main/split_files/vae/ae.safetensors?download=true",
                 "path": "vae",
                 "category": "vae",
-                "filename": "ae.safetensors"
+                "filename": "ae.safetensors",
+                "_size": 0
             }
         ],
         "text_encoders": [
@@ -1555,6 +1556,17 @@
                 "category": "upscale_models",
                 "filename": "seedvr2_ema_7b_sharp-Q8_0.gguf",
                 "_size": 0
+            }
+        ]
+    },
+    "": {
+        "vae": [
+            {
+                "name": "ae.safetensors",
+                "url": "https://huggingface.co/Comfy-Org/z_image_turbo/resolve/main/split_files/vae/ae.safetensors?download=true",
+                "path": "vae",
+                "category": "vae",
+                "filename": "ae.safetensors"
             }
         ]
     }
