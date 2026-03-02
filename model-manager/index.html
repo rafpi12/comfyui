@@ -127,11 +127,10 @@
             try {
                 const r = await fetch('/config'); cfg = await r.json();
                 const envSelector = document.getElementById('env-ui'); envSelector.innerHTML = "";
-                const environments = Object.keys(cfg);
-                if (environments.length > 0) {
-                    environments.forEach(env => envSelector.add(new Option(env, env)));
-                    envSelector.value = environments.includes("Flux") ? "Flux" : environments[0];
-                }
+                const environments = Object.keys(cfg).sort((a, b) => a.localeCompare(b));
+                envSelector.add(new Option("Tous les environnements", "__ALL__"));
+                environments.forEach(env => envSelector.add(new Option(env, env)));
+                envSelector.value = "__ALL__"; // défaut : tout afficher
                 await updateDiskState(); loadModels(); renderCatalogue(); setInterval(loop, 2000);
             } catch(e) { }
         }
@@ -142,25 +141,31 @@
             const m = document.getElementById('models-ui'); const env = document.getElementById('env-ui').value;
             const type = document.getElementById('type-ui').value; const search = document.getElementById('search-ui').value.toLowerCase();
             const savedScroll = m.scrollTop; const selectedValues = targetFilename ? [targetFilename] : Array.from(m.selectedOptions).map(o => o.value);
-            m.innerHTML = ""; if (!cfg[env]) return;
+            m.innerHTML = "";
+            if (env !== "__ALL__" && !cfg[env]) return;
 
             let allModels = [];
 
-            // Filtrage des modèles
-            Object.keys(cfg[env]).forEach(cat => {
-                let matchType = (type === 'all');
-                if (!matchType) {
-                    if (type === 'clip') matchType = (cat.includes('clip') || cat.includes('text_encoders'));
-                    else if (type === 'unet') matchType = (cat.includes('unet') || cat.includes('diffusion_models'));
-                    else matchType = cat.toLowerCase().includes(type.toLowerCase());
-                }
-                if (matchType) {
-                    cfg[env][cat].forEach(model => {
-                        if(model.filename.toLowerCase().includes(search)) {
-                            allModels.push(model);
-                        }
-                    });
-                }
+            // Environnements à parcourir : un seul ou tous
+            const envsToScan = env === "__ALL__" ? Object.keys(cfg) : [env];
+
+            envsToScan.forEach(e => {
+                // Filtrage des modèles
+                Object.keys(cfg[e]).forEach(cat => {
+                    let matchType = (type === 'all');
+                    if (!matchType) {
+                        if (type === 'clip') matchType = (cat.includes('clip') || cat.includes('text_encoders'));
+                        else if (type === 'unet') matchType = (cat.includes('unet') || cat.includes('diffusion_models'));
+                        else matchType = cat.toLowerCase().includes(type.toLowerCase());
+                    }
+                    if (matchType) {
+                        cfg[e][cat].forEach(model => {
+                            if(model.filename.toLowerCase().includes(search)) {
+                                allModels.push(model);
+                            }
+                        });
+                    }
+                });
             });
 
             // TRI DYNAMIQUE
