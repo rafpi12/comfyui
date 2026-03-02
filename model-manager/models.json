@@ -928,12 +928,6 @@
                 "path": "checkpoints",
                 "filename": "lustifySDXLNSFW_oltINPAINTING.safetensors",
                 "_size": 0
-            },
-            {
-                "name": "lustifySDXLNSFW_ggwpV7.safetensors",
-                "url": "https://civitai.com/api/download/models/2155386?type=Model&format=SafeTensor&size=pruned&fp=fp16",
-                "path": "checkpoints",
-                "filename": "lustifySDXLNSFW_ggwpV7.safetensors"
             }
         ],
         "loras": [
