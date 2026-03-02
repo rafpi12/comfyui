@@ -193,6 +193,7 @@
                 o.dataset.url = model.url;
                 o.dataset.cat = model.path;       // chemin disque pour téléchargement
                 o.dataset.category = displayCat;  // catégorie d'affichage
+				o.dataset.env = e;  // "e" est la variable de la boucle envsToScan.forEach(e => {...})
                 o.dataset.size = fileSize || 0;
                 if(isPresent) o.style.color = "#4ade80";
                 if (selectedValues.includes(model.filename)) o.selected = true;
@@ -212,7 +213,8 @@
         function syncToEditor() {
             const s = Array.from(document.getElementById('models-ui').selectedOptions); if(s.length !== 1) return;
             const o = s[0]; const cleanName = o.value.replace(/^[●○]\s/, "");
-            document.getElementById('edit-env').value = document.getElementById('env-ui').value;
+            const envVal = o.dataset.env || document.getElementById('env-ui').value;
+            document.getElementById('edit-env').value = envVal;
             document.getElementById('edit-cat').value = o.dataset.category || o.dataset.cat.split('/')[0];
             document.getElementById('edit-path').value = BASE_PATH + o.dataset.cat;
             document.getElementById('edit-url').value = o.dataset.url;
@@ -326,10 +328,16 @@
         function renderCatalogue(filterFile = null) {
             const list = document.getElementById('catalogue-list'); list.innerHTML = "";
             Object.keys(cfg).forEach(env => Object.keys(cfg[env]).forEach(cat => cfg[env][cat].forEach((m, idx) => {
-                if (filterFile && m.filename !== filterFile) return;
-                list.innerHTML += `<div class="flex justify-between items-center bg-black/40 p-2 mb-1 border border-white/5 rounded ${filterFile ? 'file-highlight' : ''}"><div class="flex flex-col"><span class="text-blue-400 font-bold uppercase" style="font-size:8px">${env} / ${cat}</span><span class="truncate italic text-slate-300">${m.filename}</span></div><button onclick="removeFromCatalogue('${env}','${cat}',${idx})" class="text-red-500 ml-2"><i class="fas fa-times"></i></button></div>`;
-            })));
-        }
+        if (filterFile && m.filename !== filterFile) return;
+        list.innerHTML += `<div class="flex justify-between items-center bg-black/40 p-2 mb-1 border border-white/5 rounded ${filterFile ? 'file-highlight' : ''}" id="cat-entry-${m.filename.replace(/\W/g,'_')}"><div class="flex flex-col"><span class="text-blue-400 font-bold uppercase" style="font-size:8px">${env} / ${cat}</span><span class="truncate italic text-slate-300">${m.filename}</span></div><button onclick="removeFromCatalogue('${env}','${cat}',${idx})" class="text-red-500 ml-2"><i class="fas fa-times"></i></button></div>`;
+    })));
+    // Scroll automatique vers l'entrée du fichier sélectionné
+    if (filterFile) {
+        const id = "cat-entry-" + filterFile.replace(/\W/g, '_');
+        const el = document.getElementById(id);
+        if (el) setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'center' }), 50);
+    }
+}
         async function removeFromCatalogue(e,c,i) { if(confirm('Supprimer du JSON ?')) { cfg[e][c].splice(i, 1); await fetch('/save-config', { method: 'POST', body: JSON.stringify(cfg) }); renderCatalogue(); loadModels(); } }
         
         function setSortAndReload(key) {
