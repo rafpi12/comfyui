@@ -927,13 +927,14 @@
                 "url": "https://civitai.com/api/download/models/1588039?type=Model&format=SafeTensor&size=pruned&fp=fp16",
                 "path": "checkpoints",
                 "filename": "lustifySDXLNSFW_oltINPAINTING.safetensors",
-                "_size": 0
+                "_size": 6938071570
             },
             {
                 "name": "lustifySDXLNSFW_ggwpV7.safetensors",
                 "url": "https://civitai.com/api/downhttps://civitai.com/api/download/models/2155386?type=Model&format=SafeTensor&size=pruned&fp=fp16load/models/2155386?type=Model&format=SafeTensor&size=pruned&fp=fp16",
                 "path": "checkpoints",
-                "filename": "lustifySDXLNSFW_ggwpV7.safetensors"
+                "filename": "lustifySDXLNSFW_ggwpV7.safetensors",
+                "_size": 6938099634
             }
         ],
         "loras": [
@@ -975,13 +976,6 @@
                 "path": "checkpoints",
                 "filename": "sd_xl_base_1.0.safetensors",
                 "_size": 0
-            },
-            {
-                "name": "lustifySDXLNSFW_ggwpV7.safetensors",
-                "url": "https://civitai.com/api/download/models/2155386?type=Model&format=SafeTensor&size=pruned&fp=fp16",
-                "path": "checkpoints",
-                "filename": "lustifySDXLNSFW_ggwpV7.safetensors",
-                "_size": 6938099634
             },
             {
                 "name": "dmd2_sdxl_4step_lora.safetensors",
