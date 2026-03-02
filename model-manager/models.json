@@ -845,6 +845,13 @@
                 "filename": "remacri_original.safetensors",
                 "_size": 66864028,
                 "category": "upscale_models"
+            },
+            {
+                "name": "8xNMKDFaces160000G_v10.pt",
+                "url": "https://civitai.com/api/download/models/158264?type=Model&format=PickleTensor",
+                "path": "upscale_models",
+                "category": "upscale_models",
+                "filename": "8xNMKDFaces160000G_v10.pt"
             }
         ],
         "controlnet": [
