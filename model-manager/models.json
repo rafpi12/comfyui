@@ -959,7 +959,14 @@
                 "name": "lustifySDXLNSFW_ggwpV7.safetensors",
                 "url": "https://civitai.com/api/download/models/2155386?type=Model&format=SafeTensor&size=pruned&fp=fp16",
                 "path": "checkpoints",
-                "filename": "lustifySDXLNSFW_ggwpV7.safetensors"
+                "filename": "lustifySDXLNSFW_ggwpV7.safetensors",
+                "_size": 6938099634
+            },
+            {
+                "name": "dmd2_sdxl_4step_lora.safetensors",
+                "url": "https://civitai.com/api/download/models/1820705?type=Model&format=SafeTensor",
+                "path": "checkpoints",
+                "filename": "dmd2_sdxl_4step_lora.safetensors"
             }
         ]
     },
