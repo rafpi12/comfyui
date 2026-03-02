@@ -1117,14 +1117,6 @@
                 "filename": "sd_xl_base_1.0.safetensors",
                 "_size": 0,
                 "category": ""
-            },
-            {
-                "name": "dmd2_sdxl_4step_lora.safetensors",
-                "url": "https://civitai.com/api/download/models/1820705?type=Model&format=SafeTensor",
-                "path": "checkpoints",
-                "filename": "dmd2_sdxl_4step_lora.safetensors",
-                "_size": 0,
-                "category": ""
             }
         ]
     },
