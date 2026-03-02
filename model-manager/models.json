@@ -27,7 +27,7 @@
                 "url": "https://huggingface.co/tewea/z_image_turbo_bf16_nsfw/resolve/main/z_image_turbo_bf16_nsfw_v2.safetensors?download=true",
                 "path": "diffusion_models",
                 "filename": "z_image_turbo_bf16_nsfw_v2.safetensors",
-                "_size": 12566033952
+                "_size": 0
             },
             {
                 "name": "darkBeastFeb2226Latest_darkblitz6Beyondnsfw.safetensors",
@@ -68,7 +68,14 @@
                 "name": "zImageTurboNSFW_45BF16Diffusion.safetensors",
                 "url": "https://civitai.com/api/download/models/2704736?type=Model&format=SafeTensor&size=full&fp=bf16",
                 "path": "diffusion_models",
-                "filename": "zImageTurboNSFW_45BF16Diffusion.safetensors"
+                "filename": "zImageTurboNSFW_45BF16Diffusion.safetensors",
+                "_size": 0
+            },
+            {
+                "name": "lustifySDXLNSFW_oltINPAINTING.safetensors",
+                "url": "https://civitai.com/api/download/models/1588039?type=Model&format=SafeTensor&size=pruned&fp=fp16",
+                "path": "checkpoints",
+                "filename": "lustifySDXLNSFW_oltINPAINTING.safetensors"
             }
         ],
         "unet": [
@@ -934,7 +941,8 @@
                 "name": "dmd2_sdxl_4step_lora.safetensors",
                 "url": "https://civitai.com/api/download/models/1820705?type=Model&format=SafeTensor",
                 "path": "loras",
-                "filename": "dmd2_sdxl_4step_lora.safetensors"
+                "filename": "dmd2_sdxl_4step_lora.safetensors",
+                "_size": 787359616
             }
         ],
         "upscale_models": [
@@ -972,7 +980,8 @@
                 "name": "dmd2_sdxl_4step_lora.safetensors",
                 "url": "https://civitai.com/api/download/models/1820705?type=Model&format=SafeTensor",
                 "path": "checkpoints",
-                "filename": "dmd2_sdxl_4step_lora.safetensors"
+                "filename": "dmd2_sdxl_4step_lora.safetensors",
+                "_size": 0
             }
         ]
     },
