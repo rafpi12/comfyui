@@ -911,13 +911,15 @@
                 "name": "jibMixIllustrious_v40Ascension.safetensors",
                 "url": "https://civitai.com/api/download/models/2569079?type=Model&format=SafeTensor&size=full&fp=fp16",
                 "path": "checkpoints",
-                "filename": "jibMixIllustrious_v40Ascension.safetensors"
+                "filename": "jibMixIllustrious_v40Ascension.safetensors",
+                "_size": 0
             },
             {
                 "name": "SUPIR-v0Q.ckpt",
                 "url": "https://huggingface.co/camenduru/SUPIR/resolve/main/SUPIR-v0Q.ckpt?download=true",
                 "path": "checkpoints/SUPIR",
-                "filename": "SUPIR-v0Q.ckpt"
+                "filename": "SUPIR-v0Q.ckpt",
+                "_size": 0
             }
         ],
         "loras": [
@@ -925,7 +927,8 @@
                 "name": "skin texture style v3.safetensors",
                 "url": "https://civitai.com/api/download/models/691191?type=Model&format=SafeTensor",
                 "path": "loras",
-                "filename": "skin texture style v3.safetensors"
+                "filename": "skin texture style v3.safetensors",
+                "_size": 0
             }
         ],
         "upscale_models": [
@@ -933,7 +936,8 @@
                 "name": "8xNMKDFaces160000G_v10.pt",
                 "url": "https://civitai.com/api/download/models/158264?type=Model&format=PickleTensor",
                 "path": "upscale_models",
-                "filename": "8xNMKDFaces160000G_v10.pt"
+                "filename": "8xNMKDFaces160000G_v10.pt",
+                "_size": 0
             }
         ],
         "": [
@@ -941,13 +945,21 @@
                 "name": "sd_xl_base_1.0_0.9vae.safetensors",
                 "url": "https://huggingface.co/camenduru/SUPIR/resolve/main/sd_xl_base_1.0_0.9vae.safetensors?download=true",
                 "path": "checkpoints",
-                "filename": "sd_xl_base_1.0_0.9vae.safetensors"
+                "filename": "sd_xl_base_1.0_0.9vae.safetensors",
+                "_size": 0
             },
             {
                 "name": "sd_xl_base_1.0.safetensors",
                 "url": "https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0/resolve/main/sd_xl_base_1.0.safetensors?download=true",
                 "path": "checkpoints",
-                "filename": "sd_xl_base_1.0.safetensors"
+                "filename": "sd_xl_base_1.0.safetensors",
+                "_size": 0
+            },
+            {
+                "name": "lustifySDXLNSFW_ggwpV7.safetensors",
+                "url": "https://civitai.com/api/download/models/2155386?type=Model&format=SafeTensor&size=pruned&fp=fp16",
+                "path": "checkpoints",
+                "filename": "lustifySDXLNSFW_ggwpV7.safetensors"
             }
         ]
     },
