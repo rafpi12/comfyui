@@ -1083,7 +1083,15 @@
                 "category": "loras"
             }
         ],
-        "upscale_models": [],
+        "upscale_models": [
+            {
+                "name": "8xNMKDFaces160000G_v10.pt",
+                "url": "https://civitai.com/api/download/models/158264?type=Model&format=PickleTensor",
+                "path": "upscale_models",
+                "category": "upscale_models",
+                "filename": "8xNMKDFaces160000G_v10.pt"
+            }
+        ],
         "": [
             {
                 "name": "sd_xl_base_1.0_0.9vae.safetensors",
