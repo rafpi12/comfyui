@@ -218,6 +218,7 @@
             document.getElementById('edit-path').value = BASE_PATH + o.dataset.cat;
             document.getElementById('edit-url').value = o.dataset.url;
             document.getElementById('edit-file').value = cleanName;
+			renderCatalogue(cleanName); // ← cette ligne manquait
         }
 
         async function startSmartDownload() {
