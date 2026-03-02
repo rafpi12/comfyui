@@ -929,12 +929,6 @@
                 "path": "loras",
                 "filename": "skin texture style v3.safetensors",
                 "_size": 0
-            },
-            {
-                "name": "dmd2_sdxl_4step_lora.safetensors",
-                "url": "https://civitai.com/api/download/models/1820705?type=Model&format=SafeTensor",
-                "path": "loras",
-                "filename": "dmd2_sdxl_4step_lora.safetensors"
             }
         ],
         "upscale_models": [
