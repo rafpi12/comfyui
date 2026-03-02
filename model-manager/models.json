@@ -1206,5 +1206,163 @@
                 "filename": "qwen_image_vae.safetensors"
             }
         ]
+    },
+    "SeedVR": {
+        "upscale_models": [
+            {
+                "name": "ema_vae_fp16",
+                "url": "https://huggingface.co/numz/SeedVR2_comfyUI/resolve/main/ema_vae_fp16.safetensors?download=true",
+                "path": "SEEDVR2/upscale_models/SeedVR2",
+                "filename": "ema_vae_fp16.safetensors",
+                "_size": 0
+            },
+            {
+                "name": "seedvr2_ema_3b_fp16",
+                "url": "https://huggingface.co/numz/SeedVR2_comfyUI/resolve/main/seedvr2_ema_3b_fp16.safetensors?download=true",
+                "path": "SEEDVR2/upscale_models/SeedVR2",
+                "filename": "seedvr2_ema_3b_fp16.safetensors",
+                "_size": 0
+            },
+            {
+                "name": "seedvr2_ema_3b_fp8_e4m3fn",
+                "url": "https://huggingface.co/numz/SeedVR2_comfyUI/resolve/main/seedvr2_ema_3b_fp8_e4m3fn.safetensors?download=true",
+                "path": "SEEDVR2/upscale_models/SeedVR2",
+                "filename": "seedvr2_ema_3b_fp8_e4m3fn.safetensors",
+                "_size": 0
+            },
+            {
+                "name": "seedvr2_ema_7b_fp16",
+                "url": "https://huggingface.co/numz/SeedVR2_comfyUI/resolve/main/seedvr2_ema_7b_fp16.safetensors?download=true",
+                "path": "SEEDVR2/upscale_models/SeedVR2",
+                "filename": "seedvr2_ema_7b_fp16.safetensors",
+                "_size": 0
+            },
+            {
+                "name": "seedvr2_ema_7b_fp8_e4m3fn",
+                "url": "https://huggingface.co/numz/SeedVR2_comfyUI/resolve/main/seedvr2_ema_7b_fp8_e4m3fn.safetensors?download=true",
+                "path": "SEEDVR2/upscale_models/SeedVR2",
+                "filename": "seedvr2_ema_7b_fp8_e4m3fn.safetensors",
+                "_size": 0
+            },
+            {
+                "name": "seedvr2_ema_7b_sharp_fp16",
+                "url": "https://huggingface.co/numz/SeedVR2_comfyUI/resolve/main/seedvr2_ema_7b_sharp_fp16.safetensors?download=true",
+                "path": "SEEDVR2/upscale_models/SeedVR2",
+                "filename": "seedvr2_ema_7b_sharp_fp16.safetensors",
+                "_size": 0
+            },
+            {
+                "name": "seedvr2_ema_7b_sharp_fp8_e4m3fn",
+                "url": "https://huggingface.co/numz/SeedVR2_comfyUI/resolve/main/seedvr2_ema_7b_sharp_fp8_e4m3fn.safetensors?download=true",
+                "path": "SEEDVR2/upscale_models/SeedVR2",
+                "filename": "seedvr2_ema_7b_sharp_fp8_e4m3fn.safetensors",
+                "_size": 0
+            },
+            {
+                "name": "seedvr2_ema_3b-Q3_K_M",
+                "url": "https://huggingface.co/cmeka/SeedVR2-GGUF/resolve/main/seedvr2_ema_3b-Q3_K_M.gguf?download=true",
+                "path": "SEEDVR2/upscale_models/SeedVR2",
+                "filename": "seedvr2_ema_3b-Q3_K_M.gguf",
+                "_size": 0
+            },
+            {
+                "name": "seedvr2_ema_3b-Q4_K_M",
+                "url": "https://huggingface.co/cmeka/SeedVR2-GGUF/resolve/main/seedvr2_ema_3b-Q4_K_M.gguf?download=true",
+                "path": "SEEDVR2/upscale_models/SeedVR2",
+                "filename": "seedvr2_ema_3b-Q4_K_M.gguf",
+                "_size": 0
+            },
+            {
+                "name": "seedvr2_ema_3b-Q5_K_M",
+                "url": "https://huggingface.co/cmeka/SeedVR2-GGUF/resolve/main/seedvr2_ema_3b-Q5_K_M.gguf?download=true",
+                "path": "SEEDVR2/upscale_models/SeedVR2",
+                "filename": "seedvr2_ema_3b-Q5_K_M.gguf",
+                "_size": 0
+            },
+            {
+                "name": "seedvr2_ema_3b-Q6_K",
+                "url": "https://huggingface.co/cmeka/SeedVR2-GGUF/resolve/main/seedvr2_ema_3b-Q6_K.gguf?download=true",
+                "path": "SEEDVR2/upscale_models/SeedVR2",
+                "filename": "seedvr2_ema_3b-Q6_K.gguf",
+                "_size": 0
+            },
+            {
+                "name": "seedvr2_ema_3b-Q8_0",
+                "url": "https://huggingface.co/cmeka/SeedVR2-GGUF/resolve/main/seedvr2_ema_3b-Q8_0.gguf?download=true",
+                "path": "SEEDVR2/upscale_models/SeedVR2",
+                "filename": "seedvr2_ema_3b-Q8_0.gguf",
+                "_size": 0
+            },
+            {
+                "name": "seedvr2_ema_7b-Q3_K_M",
+                "url": "https://huggingface.co/cmeka/SeedVR2-GGUF/resolve/main/seedvr2_ema_7b-Q3_K_M.gguf?download=true",
+                "path": "SEEDVR2/upscale_models/SeedVR2",
+                "filename": "seedvr2_ema_7b-Q3_K_M.gguf",
+                "_size": 0
+            },
+            {
+                "name": "seedvr2_ema_7b-Q4_K_M",
+                "url": "https://huggingface.co/cmeka/SeedVR2-GGUF/resolve/main/seedvr2_ema_7b-Q4_K_M.gguf?download=true",
+                "path": "SEEDVR2/upscale_models/SeedVR2",
+                "filename": "seedvr2_ema_7b-Q4_K_M.gguf",
+                "_size": 0
+            },
+            {
+                "name": "seedvr2_ema_7b-Q5_K_M",
+                "url": "https://huggingface.co/cmeka/SeedVR2-GGUF/resolve/main/seedvr2_ema_7b-Q5_K_M.gguf?download=true",
+                "path": "SEEDVR2/upscale_models/SeedVR2",
+                "filename": "seedvr2_ema_7b-Q5_K_M.gguf",
+                "_size": 0
+            },
+            {
+                "name": "seedvr2_ema_7b-Q6_K",
+                "url": "https://huggingface.co/cmeka/SeedVR2-GGUF/resolve/main/seedvr2_ema_7b-Q6_K.gguf?download=true",
+                "path": "SEEDVR2/upscale_models/SeedVR2",
+                "filename": "seedvr2_ema_7b-Q6_K.gguf",
+                "_size": 0
+            },
+            {
+                "name": "seedvr2_ema_7b-Q8_0",
+                "url": "https://huggingface.co/cmeka/SeedVR2-GGUF/resolve/main/seedvr2_ema_7b-Q8_0.gguf?download=true",
+                "path": "SEEDVR2/upscale_models/SeedVR2",
+                "filename": "seedvr2_ema_7b-Q8_0.gguf",
+                "_size": 0
+            },
+            {
+                "name": "seedvr2_ema_7b_sharp-Q3_K_M",
+                "url": "https://huggingface.co/cmeka/SeedVR2-GGUF/resolve/main/seedvr2_ema_7b_sharp-Q3_K_M.gguf?download=true",
+                "path": "SEEDVR2/upscale_models/SeedVR2",
+                "filename": "seedvr2_ema_7b_sharp-Q3_K_M.gguf",
+                "_size": 0
+            },
+            {
+                "name": "seedvr2_ema_7b_sharp-Q4_K_M",
+                "url": "https://huggingface.co/cmeka/SeedVR2-GGUF/resolve/main/seedvr2_ema_7b_sharp-Q4_K_M.gguf?download=true",
+                "path": "SEEDVR2/upscale_models/SeedVR2",
+                "filename": "seedvr2_ema_7b_sharp-Q4_K_M.gguf",
+                "_size": 0
+            },
+            {
+                "name": "seedvr2_ema_7b_sharp-Q5_K_M",
+                "url": "https://huggingface.co/cmeka/SeedVR2-GGUF/resolve/main/seedvr2_ema_7b_sharp-Q5_K_M.gguf?download=true",
+                "path": "SEEDVR2/upscale_models/SeedVR2",
+                "filename": "seedvr2_ema_7b_sharp-Q5_K_M.gguf",
+                "_size": 0
+            },
+            {
+                "name": "seedvr2_ema_7b_sharp-Q6_K",
+                "url": "https://huggingface.co/cmeka/SeedVR2-GGUF/resolve/main/seedvr2_ema_7b_sharp-Q6_K.gguf?download=true",
+                "path": "SEEDVR2/upscale_models/SeedVR2",
+                "filename": "seedvr2_ema_7b_sharp-Q6_K.gguf",
+                "_size": 0
+            },
+            {
+                "name": "seedvr2_ema_7b_sharp-Q8_0",
+                "url": "https://huggingface.co/cmeka/SeedVR2-GGUF/resolve/main/seedvr2_ema_7b_sharp-Q8_0.gguf?download=true",
+                "path": "SEEDVR2/upscale_models/SeedVR2",
+                "filename": "seedvr2_ema_7b_sharp-Q8_0.gguf",
+                "_size": 0
+            }
+        ]
     }
 }
