@@ -1070,6 +1070,13 @@
                 "filename": "lustifySDXLNSFW_ggwpV7.safetensors",
                 "_size": 6938099634,
                 "category": "diffusion_models"
+            },
+            {
+                "name": "sd_xl_refiner_1.0.safetensors",
+                "url": "https://huggingface.co/stabilityai/stable-diffusion-xl-refiner-1.0/resolve/main/sd_xl_refiner_1.0.safetensors?download=true",
+                "path": "checkpoints",
+                "category": "diffusion_models",
+                "filename": "sd_xl_refiner_1.0.safetensors"
             }
         ],
         "loras": [
