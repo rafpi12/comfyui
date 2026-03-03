@@ -291,11 +291,17 @@ def filename_fallback(download):
 @app.get("/disk-usage")
 async def disk_usage():
     try:
-        result = subprocess.run(
-            ["du", "-sb", "/workspace"],
-            capture_output=True, text=True, timeout=30
-        )
-        used_bytes = int(result.stdout.split()[0]) if result.returncode == 0 else 0
+        # Calculer l'espace utilisé en sommant les fichiers déjà scannés par scan-disk
+        # (évite du -sb qui est bloquant sur network storage MooseFS)
+        used_bytes = 0
+        if os.path.exists(BASE_MODELS_PATH):
+            for root, _, files in os.walk(BASE_MODELS_PATH):
+                for f in files:
+                    try:
+                        used_bytes += os.path.getsize(os.path.join(root, f))
+                    except:
+                        pass
+
         GB = 1_073_741_824
         used_gb = round(used_bytes / GB, 2)
         total_gb = fetch_runpod_quota()
