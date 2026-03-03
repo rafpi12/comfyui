@@ -31,14 +31,19 @@ def fetch_runpod_quota():
         api_key = os.environ.get("RUNPOD_API_KEY", "")
         if not pod_id or not api_key:
             return None
-        query = f'{{ pod(input: {{podId: "{pod_id}"}}) {{ volumeInGb }} }}'
+        query = f'{{ pod(input: {{podId: "{pod_id}"}}) {{ volumeInGb networkVolume {{ size }} }} }}'
         r = requests.post(
             f"https://api.runpod.io/graphql?api_key={api_key}",
             json={"query": query},
             timeout=5
         )
-        vol = r.json()["data"]["pod"]["volumeInGb"]
-        _workspace_quota_gb = float(vol) if vol else None
+        pod = r.json()["data"]["pod"]
+        # Network storage a priorité sur le volume local
+        net_vol = pod.get("networkVolume") or {}
+        net_size = net_vol.get("size", 0) or 0
+        vol_size = pod.get("volumeInGb", 0) or 0
+        quota = net_size if net_size > 0 else vol_size
+        _workspace_quota_gb = float(quota) if quota else None
         return _workspace_quota_gb
     except:
         return None
