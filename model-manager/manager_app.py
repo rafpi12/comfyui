@@ -259,6 +259,20 @@ def filename_fallback(download):
     except:
         return "Initialisation..."
 
+@app.get("/disk-usage")
+async def disk_usage():
+    usage = shutil.disk_usage("/workspace")
+    total_gb = usage.total / 1_073_741_824
+    used_gb = usage.used / 1_073_741_824
+    free_gb = usage.free / 1_073_741_824
+    used_pct = (usage.used / usage.total) * 100
+    return {
+        "total_gb": round(total_gb, 2),
+        "used_gb": round(used_gb, 2),
+        "free_gb": round(free_gb, 2),
+        "used_pct": round(used_pct, 1),
+    }
+
 @app.delete("/delete")
 async def delete(cat: str, file: str):
     clean_cat = cat.replace(BASE_MODELS_PATH, "").lstrip("/")
