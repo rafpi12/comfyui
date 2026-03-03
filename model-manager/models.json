@@ -1199,6 +1199,13 @@
                 "filename": "wan2.2_t2v_low_noise_14B_fp8_scaled.safetensors",
                 "category": "diffusion_models",
                 "_size": 0
+            },
+            {
+                "name": "wan22EnhancedNSFWSVICamera_nolightningSVICfQ8H.gguf",
+                "url": "https://civitai.com/api/download/models/2668710?type=Model&format=GGUF&size=full&fp=fp8",
+                "path": "diffusion_models",
+                "category": "diffusion_models",
+                "filename": "wan22EnhancedNSFWSVICamera_nolightningSVICfQ8H.gguf"
             }
         ],
         "t2v": [],
