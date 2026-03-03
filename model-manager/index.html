@@ -25,17 +25,13 @@
         <div class="flex justify-between items-center mb-8">
             <h1 class="text-2xl font-black text-blue-400 uppercase tracking-tighter">Model Manager Pro</h1>
             <div class="flex gap-3">
-                <div id="disk-widget" class="bg-slate-800 px-4 py-2 rounded-lg flex flex-col gap-1.5 min-w-[200px]">
-                    <div class="flex justify-between text-[9px] font-bold uppercase text-slate-500 tracking-widest">
-                        <span>Total</span><span>Utilisé</span><span>Libre</span>
-                    </div>
-                    <div class="flex justify-between text-[11px] font-mono font-bold">
-                        <span class="text-slate-300" id="disk-total">—</span>
-                        <span class="text-yellow-400" id="disk-used">—</span>
-                        <span class="text-green-400" id="disk-free">—</span>
+                <div id="disk-widget" class="bg-slate-800 px-4 py-2 rounded-lg flex flex-col gap-1.5 min-w-[220px]">
+                    <div class="flex justify-between items-center">
+                        <span class="text-[9px] font-bold uppercase text-slate-500 tracking-widest">📁 /workspace</span>
+                        <span class="text-[9px] font-mono text-slate-400"><span id="ws-used">—</span> / <span id="ws-total">—</span> · <span class="text-green-400" id="ws-free">—</span> libre</span>
                     </div>
                     <div class="w-full bg-slate-700 h-1.5 rounded-full overflow-hidden">
-                        <div id="disk-bar" class="h-1.5 rounded-full bg-blue-500 transition-all duration-500" style="width:0%"></div>
+                        <div id="ws-bar" class="h-1.5 rounded-full bg-blue-500 transition-all duration-500" style="width:0%"></div>
                     </div>
                 </div>
                 <button onclick="fetch('/purge',{method:'POST'})" class="bg-slate-800 px-5 py-2 rounded-lg text-xs font-bold hover:bg-slate-700">PURGER ARIA2</button>
@@ -155,13 +151,15 @@
                 const r = await fetch('/disk-usage');
                 const d = await r.json();
                 const fmt = v => v.toFixed(1) + ' Go';
-                const pct = Math.round(d.used_pct);
-                const barColor = pct > 85 ? 'bg-red-500' : pct > 65 ? 'bg-yellow-500' : 'bg-blue-500';
-                document.getElementById('disk-total').textContent = fmt(d.total_gb);
-                document.getElementById('disk-used').textContent = fmt(d.used_gb);
-                document.getElementById('disk-free').textContent = fmt(d.free_gb);
-                document.getElementById('disk-bar').style.width = pct + '%';
-                document.getElementById('disk-bar').className = 'h-1.5 rounded-full transition-all duration-500 ' + barColor;
+                if (d.workspace) {
+                    const pct = d.workspace.used_pct;
+                    const color = pct > 85 ? 'bg-red-500' : pct > 65 ? 'bg-yellow-500' : 'bg-blue-500';
+                    document.getElementById('ws-used').textContent = fmt(d.workspace.used_gb);
+                    document.getElementById('ws-total').textContent = fmt(d.workspace.total_gb);
+                    document.getElementById('ws-free').textContent = fmt(d.workspace.free_gb);
+                    document.getElementById('ws-bar').style.width = pct + '%';
+                    document.getElementById('ws-bar').className = 'h-1.5 rounded-full transition-all duration-500 ' + color;
+                }
             } catch(e) {}
         }
 
