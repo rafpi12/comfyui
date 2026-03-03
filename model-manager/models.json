@@ -1077,6 +1077,13 @@
                 "path": "checkpoints",
                 "category": "diffusion_models",
                 "filename": "sd_xl_refiner_1.0.safetensors"
+            },
+            {
+                "name": "sd_xl_base_1.0.safetensors",
+                "url": "https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0/resolve/main/sd_xl_base_1.0.safetensors?download=true",
+                "path": "checkpoints",
+                "category": "diffusion_models",
+                "filename": "sd_xl_base_1.0.safetensors"
             }
         ],
         "loras": [
