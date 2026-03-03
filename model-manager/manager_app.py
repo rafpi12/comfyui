@@ -19,6 +19,30 @@ GITHUB_FILE_PATH = "model-manager/models.json"
 
 ALLOWED_EXTENSIONS = {'.safetensors', '.pth', '.pt', '.gguf', '.bin', '.ckpt', '.yaml'}
 
+# Cache du quota RunPod (récupéré via API au premier appel)
+_workspace_quota_gb = None
+
+def fetch_runpod_quota():
+    global _workspace_quota_gb
+    if _workspace_quota_gb is not None:
+        return _workspace_quota_gb
+    try:
+        pod_id = os.environ.get("RUNPOD_POD_ID", "")
+        api_key = os.environ.get("RUNPOD_API_KEY", "")
+        if not pod_id or not api_key:
+            return None
+        query = f'{{ pod(input: {{podId: "{pod_id}"}}) {{ volumeInGb }} }}'
+        r = requests.post(
+            f"https://api.runpod.io/graphql?api_key={api_key}",
+            json={"query": query},
+            timeout=5
+        )
+        vol = r.json()["data"]["pod"]["volumeInGb"]
+        _workspace_quota_gb = float(vol) if vol else None
+        return _workspace_quota_gb
+    except:
+        return None
+
 def get_client():
     try:
         client = aria2p.Client(host="http://127.0.0.1", port=6800, secret="")
@@ -262,24 +286,31 @@ def filename_fallback(download):
 @app.get("/disk-usage")
 async def disk_usage():
     try:
-        # df -B1 donne les octets exacts du point de montage /workspace spécifiquement
         result = subprocess.run(
-            ["df", "-B1", "/workspace"],
-            capture_output=True, text=True, timeout=5
+            ["du", "-sb", "/workspace"],
+            capture_output=True, text=True, timeout=30
         )
-        lines = result.stdout.strip().split("\n")
-        # Ligne 1 = headers, ligne 2 = données
-        parts = lines[1].split()
-        total = int(parts[1])
-        used  = int(parts[2])
-        free  = int(parts[3])
+        used_bytes = int(result.stdout.split()[0]) if result.returncode == 0 else 0
         GB = 1_073_741_824
-        return {"workspace": {
-            "total_gb": round(total / GB, 1),
-            "used_gb":  round(used  / GB, 1),
-            "free_gb":  round(free  / GB, 1),
-            "used_pct": round((used / total) * 100, 1),
-        }}
+        used_gb = round(used_bytes / GB, 2)
+        total_gb = fetch_runpod_quota()
+
+        if total_gb:
+            free_gb = round(total_gb - used_gb, 2)
+            used_pct = round((used_gb / total_gb) * 100, 1)
+            return {"workspace": {
+                "total_gb": total_gb,
+                "used_gb": used_gb,
+                "free_gb": max(free_gb, 0),
+                "used_pct": min(used_pct, 100),
+            }}
+        else:
+            return {"workspace": {
+                "total_gb": None,
+                "used_gb": used_gb,
+                "free_gb": None,
+                "used_pct": None,
+            }}
     except Exception as e:
         return {"workspace": None, "error": str(e)}
 
