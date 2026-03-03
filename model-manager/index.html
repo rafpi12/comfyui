@@ -25,13 +25,16 @@
         <div class="flex justify-between items-center mb-8">
             <h1 class="text-2xl font-black text-blue-400 uppercase tracking-tighter">Model Manager Pro</h1>
             <div class="flex gap-3">
-                <div id="disk-widget" class="bg-slate-800 px-4 py-2 rounded-lg flex flex-col gap-1.5 min-w-[220px]">
+                <div id="disk-widget" class="bg-slate-800 px-4 py-2 rounded-lg flex flex-col gap-1.5 min-w-[200px]">
                     <div class="flex justify-between items-center">
                         <span class="text-[9px] font-bold uppercase text-slate-500 tracking-widest">📁 /workspace</span>
-                        <span class="text-[9px] font-mono text-slate-400"><span id="ws-used">—</span> / <span id="ws-total">—</span> · <span class="text-green-400" id="ws-free">—</span> libre</span>
+                        <span class="text-[9px] font-mono text-slate-400"><span id="ws-used">—</span> / <span id="ws-total">—</span></span>
                     </div>
                     <div class="w-full bg-slate-700 h-1.5 rounded-full overflow-hidden">
                         <div id="ws-bar" class="h-1.5 rounded-full bg-blue-500 transition-all duration-500" style="width:0%"></div>
+                    </div>
+                    <div class="text-[9px] font-mono text-right">
+                        <span class="text-green-400" id="ws-free">—</span><span class="text-slate-500"> libre</span>
                     </div>
                 </div>
                 <button onclick="fetch('/purge',{method:'POST'})" class="bg-slate-800 px-5 py-2 rounded-lg text-xs font-bold hover:bg-slate-700">PURGER ARIA2</button>
@@ -152,13 +155,20 @@
                 const d = await r.json();
                 const fmt = v => v.toFixed(1) + ' Go';
                 if (d.workspace) {
-                    const pct = d.workspace.used_pct;
-                    const color = pct > 85 ? 'bg-red-500' : pct > 65 ? 'bg-yellow-500' : 'bg-blue-500';
-                    document.getElementById('ws-used').textContent = fmt(d.workspace.used_gb);
-                    document.getElementById('ws-total').textContent = fmt(d.workspace.total_gb);
-                    document.getElementById('ws-free').textContent = fmt(d.workspace.free_gb);
-                    document.getElementById('ws-bar').style.width = pct + '%';
-                    document.getElementById('ws-bar').className = 'h-1.5 rounded-full transition-all duration-500 ' + color;
+                    const ws = d.workspace;
+                    document.getElementById('ws-used').textContent = fmt(ws.used_gb);
+                    if (ws.total_gb !== null) {
+                        document.getElementById('ws-total').textContent = fmt(ws.total_gb);
+                        document.getElementById('ws-free').textContent = fmt(ws.free_gb);
+                        const color = ws.used_pct > 85 ? 'bg-red-500' : ws.used_pct > 65 ? 'bg-yellow-500' : 'bg-blue-500';
+                        document.getElementById('ws-bar').style.width = ws.used_pct + '%';
+                        document.getElementById('ws-bar').className = 'h-1.5 rounded-full transition-all duration-500 ' + color;
+                    } else {
+                        // Pas de quota défini : on cache total/libre/barre
+                        document.getElementById('ws-total').textContent = '? Go';
+                        document.getElementById('ws-free').textContent = '—';
+                        document.getElementById('ws-bar').style.width = '0%';
+                    }
                 }
             } catch(e) {}
         }
