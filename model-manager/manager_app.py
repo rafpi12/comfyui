@@ -261,17 +261,17 @@ def filename_fallback(download):
 
 @app.get("/disk-usage")
 async def disk_usage():
-    usage = shutil.disk_usage("/workspace")
-    total_gb = usage.total / 1_073_741_824
-    used_gb = usage.used / 1_073_741_824
-    free_gb = usage.free / 1_073_741_824
-    used_pct = (usage.used / usage.total) * 100
-    return {
-        "total_gb": round(total_gb, 2),
-        "used_gb": round(used_gb, 2),
-        "free_gb": round(free_gb, 2),
-        "used_pct": round(used_pct, 1),
-    }
+    def get_usage(path):
+        if not os.path.exists(path):
+            return None
+        u = shutil.disk_usage(path)
+        return {
+            "total_gb": round(u.total / 1_073_741_824, 1),
+            "used_gb": round(u.used / 1_073_741_824, 1),
+            "free_gb": round(u.free / 1_073_741_824, 1),
+            "used_pct": round((u.used / u.total) * 100, 1),
+        }
+    return {"workspace": get_usage("/workspace")}
 
 @app.delete("/delete")
 async def delete(cat: str, file: str):
