@@ -25,6 +25,16 @@
         <div class="flex justify-between items-center mb-8">
             <h1 class="text-2xl font-black text-blue-400 uppercase tracking-tighter">Model Manager Pro</h1>
             <div class="flex gap-3">
+                <div id="disk-widget" class="bg-slate-800 px-4 py-2 rounded-lg flex flex-col gap-1 min-w-[190px]">
+                    <div class="flex justify-between text-[10px] font-mono text-slate-400">
+                        <span>💾 /workspace</span>
+                        <span id="disk-text">...</span>
+                    </div>
+                    <div class="w-full bg-slate-700 h-1.5 rounded-full overflow-hidden">
+                        <div id="disk-bar" class="h-1.5 rounded-full bg-blue-500 transition-all duration-500" style="width:0%"></div>
+                    </div>
+                    <div class="text-[9px] text-slate-500 text-right" id="disk-free">libre : ...</div>
+                </div>
                 <button onclick="fetch('/purge',{method:'POST'})" class="bg-slate-800 px-5 py-2 rounded-lg text-xs font-bold hover:bg-slate-700">PURGER ARIA2</button>
                 <button onclick="location.reload()" class="bg-slate-800 px-5 py-2 rounded-lg text-xs font-bold hover:bg-slate-700">ACTUALISER</button>
             </div>
@@ -131,11 +141,27 @@
                 envSelector.add(new Option("Tous les environnements", "__ALL__"));
                 environments.forEach(env => envSelector.add(new Option(env, env)));
                 envSelector.value = "__ALL__"; // défaut : tout afficher
-                await updateDiskState(); loadModels(); renderCatalogue(); setInterval(loop, 2000);
+                await updateDiskState(); await updateDiskWidget(); loadModels(); renderCatalogue(); setInterval(loop, 2000); setInterval(updateDiskWidget, 30000);
             } catch(e) { }
         }
 
         async function updateDiskState() { const r = await fetch('/scan-disk'); diskFiles = await r.json(); }
+
+        async function updateDiskWidget() {
+            try {
+                const r = await fetch('/disk-usage');
+                const d = await r.json();
+                const used = d.used_gb.toFixed(1);
+                const total = d.total_gb.toFixed(1);
+                const free = d.free_gb.toFixed(1);
+                const pct = Math.round(d.used_pct);
+                const barColor = pct > 85 ? 'bg-red-500' : pct > 65 ? 'bg-yellow-500' : 'bg-blue-500';
+                document.getElementById('disk-text').textContent = used + ' / ' + total + ' Go';
+                document.getElementById('disk-free').textContent = 'libre : ' + free + ' Go';
+                document.getElementById('disk-bar').style.width = pct + '%';
+                document.getElementById('disk-bar').className = 'h-1.5 rounded-full transition-all duration-500 ' + barColor;
+            } catch(e) {}
+        }
 
         function loadModels(targetFilename = null) {
             const m = document.getElementById('models-ui'); const env = document.getElementById('env-ui').value;
@@ -344,11 +370,14 @@
         if (filterFile && m.filename !== filterFile) return;
         list.innerHTML += `<div class="flex justify-between items-center bg-black/40 p-2 mb-1 border border-white/5 rounded ${filterFile ? 'file-highlight' : ''}" id="cat-entry-${m.filename.replace(/\W/g,'_')}"><div class="flex flex-col"><span class="text-blue-400 font-bold uppercase" style="font-size:8px">${env} / ${cat}</span><span class="truncate italic text-slate-300">${m.filename}</span></div><button onclick="removeFromCatalogue('${env}','${cat}',${idx})" class="text-red-500 ml-2"><i class="fas fa-times"></i></button></div>`;
     })));
-    // Scroll automatique vers l'entrée du fichier sélectionné
+    // Scroll interne à la liste catalogue uniquement (sans focus page)
     if (filterFile) {
         const id = "cat-entry-" + filterFile.replace(/\W/g, '_');
         const el = document.getElementById(id);
-        if (el) setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'center' }), 50);
+        if (el) setTimeout(() => {
+            const list = document.getElementById('catalogue-list');
+            list.scrollTop = el.offsetTop - list.offsetTop - 10;
+        }, 50);
     }
 }
         async function removeFromCatalogue(e,c,i) { if(confirm('Supprimer du JSON ?')) { cfg[e][c].splice(i, 1); await fetch('/save-config', { method: 'POST', body: JSON.stringify(cfg) }); renderCatalogue(); loadModels(); } }
