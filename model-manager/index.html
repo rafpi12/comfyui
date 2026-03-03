@@ -143,7 +143,7 @@
                 envSelector.add(new Option("Tous les environnements", "__ALL__"));
                 environments.forEach(env => envSelector.add(new Option(env, env)));
                 envSelector.value = "__ALL__"; // défaut : tout afficher
-                await updateDiskState(); await updateDiskWidget(); loadModels(); renderCatalogue(); setInterval(loop, 2000); setInterval(updateDiskWidget, 30000);
+                await updateDiskState(); loadModels(); renderCatalogue(); setInterval(loop, 2000); updateDiskWidget(); setInterval(updateDiskWidget, 30000);
             } catch(e) { }
         }
 
