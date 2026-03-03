@@ -261,17 +261,27 @@ def filename_fallback(download):
 
 @app.get("/disk-usage")
 async def disk_usage():
-    def get_usage(path):
-        if not os.path.exists(path):
-            return None
-        u = shutil.disk_usage(path)
-        return {
-            "total_gb": round(u.total / 1_073_741_824, 1),
-            "used_gb": round(u.used / 1_073_741_824, 1),
-            "free_gb": round(u.free / 1_073_741_824, 1),
-            "used_pct": round((u.used / u.total) * 100, 1),
-        }
-    return {"workspace": get_usage("/workspace")}
+    try:
+        # df -B1 donne les octets exacts du point de montage /workspace spécifiquement
+        result = subprocess.run(
+            ["df", "-B1", "/workspace"],
+            capture_output=True, text=True, timeout=5
+        )
+        lines = result.stdout.strip().split("\n")
+        # Ligne 1 = headers, ligne 2 = données
+        parts = lines[1].split()
+        total = int(parts[1])
+        used  = int(parts[2])
+        free  = int(parts[3])
+        GB = 1_073_741_824
+        return {"workspace": {
+            "total_gb": round(total / GB, 1),
+            "used_gb":  round(used  / GB, 1),
+            "free_gb":  round(free  / GB, 1),
+            "used_pct": round((used / total) * 100, 1),
+        }}
+    except Exception as e:
+        return {"workspace": None, "error": str(e)}
 
 @app.delete("/delete")
 async def delete(cat: str, file: str):
