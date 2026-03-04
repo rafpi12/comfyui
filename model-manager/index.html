@@ -206,7 +206,7 @@
             // TRI DYNAMIQUE
             allModels.sort((a, b) => {
                 if (sortState.key === 'size') {
-                    return ((a._size || 0) - (b._size || 0)) * sortState.dir;
+                    return ((a._diskSize || 0) - (b._diskSize || 0)) * sortState.dir;
                 }
                 return a.filename.localeCompare(b.filename) * sortState.dir;
             });
@@ -221,7 +221,7 @@
                 const diskEntry = diskCategoryFiles.find(f => (f.path || f).toLowerCase() === fullModelPath.toLowerCase());
                 const isPresent = !!diskEntry;
                 const fileSize = diskEntry ? diskEntry.size : null;
-                model._size = isPresent ? (fileSize || 0) : 0;
+                model._diskSize = isPresent ? (fileSize || 0) : 0;
 
                 const label = (isPresent ? "● " : "○ ") + model.filename + (isPresent && fileSize ? "  [" + formatSize(fileSize) + "]" : "");
                 let o = new Option(label, model.filename);
