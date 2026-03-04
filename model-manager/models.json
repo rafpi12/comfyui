@@ -966,6 +966,13 @@
                 "filename": "flux1-dev.safetensors",
                 "_size": 0,
                 "category": "diffusion_models"
+            },
+            {
+                "name": "darkBeastMar0326Latest_dbkleinv2BFS.safetensors",
+                "url": "https://civitai.com/api/download/models/2740209?type=Model&format=SafeTensor&size=pruned&fp=fp8",
+                "path": "diffusion_models",
+                "category": "diffusion_models",
+                "filename": "darkBeastMar0326Latest_dbkleinv2BFS.safetensors"
             }
         ],
         "vae": [
