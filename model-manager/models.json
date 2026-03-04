@@ -1133,6 +1133,13 @@
                 "filename": "qwen_image_edit_2511_bf16.safetensors",
                 "category": "diffusion_models",
                 "_size": 0
+            },
+            {
+                "name": "wan22EnhancedNSFWSVICamera_nolightningSVICfQ6KL.gguf",
+                "url": "https://civitai.com/api/download/models/2647328?type=Model&format=GGUF&size=full&fp=fp8",
+                "path": "diffusion_models",
+                "category": "diffusion_models",
+                "filename": "wan22EnhancedNSFWSVICamera_nolightningSVICfQ6KL.gguf"
             }
         ],
         "text_encoders": [
@@ -1213,13 +1220,6 @@
                 "path": "diffusion_models",
                 "category": "diffusion_models",
                 "filename": "wan22EnhancedNSFWSVICamera_nolightningSVICfQ8L.gguf"
-            },
-            {
-                "name": "wan22EnhancedNSFWSVICamera_nolightningSVICfQ6KH.gguf",
-                "url": "https://civitai.com/api/download/models/2647324?type=Model&format=GGUF&size=full&fp=fp8",
-                "path": "diffusion_models",
-                "category": "diffusion_models",
-                "filename": "wan22EnhancedNSFWSVICamera_nolightningSVICfQ6KH.gguf"
             }
         ],
         "t2v": [],
