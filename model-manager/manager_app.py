@@ -210,7 +210,6 @@ async def download(request: Request):
         "max-tries": "5",
         "retry-wait": "3",
         "stream-piece-selector": "geom", # sélection géométrique = meilleure perf réseau
-        "optimize-concurrent-downloads": "true",
     }
 
     try:
@@ -344,6 +343,7 @@ if __name__ == "__main__":
     subprocess.Popen([
         "aria2c", "--enable-rpc", "--rpc-listen-all=true",
         "--rpc-allow-origin-all=true", "--max-concurrent-downloads=6",
-        "--follow-torrent=mem", "--rpc-save-upload-metadata=true", "-D"
+        "--follow-torrent=mem", "--rpc-save-upload-metadata=true",
+        "--optimize-concurrent-downloads=false", "-D"
     ])
     uvicorn.run(app, host="0.0.0.0", port=8080)
