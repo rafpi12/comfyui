@@ -203,6 +203,14 @@
     });
 });
 
+            // PASSE 1 : calculer _diskSize sur tous les modèles avant le tri
+            allModels.forEach(model => {
+                const diskKey = model.path.split('/')[0];
+                const diskCategoryFiles = diskFiles[diskKey] || [];
+                const diskEntry = diskCategoryFiles.find(f => (f.path || f).toLowerCase() === model.filename.toLowerCase());
+                model._diskSize = diskEntry ? (diskEntry.size || 0) : 0;
+            });
+
             // TRI DYNAMIQUE
             allModels.sort((a, b) => {
                 if (sortState.key === 'size') {
@@ -213,7 +221,6 @@
 
             // Remplissage du select
             allModels.forEach(model => {
-                // category = affichage dans le browser, path = dossier disque réel
                 const displayCat = model.category || model.path.split('/')[0];
                 const diskKey = model.path.split('/')[0];
                 const diskCategoryFiles = diskFiles[diskKey] || [];
@@ -221,7 +228,6 @@
                 const diskEntry = diskCategoryFiles.find(f => (f.path || f).toLowerCase() === fullModelPath.toLowerCase());
                 const isPresent = !!diskEntry;
                 const fileSize = diskEntry ? diskEntry.size : null;
-                model._diskSize = isPresent ? (fileSize || 0) : 0;
 
                 const label = (isPresent ? "● " : "○ ") + model.filename + (isPresent && fileSize ? "  [" + formatSize(fileSize) + "]" : "");
                 let o = new Option(label, model.filename);
