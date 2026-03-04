@@ -1227,6 +1227,13 @@
                 "path": "diffusion_models",
                 "category": "diffusion_models",
                 "filename": "wan22EnhancedNSFWSVICamera_nolightningSVICfQ6KH.gguf"
+            },
+            {
+                "name": "wan22EnhancedNSFWSVICamera_nolightninSVICfQ4KMH.gguf",
+                "url": "https://civitai.com/api/download/models/2625965?type=Model&format=GGUF&size=full&fp=fp8",
+                "path": "diffusion_models",
+                "category": "diffusion_models",
+                "filename": "wan22EnhancedNSFWSVICamera_nolightninSVICfQ4KMH.gguf"
             }
         ],
         "t2v": [],
