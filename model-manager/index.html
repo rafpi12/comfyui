@@ -221,7 +221,7 @@
                 const diskEntry = diskCategoryFiles.find(f => (f.path || f).toLowerCase() === fullModelPath.toLowerCase());
                 const isPresent = !!diskEntry;
                 const fileSize = diskEntry ? diskEntry.size : null;
-                model._size = fileSize || 0;
+                model._size = isPresent ? (fileSize || 0) : 0;
 
                 const label = (isPresent ? "● " : "○ ") + model.filename + (isPresent && fileSize ? "  [" + formatSize(fileSize) + "]" : "");
                 let o = new Option(label, model.filename);
