@@ -38,7 +38,6 @@
                     </div>
                 </div>
                 <button onclick="fetch('/purge',{method:'POST'})" class="bg-slate-800 px-5 py-2 rounded-lg text-xs font-bold hover:bg-slate-700">PURGER ARIA2</button>
-                <button onclick="syncGithub()" class="bg-slate-800 px-5 py-2 rounded-lg text-xs font-bold hover:bg-slate-700 text-green-400"><i class="fab fa-github mr-1"></i>SYNC</button>
                 <button onclick="location.reload()" class="bg-slate-800 px-5 py-2 rounded-lg text-xs font-bold hover:bg-slate-700">ACTUALISER</button>
             </div>
         </div>
@@ -145,7 +144,6 @@
                 environments.forEach(env => envSelector.add(new Option(env, env)));
                 envSelector.value = "__ALL__"; // défaut : tout afficher
                 await updateDiskState(); loadModels(); renderCatalogue(); setInterval(loop, 2000); updateDiskWidget(); setInterval(updateDiskWidget, 30000);
-                setTimeout(async () => { await updateDiskState(); loadModels(); }, 3000);
             } catch(e) { }
         }
 
@@ -204,6 +202,14 @@
         }
     });
 });
+
+            // PASSE 1 : calculer _diskSize avant le tri
+            allModels.forEach(model => {
+                const diskKey = model.path.split('/')[0];
+                const diskCategoryFiles = diskFiles[diskKey] || [];
+                const diskEntry = diskCategoryFiles.find(f => (f.path || f).toLowerCase() === model.filename.toLowerCase());
+                model._diskSize = diskEntry ? (diskEntry.size || 0) : 0;
+            });
 
             // TRI DYNAMIQUE
             allModels.sort((a, b) => {
@@ -295,12 +301,6 @@
         }
 
         function showGitHubToast() { const t = document.getElementById('github-toast'); t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3000); }
-        async function syncGithub() {
-            const r = await fetch('/sync-github', { method: 'POST' });
-            const d = await r.json();
-            if (d.status === 'ok') showGitHubToast();
-            else addLog('Sync GitHub échoué : ' + (d.message || ''), true);
-        }
         function resetEditor() { document.getElementById('edit-url').value = ""; document.getElementById('edit-file').value = ""; document.getElementById('edit-path').value = ""; hidePathBrowser(); }
         function updatePathByCategory() { const cat = document.getElementById('edit-cat').value; document.getElementById('edit-path').value = BASE_PATH + cat; hidePathBrowser(); }
         async function togglePathBrowser() {
