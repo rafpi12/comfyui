@@ -331,6 +331,13 @@ async def delete(cat: str, file: str):
     if os.path.exists(p): os.remove(p)
     return {"status": "ok"}
 
+@app.post("/sync-github")
+async def sync_github_endpoint():
+    result = sync_to_github()
+    if result:
+        return {"status": "ok"}
+    return {"status": "error", "message": "Sync échoué — vérifier GITHUB_TOKEN"}
+
 @app.post("/purge")
 async def purge():
     client = get_client()
