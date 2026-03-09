@@ -1,3 +1,1604 @@
 {
-    "test": 1
+    "Z-Image": {
+        "diffusion_models": [
+            {
+                "name": "RealDream Z-Image V1 (FP8)",
+                "url": "https://civitai.com/api/download/models/2507717?type=Model&format=SafeTensor&size=pruned&fp=fp8",
+                "path": "diffusion_models",
+                "filename": "realDream_zImageV1.safetensors",
+                "_size": 0,
+                "category": "diffusion_models"
+            },
+            {
+                "name": "Z-Image Base BF16 (Non-Turbo)",
+                "url": "https://huggingface.co/Comfy-Org/z_image/resolve/main/split_files/diffusion_models/z_image_bf16.safetensors?download=true",
+                "path": "diffusion_models",
+                "filename": "z_image_bf16.safetensors",
+                "_size": 0,
+                "category": "diffusion_models"
+            },
+            {
+                "name": "Z-Image Turbo BF16",
+                "url": "https://huggingface.co/Comfy-Org/z_image_turbo/resolve/main/split_files/diffusion_models/z_image_turbo_bf16.safetensors?download=true",
+                "path": "diffusion_models",
+                "filename": "z_image_turbo_bf16.safetensors",
+                "_size": 0,
+                "category": "diffusion_models"
+            },
+            {
+                "name": "Z-Image Turbo BF16 NSFW V2",
+                "url": "https://huggingface.co/tewea/z_image_turbo_bf16_nsfw/resolve/main/z_image_turbo_bf16_nsfw_v2.safetensors?download=true",
+                "path": "diffusion_models",
+                "filename": "z_image_turbo_bf16_nsfw_v2.safetensors",
+                "_size": 0,
+                "category": "diffusion_models"
+            },
+            {
+                "name": "darkBeastFeb2226Latest_darkblitz6Beyondnsfw.safetensors",
+                "url": "https://civitai.com/api/download/models/2699886?type=Model&format=SafeTensor&size=pruned&fp=bf16",
+                "path": "diffusion_models",
+                "filename": "darkBeastFeb2226Latest_darkblitz6Beyondnsfw.safetensors",
+                "_size": 0,
+                "category": "diffusion_models"
+            },
+            {
+                "name": "redcraftFeb1926Latest_zibDistilledDX3Lucis.safetensors",
+                "url": "https://civitai.com/api/download/models/2680424?type=Model&format=SafeTensor&size=pruned&fp=bf16",
+                "path": "diffusion_models",
+                "filename": "redcraftFeb1926Latest_zibDistilledDX3Lucis.safetensors",
+                "_size": 0,
+                "category": "diffusion_models"
+            },
+            {
+                "name": "moodyPornMix_zitV9FP8.safetensors",
+                "url": "https://civitai.com/api/download/models/2708941?type=Model&format=SafeTensor&size=pruned&fp=fp8",
+                "path": "diffusion_models",
+                "filename": "moodyPornMix_zitV9FP8.safetensors",
+                "_size": 0,
+                "category": "diffusion_models"
+            },
+            {
+                "name": "zimageTurboNSFWBy_2602NSFWBF16.safetensors",
+                "url": "https://civitai.com/api/download/models/2668773?type=Model&format=SafeTensor&size=full&fp=bf16",
+                "path": "diffusion_models",
+                "filename": "zimageTurboNSFWBy_2602NSFWBF16.safetensors",
+                "_size": 0,
+                "category": "diffusion_models"
+            },
+            {
+                "name": "redcraftFeb2626LatestZib_zibDistilledDPOVeris.safetensors",
+                "url": "https://civitai.com/api/download/models/2726064?type=Model&format=SafeTensor&size=pruned&fp=bf16",
+                "path": "diffusion_models",
+                "filename": "redcraftFeb2626LatestZib_zibDistilledDPOVeris.safetensors",
+                "_size": 0,
+                "category": "diffusion_models"
+            },
+            {
+                "name": "zImageTurboNSFW_45BF16Diffusion.safetensors",
+                "url": "https://civitai.com/api/download/models/2704736?type=Model&format=SafeTensor&size=full&fp=bf16",
+                "path": "diffusion_models",
+                "filename": "zImageTurboNSFW_45BF16Diffusion.safetensors",
+                "_size": 0,
+                "category": "diffusion_models"
+            },
+            {
+                "name": "z-image-turbo-bf16-aio.safetensors",
+                "url": "https://huggingface.co/SeeSee21/Z-Image-Turbo-AIO/resolve/main/z-image-turbo-bf16-aio.safetensors?download=true",
+                "path": "diffusion_models",
+                "filename": "z-image-turbo-bf16-aio.safetensors",
+                "category": "diffusion_models",
+                "_size": 20522566986
+            }
+        ],
+        "unet": [
+            {
+                "name": "[GGUF] Z-Image Base BF16",
+                "url": "https://huggingface.co/babakarto/z-image-base-gguf/resolve/main/z_image_base_BF16.gguf?download=true",
+                "path": "unet",
+                "filename": "z_image_base_BF16.gguf",
+                "_size": 0,
+                "category": "unet"
+            }
+        ],
+        "vae": [
+            {
+                "name": "ae.safetensors",
+                "url": "https://huggingface.co/Comfy-Org/z_image_turbo/resolve/main/split_files/vae/ae.safetensors?download=true",
+                "path": "vae",
+                "category": "vae",
+                "filename": "ae.safetensors",
+                "_size": 335304388
+            },
+            {
+                "name": "ultrafluxvae.safetensors",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/VAE/Z-Image/ultrafluxvae.safetensors?download=true",
+                "path": "vae",
+                "category": "vae",
+                "filename": "ultrafluxvae.safetensors"
+            }
+        ],
+        "text_encoders": [
+            {
+                "name": "Qwen 3.4B (Text Enc)",
+                "url": "https://huggingface.co/Comfy-Org/z_image_turbo/resolve/main/split_files/text_encoders/qwen_3_4b.safetensors?download=true",
+                "path": "text_encoders",
+                "filename": "qwen_3_4b.safetensors",
+                "_size": 8044982048,
+                "category": "text_encoders"
+            },
+            {
+                "name": "josiefied-qwen3-4b-abliterated-v2-q8_0.gguf",
+                "url": "https://huggingface.co/Triangle104/Josiefied-Qwen3-4B-abliterated-v2-Q8_0-GGUF/resolve/main/josiefied-qwen3-4b-abliterated-v2-q8_0.gguf?download=true",
+                "path": "text_encoders",
+                "filename": "josiefied-qwen3-4b-abliterated-v2-q8_0.gguf",
+                "_size": 4280405248,
+                "category": "text_encoders"
+            }
+        ],
+        "loras": [
+            {
+                "name": "Grainscape Z-Image",
+                "url": "https://huggingface.co/Danrisi/GrainScape_UltraReal_ZImage/resolve/main/grainscape_zimage.safetensors",
+                "path": "loras",
+                "filename": "grainscape_zimage.safetensors",
+                "_size": 85094848,
+                "category": "loras"
+            },
+            {
+                "name": "Tumblr Minimalism 2250",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/tmblr0ne_minimalism_000002250.safetensors?download=true",
+                "path": "loras",
+                "filename": "tmblr0ne_minimalism_000002250.safetensors",
+                "_size": 170128312,
+                "category": "loras"
+            },
+            {
+                "name": "Tumblr Minimalism 2750",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/tmblr0ne_minimalism_000002750.safetensors?download=true",
+                "path": "loras",
+                "filename": "tmblr0ne_minimalism_000002750.safetensors",
+                "_size": 170128312,
+                "category": "loras"
+            },
+            {
+                "name": "ZIB-Detail-Slider.safetensors",
+                "url": "https://civitai.com/api/download/models/2687961?type=Model&format=SafeTensor",
+                "path": "loras",
+                "filename": "ZIB-Detail-Slider.safetensors",
+                "_size": 0,
+                "category": "loras"
+            },
+            {
+                "name": "ZiB_SoReal!_POV_V3.safetensors",
+                "url": "https://civitai.com/api/download/models/2691810",
+                "path": "loras",
+                "filename": "ZiB_SoReal!_POV_V3.safetensors",
+                "_size": 0,
+                "category": "loras"
+            },
+            {
+                "name": "MisterMR_Anna_ZImageTurbo.safetensors",
+                "url": "https://civitai.com/api/download/models/2691425?type=Model&format=SafeTensor",
+                "path": "loras",
+                "filename": "MisterMR_Anna_ZImageTurbo.safetensors",
+                "_size": 170128208,
+                "category": "loras"
+            },
+            {
+                "name": "DC Ancient Futurism Style 1 [Z-ImageBase][GPT4oTagged][Trigger=dcanchfutre.][32Rank] v1.safetensors",
+                "url": "https://civitai.com/api/download/models/2688332?type=Model&format=SafeTensor",
+                "path": "loras",
+                "filename": "DC Ancient Futurism Style 1 [Z-ImageBase][GPT4oTagged][Trigger=dcanchfutre.][32Rank] v1.safetensors",
+                "_size": 170128440,
+                "category": "loras"
+            },
+            {
+                "name": "lavampirenue_000002750.safetensors",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/aesthetic/Z-Image/lavampirenue_000002750.safetensors?download=true",
+                "path": "loras",
+                "filename": "lavampirenue_000002750.safetensors",
+                "_size": 170128280,
+                "category": "loras"
+            },
+            {
+                "name": "lavampirenue_000003000.safetensors",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/aesthetic/Z-Image/lavampirenue_000003000.safetensors?download=true",
+                "path": "loras",
+                "filename": "lavampirenue_000003000.safetensors",
+                "_size": 170128288,
+                "category": "loras"
+            },
+            {
+                "name": "lavampirenue_000003250.safetensors",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/aesthetic/Z-Image/lavampirenue_000003250.safetensors?download=true",
+                "path": "loras",
+                "filename": "lavampirenue_000003250.safetensors",
+                "_size": 170128288,
+                "category": "loras"
+            },
+            {
+                "name": "Z-Image-Fun-Lora-Distill-8-Steps_ComfyUI.safetensors",
+                "url": "https://civitai.com/api/download/models/2657506?type=Model&format=SafeTensor",
+                "path": "loras",
+                "filename": "Z-Image-Fun-Lora-Distill-8-Steps_ComfyUI.safetensors",
+                "_size": 200578740,
+                "category": "loras"
+            },
+            {
+                "name": "Z-Image-Fun-Lora-Distill-8-Steps-2602-ComfyUI.safetensors",
+                "url": "https://huggingface.co/alibaba-pai/Z-Image-Fun-Lora-Distill/resolve/main/Z-Image-Fun-Lora-Distill-8-Steps-2602-ComfyUI.safetensors?download=true",
+                "path": "loras",
+                "filename": "Z-Image-Fun-Lora-Distill-8-Steps-2602-ComfyUI.safetensors",
+                "_size": 568275120,
+                "category": "loras"
+            },
+            {
+                "name": "deedee_amateur_photography_zimage_base_and_turbo_v1.safetensors",
+                "url": "https://civitai.com/api/download/models/2678174?type=Model&format=SafeTensor",
+                "path": "loras",
+                "filename": "deedee_amateur_photography_zimage_base_and_turbo_v1.safetensors",
+                "_size": 340193560,
+                "category": "loras"
+            },
+            {
+                "name": "Famegrid_Z_Image_V0.5_Beta.safetensors",
+                "url": "https://civitai.com/api/download/models/2504549?type=Model&format=SafeTensor",
+                "path": "loras",
+                "filename": "Famegrid_Z_Image_V0.5_Beta.safetensors",
+                "_size": 170127824,
+                "category": "loras"
+            },
+            {
+                "name": "Famegid_Z-Image_Spice_V1.safetensors",
+                "url": "https://civitai.com/api/download/models/2604982?type=Model&format=SafeTensor",
+                "path": "loras",
+                "filename": "Famegid_Z-Image_Spice_V1.safetensors",
+                "_size": 0,
+                "category": "loras"
+            },
+            {
+                "name": "nicegirls_zimagebase.safetensors",
+                "url": "https://civitai.com/api/download/models/2683561?type=Model&format=SafeTensor",
+                "path": "loras",
+                "filename": "nicegirls_zimagebase.safetensors",
+                "_size": 340194456,
+                "category": "loras"
+            },
+            {
+                "name": "nicegirls_Zimage.safetensors",
+                "url": "https://civitai.com/api/download/models/2465980?type=Model&format=SafeTensor",
+                "path": "loras",
+                "filename": "nicegirls_Zimage.safetensors",
+                "_size": 170127768,
+                "category": "loras"
+            },
+            {
+                "name": "bw_slider3_000000075.safetensors",
+                "url": "https://civitai.com/api/download/models/2489956",
+                "path": "loras",
+                "filename": "bw_slider3_000000075.safetensors",
+                "_size": 21319224,
+                "category": "loras"
+            },
+            {
+                "name": "RealisticSnapshot-Zimage-Turbov5.safetensors",
+                "url": "https://civitai.com/api/download/models/2617751?type=Model&format=SafeTensor",
+                "path": "loras",
+                "filename": "RealisticSnapshot-Zimage-Turbov5.safetensors",
+                "_size": 0,
+                "category": "loras"
+            },
+            {
+                "name": "zit_fdpo_v1.safetensors",
+                "url": "https://huggingface.co/F16/z-image-turbo-flow-dpo/resolve/main/zit_fdpo_v1.safetensors?download=true",
+                "path": "loras",
+                "filename": "zit_fdpo_v1.safetensors",
+                "_size": 169691320,
+                "category": "loras"
+            },
+            {
+                "name": "RedCraft-RedZDX-v3-ZIB-Distilled-Lucis-LoRA-r256.safetensors",
+                "url": "https://huggingface.co/GuangyuanSD/Z-Image-Distilled/resolve/main/RedCraft-RedZDX-v3-ZIB-Distilled-Lucis-LoRA-r256.safetensors?download=true",
+                "path": "loras",
+                "filename": "RedCraft-RedZDX-v3-ZIB-Distilled-Lucis-LoRA-r256.safetensors",
+                "_size": 1136437632,
+                "category": "loras"
+            },
+            {
+                "name": "FameGrid_Revolution_ZIB.safetensors",
+                "url": "https://civitai.com/api/download/models/2733658?type=Model&format=SafeTensor",
+                "path": "loras",
+                "filename": "FameGrid_Revolution_ZIB.safetensors",
+                "_size": 280243408,
+                "category": "loras"
+            }
+        ],
+        "loras/Vyesna": [
+            {
+                "name": "Hairfix 1500",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Vyesna/Z-Image%20Turbo/v3sna-ZIT-hairfix_000001500.safetensors?download=true",
+                "path": "loras/Vyesna",
+                "filename": "v3sna-ZIT-hairfix_000001500.safetensors",
+                "_size": 0,
+                "category": "loras/Vyesna"
+            },
+            {
+                "name": "Hairfix 1750",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Vyesna/Z-Image%20Turbo/v3sna-ZIT-hairfix_000001750.safetensors?download=true",
+                "path": "loras/Vyesna",
+                "filename": "v3sna-ZIT-hairfix_000001750.safetensors",
+                "_size": 0,
+                "category": "loras/Vyesna"
+            },
+            {
+                "name": "Hairfix 2000",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Vyesna/Z-Image%20Turbo/v3sna-ZIT-hairfix_000002000.safetensors?download=true",
+                "path": "loras/Vyesna",
+                "filename": "v3sna-ZIT-hairfix_000002000.safetensors",
+                "_size": 0,
+                "category": "loras/Vyesna"
+            },
+            {
+                "name": "Hairfix 2250",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Vyesna/Z-Image%20Turbo/v3sna-ZIT-hairfix_000002250.safetensors?download=true",
+                "path": "loras/Vyesna",
+                "filename": "v3sna-ZIT-hairfix_000002250.safetensors",
+                "_size": 0,
+                "category": "loras/Vyesna"
+            },
+            {
+                "name": "Vy3sna Woman 2250",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Vyesna/Z-Image%20Turbo/vy3snawoman-zit_000002250.safetensors?download=true",
+                "path": "loras/Vyesna",
+                "filename": "vy3snawoman-zit_000002250.safetensors",
+                "_size": 0,
+                "category": "loras/Vyesna"
+            },
+            {
+                "name": "Vy3sna Woman 2500",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Vyesna/Z-Image%20Turbo/vy3snawoman-zit_000002500.safetensors?download=true",
+                "path": "loras/Vyesna",
+                "filename": "vy3snawoman-zit_000002500.safetensors",
+                "_size": 0,
+                "category": "loras/Vyesna"
+            },
+            {
+                "name": "Vy3sna Woman 2750",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Vyesna/Z-Image%20Turbo/vy3snawoman-zit_000002750.safetensors?download=true",
+                "path": "loras/Vyesna",
+                "filename": "vy3snawoman-zit_000002750.safetensors",
+                "_size": 0,
+                "category": "loras/Vyesna"
+            },
+            {
+                "name": "Vy3sna Woman 3000",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Vyesna/Z-Image%20Turbo/vy3snawoman-zit_000003000.safetensors?download=true",
+                "path": "loras/Vyesna",
+                "filename": "vy3snawoman-zit_000003000.safetensors",
+                "_size": 0,
+                "category": "loras/Vyesna"
+            },
+            {
+                "name": "Vy3sna Woman 3250",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Vyesna/Z-Image%20Turbo/vy3snawoman-zit_000003250.safetensors?download=true",
+                "path": "loras/Vyesna",
+                "filename": "vy3snawoman-zit_000003250.safetensors",
+                "_size": 0,
+                "category": "loras/Vyesna"
+            },
+            {
+                "name": "Vyesna ZIT v1 1750",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Vyesna/Z-Image%20Turbo/Vyesna-ZIT-lora_v1_000001750.safetensors?download=true",
+                "path": "loras/Vyesna",
+                "filename": "Vyesna-ZIT-lora_v1_000001750.safetensors",
+                "_size": 0,
+                "category": "loras/Vyesna"
+            },
+            {
+                "name": "Vyesna ZIT v1 2250",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Vyesna/Z-Image%20Turbo/Vyesna-ZIT-lora_v1_000002250.safetensors?download=true",
+                "path": "loras/Vyesna",
+                "filename": "Vyesna-ZIT-lora_v1_000002250.safetensors",
+                "_size": 0,
+                "category": "loras/Vyesna"
+            },
+            {
+                "name": "Vyesna ZIT v1 2500",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Vyesna/Z-Image%20Turbo/Vyesna-ZIT-lora_v1_000002500.safetensors?download=true",
+                "path": "loras/Vyesna",
+                "filename": "Vyesna-ZIT-lora_v1_000002500.safetensors",
+                "_size": 0,
+                "category": "loras/Vyesna"
+            },
+            {
+                "name": "Vyesna ZIT v1 2750",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Vyesna/Z-Image%20Turbo/Vyesna-ZIT-lora_v1_000002750.safetensors?download=true",
+                "path": "loras/Vyesna",
+                "filename": "Vyesna-ZIT-lora_v1_000002750.safetensors",
+                "_size": 0,
+                "category": "loras/Vyesna"
+            },
+            {
+                "name": "Vyesna ZIT v1 3000",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Vyesna/Z-Image%20Turbo/Vyesna-ZIT-lora_v1_000003000.safetensors?download=true",
+                "path": "loras/Vyesna",
+                "filename": "Vyesna-ZIT-lora_v1_000003000.safetensors",
+                "_size": 0,
+                "category": "loras/Vyesna"
+            },
+            {
+                "name": "Vyesna ZIT v1 3250",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Vyesna/Z-Image%20Turbo/Vyesna-ZIT-lora_v1_000003250.safetensors?download=true",
+                "path": "loras/Vyesna",
+                "filename": "Vyesna-ZIT-lora_v1_000003250.safetensors",
+                "_size": 0,
+                "category": "loras/Vyesna"
+            }
+        ],
+        "loras/Olivia": [
+            {
+                "name": "Olivia ZIB - NoCap 4500",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Olivia/Z-Image%20Base/Olivia-ZIB-NoCapNoTrig-512x512_000004500.safetensors?download=true",
+                "path": "loras/Olivia",
+                "filename": "Olivia-ZIB-NoCapNoTrig-512x512_000004500.safetensors",
+                "_size": 0,
+                "category": "loras/Olivia"
+            },
+            {
+                "name": "Olivia ZIB - NoCap 4750",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Olivia/Z-Image%20Base/Olivia-ZIB-NoCapNoTrig-512x512_000004750.safetensors?download=true",
+                "path": "loras/Olivia",
+                "filename": "Olivia-ZIB-NoCapNoTrig-512x512_000004750.safetensors",
+                "_size": 0,
+                "category": "loras/Olivia"
+            },
+            {
+                "name": "Olivia ZIB - NoCap 5000",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Olivia/Z-Image%20Base/Olivia-ZIB-NoCapNoTrig-512x512_000005000.safetensors?download=true",
+                "path": "loras/Olivia",
+                "filename": "Olivia-ZIB-NoCapNoTrig-512x512_000005000.safetensors",
+                "_size": 0,
+                "category": "loras/Olivia"
+            },
+            {
+                "name": "OliviaV2 ZIB - 2200",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Olivia/Z-Image%20Base/OliviaV2-ZIB-NoCapNoTrig-512x12_000002200.safetensors?download=true",
+                "path": "loras/Olivia",
+                "filename": "OliviaV2-ZIB-NoCapNoTrig-512x12_000002200.safetensors",
+                "_size": 0,
+                "category": "loras/Olivia"
+            },
+            {
+                "name": "OliviaV2 ZIB - 2400",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Olivia/Z-Image%20Base/OliviaV2-ZIB-NoCapNoTrig-512x12_000002400.safetensors?download=true",
+                "path": "loras/Olivia",
+                "filename": "OliviaV2-ZIB-NoCapNoTrig-512x12_000002400.safetensors",
+                "_size": 0,
+                "category": "loras/Olivia"
+            },
+            {
+                "name": "OliviaV2 ZIB - 2600",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Olivia/Z-Image%20Base/OliviaV2-ZIB-NoCapNoTrig-512x12_000002600.safetensors?download=true",
+                "path": "loras/Olivia",
+                "filename": "OliviaV2-ZIB-NoCapNoTrig-512x12_000002600.safetensors",
+                "_size": 0,
+                "category": "loras/Olivia"
+            },
+            {
+                "name": "OliviaV2 ZIB - 2800",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Olivia/Z-Image%20Base/OliviaV2-ZIB-NoCapNoTrig-512x12_000002800.safetensors?download=true",
+                "path": "loras/Olivia",
+                "filename": "OliviaV2-ZIB-NoCapNoTrig-512x12_000002800.safetensors",
+                "_size": 0,
+                "category": "loras/Olivia"
+            },
+            {
+                "name": "OliviaV2 ZIB - 3000",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Olivia/Z-Image%20Base/OliviaV2-ZIB-NoCapNoTrig-512x12_000003000.safetensors?download=true",
+                "path": "loras/Olivia",
+                "filename": "OliviaV2-ZIB-NoCapNoTrig-512x12_000003000.safetensors",
+                "_size": 0,
+                "category": "loras/Olivia"
+            },
+            {
+                "name": "OliviaV2 ZIB - 3200",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Olivia/Z-Image%20Base/OliviaV2-ZIB-NoCapNoTrig-512x12_000003200.safetensors?download=true",
+                "path": "loras/Olivia",
+                "filename": "OliviaV2-ZIB-NoCapNoTrig-512x12_000003200.safetensors",
+                "_size": 0,
+                "category": "loras/Olivia"
+            },
+            {
+                "name": "OliviaV2 ZIB - 3400",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Olivia/Z-Image%20Base/OliviaV2-ZIB-NoCapNoTrig-512x12_000003400.safetensors?download=true",
+                "path": "loras/Olivia",
+                "filename": "OliviaV2-ZIB-NoCapNoTrig-512x12_000003400.safetensors",
+                "_size": 0,
+                "category": "loras/Olivia"
+            },
+            {
+                "name": "OliviaV3 ZIB - 2500",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Olivia/Z-Image%20Base/OliviaV3-ZIB-NoCapNoTrig-512x512_000002500.safetensors?download=true",
+                "path": "loras/Olivia",
+                "filename": "OliviaV3-ZIB-NoCapNoTrig-512x512_000002500.safetensors",
+                "_size": 0,
+                "category": "loras/Olivia"
+            },
+            {
+                "name": "OliviaV3 ZIB - 3000",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Olivia/Z-Image%20Base/OliviaV3-ZIB-NoCapNoTrig-512x512_000003000.safetensors?download=true",
+                "path": "loras/Olivia",
+                "filename": "OliviaV3-ZIB-NoCapNoTrig-512x512_000003000.safetensors",
+                "_size": 0,
+                "category": "loras/Olivia"
+            },
+            {
+                "name": "OliviaV3 ZIB - 3500",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Olivia/Z-Image%20Base/OliviaV3-ZIB-NoCapNoTrig-512x512_000003500.safetensors?download=true",
+                "path": "loras/Olivia",
+                "filename": "OliviaV3-ZIB-NoCapNoTrig-512x512_000003500.safetensors",
+                "_size": 0,
+                "category": "loras/Olivia"
+            },
+            {
+                "name": "OliviaV3 ZIB - 4000",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Olivia/Z-Image%20Base/OliviaV3-ZIB-NoCapNoTrig-512x512_000004000.safetensors?download=true",
+                "path": "loras/Olivia",
+                "filename": "OliviaV3-ZIB-NoCapNoTrig-512x512_000004000.safetensors",
+                "_size": 0,
+                "category": "loras/Olivia"
+            },
+            {
+                "name": "OliviaV3 ZIB - 4500",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Olivia/Z-Image%20Base/OliviaV3-ZIB-NoCapNoTrig-512x512_000004500.safetensors?download=true",
+                "path": "loras/Olivia",
+                "filename": "OliviaV3-ZIB-NoCapNoTrig-512x512_000004500.safetensors",
+                "_size": 0,
+                "category": "loras/Olivia"
+            },
+            {
+                "name": "OliviaV3 ZIB - 5000",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Olivia/Z-Image%20Base/OliviaV3-ZIB-NoCapNoTrig-512x512_000005000.safetensors?download=true",
+                "path": "loras/Olivia",
+                "filename": "OliviaV3-ZIB-NoCapNoTrig-512x512_000005000.safetensors",
+                "_size": 0,
+                "category": "loras/Olivia"
+            },
+            {
+                "name": "Olivia ZIT - Cap 2250",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Olivia/Z-Image%20Turbo/Olivia-ZIT-Cap-512x512_000002250.safetensors?download=true",
+                "path": "loras/Olivia",
+                "filename": "Olivia-ZIT-Cap-512x512_000002250.safetensors",
+                "_size": 0,
+                "category": "loras/Olivia"
+            },
+            {
+                "name": "Olivia ZIT - Cap 2550",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Olivia/Z-Image%20Turbo/Olivia-ZIT-Cap-512x512_000002550.safetensors?download=true",
+                "path": "loras/Olivia",
+                "filename": "Olivia-ZIT-Cap-512x512_000002550.safetensors",
+                "_size": 0,
+                "category": "loras/Olivia"
+            },
+            {
+                "name": "Olivia ZIT - Cap 2850",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Olivia/Z-Image%20Turbo/Olivia-ZIT-Cap-512x512_000002850.safetensors?download=true",
+                "path": "loras/Olivia",
+                "filename": "Olivia-ZIT-Cap-512x512_000002850.safetensors",
+                "_size": 0,
+                "category": "loras/Olivia"
+            },
+            {
+                "name": "Olivia ZIT - Cap 3150",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Olivia/Z-Image%20Turbo/Olivia-ZIT-Cap-512x512_000003150.safetensors?download=true",
+                "path": "loras/Olivia",
+                "filename": "Olivia-ZIT-Cap-512x512_000003150.safetensors",
+                "_size": 0,
+                "category": "loras/Olivia"
+            },
+            {
+                "name": "Olivia ZIT - Cap 3450",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Olivia/Z-Image%20Turbo/Olivia-ZIT-Cap-512x512_000003450.safetensors?download=true",
+                "path": "loras/Olivia",
+                "filename": "Olivia-ZIT-Cap-512x512_000003450.safetensors",
+                "_size": 0,
+                "category": "loras/Olivia"
+            },
+            {
+                "name": "Olivia ZIT - NoCap 1050",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Olivia/Z-Image%20Turbo/Olivia-ZIT-NoCap-768x768_000001050.safetensors?download=true",
+                "path": "loras/Olivia",
+                "filename": "Olivia-ZIT-NoCap-768x768_000001050.safetensors",
+                "_size": 0,
+                "category": "loras/Olivia"
+            },
+            {
+                "name": "Olivia ZIT - NoCap 1200",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Olivia/Z-Image%20Turbo/Olivia-ZIT-NoCap-768x768_000001200.safetensors?download=true",
+                "path": "loras/Olivia",
+                "filename": "Olivia-ZIT-NoCap-768x768_000001200.safetensors",
+                "_size": 0,
+                "category": "loras/Olivia"
+            },
+            {
+                "name": "Olivia ZIT - NoCap 1350",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Olivia/Z-Image%20Turbo/Olivia-ZIT-NoCap-768x768_000001350.safetensors?download=true",
+                "path": "loras/Olivia",
+                "filename": "Olivia-ZIT-NoCap-768x768_000001350.safetensors",
+                "_size": 0,
+                "category": "loras/Olivia"
+            },
+            {
+                "name": "Olivia ZIT - NoCapTrig 1800",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Olivia/Z-Image%20Turbo/Olivia-ZIT-NoCapNoTrig-512x512_000001800.safetensors?download=true",
+                "path": "loras/Olivia",
+                "filename": "Olivia-ZIT-NoCapNoTrig-512x512_000001800.safetensors",
+                "_size": 0,
+                "category": "loras/Olivia"
+            },
+            {
+                "name": "Olivia ZIT - NoCapTrig 2400",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Olivia/Z-Image%20Turbo/Olivia-ZIT-NoCapNoTrig-512x512_000002400.safetensors?download=true",
+                "path": "loras/Olivia",
+                "filename": "Olivia-ZIT-NoCapNoTrig-512x512_000002400.safetensors",
+                "_size": 0,
+                "category": "loras/Olivia"
+            },
+            {
+                "name": "Olivia ZIT - NoCapTrig 2800",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Olivia/Z-Image%20Turbo/Olivia-ZIT-NoCapNoTrig-512x512_000002800.safetensors?download=true",
+                "path": "loras/Olivia",
+                "filename": "Olivia-ZIT-NoCapNoTrig-512x512_000002800.safetensors",
+                "_size": 0,
+                "category": "loras/Olivia"
+            },
+            {
+                "name": "Olivia ZIT - NoCapTrig 3400",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Olivia/Z-Image%20Turbo/Olivia-ZIT-NoCapNoTrig-512x512_000003400.safetensors?download=true",
+                "path": "loras/Olivia",
+                "filename": "Olivia-ZIT-NoCapNoTrig-512x512_000003400.safetensors",
+                "_size": 0,
+                "category": "loras/Olivia"
+            },
+            {
+                "name": "Olivia ZIT - NoCapTrig 3600",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Olivia/Z-Image%20Turbo/Olivia-ZIT-NoCapNoTrig-512x512_000003600.safetensors?download=true",
+                "path": "loras/Olivia",
+                "filename": "Olivia-ZIT-NoCapNoTrig-512x512_000003600.safetensors",
+                "_size": 0,
+                "category": "loras/Olivia"
+            },
+            {
+                "name": "Olivia ZIT - NoCapTrig 3800",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Olivia/Z-Image%20Turbo/Olivia-ZIT-NoCapNoTrig-512x512_000003800.safetensors?download=true",
+                "path": "loras/Olivia",
+                "filename": "Olivia-ZIT-NoCapNoTrig-512x512_000003800.safetensors",
+                "_size": 0,
+                "category": "loras/Olivia"
+            },
+            {
+                "name": "Olivia ZIT - NoCapTrig 4000",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Olivia/Z-Image%20Turbo/Olivia-ZIT-NoCapNoTrig-512x512_000004000.safetensors?download=true",
+                "path": "loras/Olivia",
+                "filename": "Olivia-ZIT-NoCapNoTrig-512x512_000004000.safetensors",
+                "_size": 0,
+                "category": "loras/Olivia"
+            },
+            {
+                "name": "Olivia ZIT - NoCapTrig 4200",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Olivia/Z-Image%20Turbo/Olivia-ZIT-NoCapNoTrig-512x512_000004200.safetensors?download=true",
+                "path": "loras/Olivia",
+                "filename": "Olivia-ZIT-NoCapNoTrig-512x512_000004200.safetensors",
+                "_size": 0,
+                "category": "loras/Olivia"
+            },
+            {
+                "name": "Olivia ZIT - NoCapTrig 4400",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Olivia/Z-Image%20Turbo/Olivia-ZIT-NoCapNoTrig-512x512_000004400.safetensors?download=true",
+                "path": "loras/Olivia",
+                "filename": "Olivia-ZIT-NoCapNoTrig-512x512_000004400.safetensors",
+                "_size": 0,
+                "category": "loras/Olivia"
+            },
+            {
+                "name": "Olivia ZIT - NoCapTrig 4600",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Olivia/Z-Image%20Turbo/Olivia-ZIT-NoCapNoTrig-512x512_000004600.safetensors?download=true",
+                "path": "loras/Olivia",
+                "filename": "Olivia-ZIT-NoCapNoTrig-512x512_000004600.safetensors",
+                "_size": 0,
+                "category": "loras/Olivia"
+            },
+            {
+                "name": "Olivia ZIT - NoCapTrig 4800",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Olivia/Z-Image%20Turbo/Olivia-ZIT-NoCapNoTrig-512x512_000004800.safetensors?download=true",
+                "path": "loras/Olivia",
+                "filename": "Olivia-ZIT-NoCapNoTrig-512x512_000004800.safetensors",
+                "_size": 0,
+                "category": "loras/Olivia"
+            },
+            {
+                "name": "oliviaface_000002250.safetensors",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Olivia/Z-Image%20Turbo/oliviaface_000002250.safetensors?download=true",
+                "path": "loras/Olivia",
+                "filename": "oliviaface_000002250.safetensors",
+                "_size": 0,
+                "category": "loras/Olivia"
+            },
+            {
+                "name": "oliviaface_000002500.safetensors",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Olivia/Z-Image%20Turbo/oliviaface_000002500.safetensors?download=true",
+                "path": "loras/Olivia",
+                "filename": "oliviaface_000002500.safetensors",
+                "_size": 0,
+                "category": "loras/Olivia"
+            },
+            {
+                "name": "oliviaface_000002750.safetensors",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Olivia/Z-Image%20Turbo/oliviaface_000002750.safetensors?download=true",
+                "path": "loras/Olivia",
+                "filename": "oliviaface_000002750.safetensors",
+                "_size": 0,
+                "category": "loras/Olivia"
+            },
+            {
+                "name": "oliviaface_000003000.safetensors",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Olivia/Z-Image%20Turbo/oliviaface_000003000.safetensors?download=true",
+                "path": "loras/Olivia",
+                "filename": "oliviaface_000003000.safetensors",
+                "_size": 0,
+                "category": "loras/Olivia"
+            },
+            {
+                "name": "oliviaface_000003250.safetensors",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Olivia/Z-Image%20Turbo/oliviaface_000003250.safetensors?download=true",
+                "path": "loras/Olivia",
+                "filename": "oliviaface_000003250.safetensors",
+                "_size": 0,
+                "category": "loras/Olivia"
+            },
+            {
+                "name": "oliviaface_000003500.safetensors",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Olivia/Z-Image%20Turbo/oliviaface_000003500.safetensors?download=true",
+                "path": "loras/Olivia",
+                "filename": "oliviaface_000003500.safetensors",
+                "_size": 0,
+                "category": "loras/Olivia"
+            },
+            {
+                "name": "oliviaface_000003750.safetensors",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Olivia/Z-Image%20Turbo/oliviaface_000003750.safetensors?download=true",
+                "path": "loras/Olivia",
+                "filename": "oliviaface_000003750.safetensors",
+                "_size": 0,
+                "category": "loras/Olivia"
+            }
+        ],
+        "upscale_models": [
+            {
+                "name": "4x-UltraSharp.pth",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Upscalers/4x-UltraSharp.pth?download=true",
+                "path": "upscale_models",
+                "filename": "4x-UltraSharp.pth",
+                "_size": 66961958,
+                "category": "upscale_models"
+            },
+            {
+                "name": "4x-UltraSharpV2.safetensors",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Upscalers/4x-UltraSharpV2.safetensors?download=true",
+                "path": "upscale_models",
+                "filename": "4x-UltraSharpV2.safetensors",
+                "_size": 139792588,
+                "category": "upscale_models"
+            },
+            {
+                "name": "4xFFHQDAT.pth",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Upscalers/4xFFHQDAT.pth?download=true",
+                "path": "upscale_models",
+                "filename": "4xFFHQDAT.pth",
+                "_size": 154679777,
+                "category": "upscale_models"
+            },
+            {
+                "name": "4xPurePhoto-RealPLSKR.pth",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Upscalers/4xPurePhoto-RealPLSKR.pth?download=true",
+                "path": "upscale_models",
+                "filename": "4xPurePhoto-RealPLSKR.pth",
+                "_size": 29663426,
+                "category": "upscale_models"
+            },
+            {
+                "name": "4x_NMKD-Superscale-SP_178000_G.pth",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Upscalers/4x_NMKD-Superscale-SP_178000_G.pth?download=true",
+                "path": "upscale_models",
+                "filename": "4x_NMKD-Superscale-SP_178000_G.pth",
+                "_size": 66958607,
+                "category": "upscale_models"
+            },
+            {
+                "name": "4x_Nickelback_70000G.safetensors",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Upscalers/4x_Nickelback_70000G.safetensors?download=true",
+                "path": "upscale_models",
+                "filename": "4x_Nickelback_70000G.safetensors",
+                "_size": 66864028,
+                "category": "upscale_models"
+            },
+            {
+                "name": "4x_foolhardy_Remacri.safetensors",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Upscalers/4x_foolhardy_Remacri.safetensors?download=true",
+                "path": "upscale_models",
+                "filename": "4x_foolhardy_Remacri.safetensors",
+                "_size": 33467822,
+                "category": "upscale_models"
+            },
+            {
+                "name": "RealESRGAN_x4plus.pth",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Upscalers/RealESRGAN_x4plus.pth?download=true",
+                "path": "upscale_models",
+                "filename": "RealESRGAN_x4plus.pth",
+                "_size": 67040989,
+                "category": "upscale_models"
+            },
+            {
+                "name": "remacri_original.safetensors",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Upscalers/remacri_original.safetensors?download=true",
+                "path": "upscale_models",
+                "filename": "remacri_original.safetensors",
+                "_size": 66864028,
+                "category": "upscale_models"
+            },
+            {
+                "name": "8xNMKDFaces160000G_v10.pt",
+                "url": "https://civitai.com/api/download/models/158264?type=Model&format=PickleTensor",
+                "path": "upscale_models",
+                "category": "upscale_models",
+                "filename": "8xNMKDFaces160000G_v10.pt"
+            }
+        ],
+        "controlnet": [
+            {
+                "name": "Z-Image-Turbo-Fun-Controlnet-Union-2.0.safetensors",
+                "url": "https://huggingface.co/alibaba-pai/Z-Image-Turbo-Fun-Controlnet-Union-2.1/resolve/main/Z-Image-Turbo-Fun-Controlnet-Union-2.0.safetensors?download=true",
+                "path": "model_patches",
+                "filename": "Z-Image-Turbo-Fun-Controlnet-Union-2.0.safetensors",
+                "_size": 0,
+                "category": "controlnet"
+            },
+            {
+                "name": "Z-Image-Turbo-Fun-Controlnet-Union-2.1.safetensors",
+                "url": "https://huggingface.co/alibaba-pai/Z-Image-Turbo-Fun-Controlnet-Union-2.1/resolve/main/Z-Image-Turbo-Fun-Controlnet-Union-2.1.safetensors?download=true",
+                "path": "model_patches",
+                "filename": "Z-Image-Turbo-Fun-Controlnet-Union-2.1.safetensors",
+                "_size": 0,
+                "category": "controlnet"
+            },
+            {
+                "name": "Z-Image-Turbo-Fun-Controlnet-Union-2.1-2601-8steps.safetensors",
+                "url": "https://huggingface.co/alibaba-pai/Z-Image-Turbo-Fun-Controlnet-Union-2.1/resolve/main/Z-Image-Turbo-Fun-Controlnet-Union-2.1-2601-8steps.safetensors?download=true",
+                "path": "model_patches",
+                "filename": "Z-Image-Turbo-Fun-Controlnet-Union-2.1-2601-8steps.safetensors",
+                "_size": 0,
+                "category": "controlnet"
+            }
+        ],
+        "clip": [
+            {
+                "name": "qwen-4b-zimage-heretic-q8.gguf",
+                "url": "https://huggingface.co/Lockout/qwen3-4b-heretic-zimage/resolve/main/qwen-4b-zimage-heretic-q8.gguf?download=true",
+                "path": "clip",
+                "filename": "qwen-4b-zimage-heretic-q8.gguf",
+                "_size": 4280404896,
+                "category": "clip"
+            }
+        ]
+    },
+    "Flux": {
+        "text_encoders": [
+            {
+                "name": "qwen_3_8b_fp8mixed.safetensors",
+                "url": "https://huggingface.co/Comfy-Org/vae-text-encorder-for-flux-klein-9b/resolve/main/split_files/text_encoders/qwen_3_8b_fp8mixed.safetensors?download=true",
+                "path": "clip",
+                "filename": "qwen_3_8b_fp8mixed.safetensors",
+                "_size": 0,
+                "category": "text_encoders"
+            },
+            {
+                "name": "t5xxl_fp8_e4m3fn.safetensors",
+                "url": "https://huggingface.co/comfyanonymous/flux_text_encoders/resolve/main/t5xxl_fp8_e4m3fn.safetensors?download=true",
+                "path": "clip",
+                "filename": "t5xxl_fp8_e4m3fn.safetensors",
+                "_size": 0,
+                "category": "text_encoders"
+            },
+            {
+                "name": "clip_l.safetensors",
+                "url": "https://huggingface.co/comfyanonymous/flux_text_encoders/resolve/main/clip_l.safetensors?download=true",
+                "path": "clip",
+                "filename": "clip_l.safetensors",
+                "_size": 0,
+                "category": "text_encoders"
+            },
+            {
+                "name": "EVA02_CLIP_L_336_psz14_s6B.pt",
+                "url": "https://huggingface.co/QuanSun/EVA-CLIP/resolve/main/EVA02_CLIP_L_336_psz14_s6B.pt?download=true",
+                "path": "clip",
+                "filename": "EVA02_CLIP_L_336_psz14_s6B.pt",
+                "_size": 0,
+                "category": "text_encoders"
+            }
+        ],
+        "diffusion_models": [
+            {
+                "name": "flux-2-klein-9b-fp8.safetensors",
+                "url": "https://huggingface.co/black-forest-labs/FLUX.2-klein-9b-fp8/resolve/main/flux-2-klein-9b-fp8.safetensors?download=true",
+                "path": "unet",
+                "filename": "flux-2-klein-9b-fp8.safetensors",
+                "_size": 0,
+                "category": "diffusion_models"
+            },
+            {
+                "name": "flux-2-klein-9b.safetensors",
+                "url": "https://huggingface.co/black-forest-labs/FLUX.2-klein-9B/resolve/main/flux-2-klein-9b.safetensors?download=true",
+                "path": "unet",
+                "filename": "flux-2-klein-9b.safetensors",
+                "_size": 0,
+                "category": "diffusion_models"
+            },
+            {
+                "name": "flux-2-klein-base-9b-fp8.safetensors",
+                "url": "https://huggingface.co/black-forest-labs/FLUX.2-klein-base-9b-fp8/resolve/main/flux-2-klein-base-9b-fp8.safetensors?download=true",
+                "path": "unet",
+                "filename": "flux-2-klein-base-9b-fp8.safetensors",
+                "_size": 0,
+                "category": "diffusion_models"
+            },
+            {
+                "name": "flux1-krea-dev_fp8_scaled.safetensors",
+                "url": "https://huggingface.co/Comfy-Org/FLUX.1-Krea-dev_ComfyUI/resolve/main/split_files/diffusion_models/flux1-krea-dev_fp8_scaled.safetensors?download=true",
+                "path": "diffusion_models",
+                "filename": "flux1-krea-dev_fp8_scaled.safetensors",
+                "_size": 0,
+                "category": "diffusion_models"
+            },
+            {
+                "name": "flux1-dev.safetensors",
+                "url": "https://huggingface.co/black-forest-labs/FLUX.1-dev/resolve/main/flux1-dev.safetensors?download=true",
+                "path": "diffusion_models",
+                "filename": "flux1-dev.safetensors",
+                "_size": 0,
+                "category": "diffusion_models"
+            },
+            {
+                "name": "darkBeastMar0326Latest_dbkleinv2BFS.safetensors",
+                "url": "https://civitai.com/api/download/models/2740209?type=Model&format=SafeTensor&size=pruned&fp=fp8",
+                "path": "diffusion_models",
+                "category": "diffusion_models",
+                "filename": "darkBeastMar0326Latest_dbkleinv2BFS.safetensors"
+            }
+        ],
+        "vae": [
+            {
+                "name": "ae.safetensors",
+                "url": "https://huggingface.co/modelzpalace/ae.safetensors/resolve/main/ae.safetensors?download=true",
+                "path": "vae",
+                "filename": "ae.safetensors",
+                "_size": 335304388,
+                "category": "vae"
+            },
+            {
+                "name": "flux2-vae.safetensors",
+                "url": "https://huggingface.co/Comfy-Org/flux2-dev/resolve/main/split_files/vae/flux2-vae.safetensors?download=true",
+                "path": "vae",
+                "filename": "flux2-vae.safetensors",
+                "_size": 0,
+                "category": "vae"
+            }
+        ],
+        "loras": [
+            {
+                "name": "klein-m4crom4sti4-5epoc-k3nk.safetensors",
+                "url": "https://civitai.com/api/download/models/2618139?type=Model&format=SafeTensor",
+                "path": "loras",
+                "filename": "klein-m4crom4sti4-5epoc-k3nk.safetensors",
+                "_size": 0,
+                "category": "loras"
+            },
+            {
+                "name": "pussydiffusion-f2-klein-9b_v2.safetensors",
+                "url": "https://civitai.com/api/download/models/2645238?type=Model&format=SafeTensor",
+                "path": "loras",
+                "filename": "pussydiffusion-f2-klein-9b_v2.safetensors",
+                "_size": 0,
+                "category": "loras"
+            },
+            {
+                "name": "busty-curvy.safetensors",
+                "url": "https://civitai.com/api/download/models/1732014?type=Model&format=SafeTensor",
+                "path": "loras",
+                "filename": "busty-curvy.safetensors",
+                "_size": 0,
+                "category": "loras"
+            },
+            {
+                "name": "FC Flux Perfect Busts.safetensors",
+                "url": "https://huggingface.co/marc8460/sienna-blaze-lora-v1/resolve/main/FC%20Flux%20Perfect%20Busts.safetensors?download=true",
+                "path": "loras",
+                "filename": "FC Flux Perfect Busts.safetensors",
+                "_size": 0,
+                "category": "loras"
+            },
+            {
+                "name": "olivia2025.safetensors",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/olivia2025.safetensors?download=true",
+                "path": "loras",
+                "filename": "olivia2025.safetensors",
+                "_size": 0,
+                "category": "loras"
+            },
+            {
+                "name": "Skintastic_Flux_v1.safetensors",
+                "url": "https://civitai.com/api/download/models/1523139?type=Model&format=SafeTensor",
+                "path": "loras",
+                "filename": "Skintastic_Flux_v1.safetensors",
+                "_size": 0,
+                "category": "loras"
+            }
+        ]
+    },
+    "SDXL": {
+        "diffusion_models": [
+            {
+                "name": "jibMixIllustrious_v40Ascension.safetensors",
+                "url": "https://civitai.com/api/download/models/2569079?type=Model&format=SafeTensor&size=full&fp=fp16",
+                "path": "checkpoints",
+                "filename": "jibMixIllustrious_v40Ascension.safetensors",
+                "_size": 0,
+                "category": "diffusion_models"
+            },
+            {
+                "name": "SUPIR-v0Q.ckpt",
+                "url": "https://huggingface.co/camenduru/SUPIR/resolve/main/SUPIR-v0Q.ckpt?download=true",
+                "path": "checkpoints/SUPIR",
+                "filename": "SUPIR-v0Q.ckpt",
+                "_size": 0,
+                "category": "diffusion_models"
+            },
+            {
+                "name": "lustifySDXLNSFW_oltINPAINTING.safetensors",
+                "url": "https://civitai.com/api/download/models/1588039?type=Model&format=SafeTensor&size=pruned&fp=fp16",
+                "path": "checkpoints",
+                "filename": "lustifySDXLNSFW_oltINPAINTING.safetensors",
+                "_size": 6938071570,
+                "category": "diffusion_models"
+            },
+            {
+                "name": "lustifySDXLNSFW_ggwpV7.safetensors",
+                "url": "https://civitai.com/api/downhttps://civitai.com/api/download/models/2155386?type=Model&format=SafeTensor&size=pruned&fp=fp16load/models/2155386?type=Model&format=SafeTensor&size=pruned&fp=fp16",
+                "path": "checkpoints",
+                "filename": "lustifySDXLNSFW_ggwpV7.safetensors",
+                "_size": 6938099634,
+                "category": "diffusion_models"
+            },
+            {
+                "name": "sd_xl_refiner_1.0.safetensors",
+                "url": "https://huggingface.co/stabilityai/stable-diffusion-xl-refiner-1.0/resolve/main/sd_xl_refiner_1.0.safetensors?download=true",
+                "path": "checkpoints",
+                "category": "diffusion_models",
+                "filename": "sd_xl_refiner_1.0.safetensors"
+            },
+            {
+                "name": "sd_xl_base_1.0.safetensors",
+                "url": "https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0/resolve/main/sd_xl_base_1.0.safetensors?download=true",
+                "path": "checkpoints",
+                "category": "diffusion_models",
+                "filename": "sd_xl_base_1.0.safetensors"
+            }
+        ],
+        "loras": [
+            {
+                "name": "skin texture style v3.safetensors",
+                "url": "https://civitai.com/api/download/models/691191?type=Model&format=SafeTensor",
+                "path": "loras",
+                "filename": "skin texture style v3.safetensors",
+                "_size": 0,
+                "category": "loras"
+            },
+            {
+                "name": "dmd2_sdxl_4step_lora.safetensors",
+                "url": "https://civitai.com/api/download/models/1820705?type=Model&format=SafeTensor",
+                "path": "loras",
+                "filename": "dmd2_sdxl_4step_lora.safetensors",
+                "_size": 787359616,
+                "category": "loras"
+            }
+        ],
+        "upscale_models": [],
+        "": [
+            {
+                "name": "sd_xl_base_1.0_0.9vae.safetensors",
+                "url": "https://huggingface.co/camenduru/SUPIR/resolve/main/sd_xl_base_1.0_0.9vae.safetensors?download=true",
+                "path": "checkpoints",
+                "filename": "sd_xl_base_1.0_0.9vae.safetensors",
+                "_size": 0,
+                "category": ""
+            }
+        ]
+    },
+    "Qwen": {
+        "diffusion_models": [
+            {
+                "name": "qwen_image_edit_2511_fp8_e4m3fn.safetensors",
+                "url": "https://huggingface.co/drbaph/Qwen-Image-Edit-2511-FP8/resolve/main/qwen_image_edit_2511_fp8_e4m3fn.safetensors?download=true",
+                "path": "diffusion_models",
+                "filename": "qwen_image_edit_2511_fp8_e4m3fn.safetensors",
+                "_size": 0,
+                "category": "diffusion_models"
+            },
+            {
+                "name": "qwen_image_edit_2511_bf16.safetensors",
+                "url": "https://huggingface.co/Comfy-Org/Qwen-Image-Edit_ComfyUI/resolve/main/split_files/diffusion_models/qwen_image_edit_2511_bf16.safetensors",
+                "path": "diffusion_models",
+                "filename": "qwen_image_edit_2511_bf16.safetensors",
+                "category": "diffusion_models",
+                "_size": 0
+            }
+        ],
+        "text_encoders": [
+            {
+                "name": "qwen_2.5_vl_7b_fp8_scaled.safetensors",
+                "url": "https://huggingface.co/Comfy-Org/Qwen-Image_ComfyUI/resolve/main/split_files/text_encoders/qwen_2.5_vl_7b_fp8_scaled.safetensors?download=true",
+                "path": "text_encoders",
+                "filename": "qwen_2.5_vl_7b_fp8_scaled.safetensors",
+                "_size": 0,
+                "category": "text_encoders"
+            }
+        ],
+        "loras": [
+            {
+                "name": "Qwen-Image-Edit-2511-Lightning-4steps-V1.0-bf16.safetensors",
+                "url": "https://huggingface.co/lightx2v/Qwen-Image-Edit-2511-Lightning/resolve/main/Qwen-Image-Edit-2511-Lightning-4steps-V1.0-bf16.safetensors",
+                "path": "loras/Lightning",
+                "filename": "Qwen-Image-Edit-2511-Lightning-4steps-V1.0-bf16.safetensors",
+                "_size": 0,
+                "category": "loras"
+            }
+        ],
+        "vae": [
+            {
+                "name": "qwen_image_vae.safetensors",
+                "url": "https://huggingface.co/Comfy-Org/Qwen-Image_ComfyUI/resolve/main/split_files/vae/qwen_image_vae.safetensors?download=true",
+                "path": "vae",
+                "filename": "qwen_image_vae.safetensors",
+                "_size": 0,
+                "category": "vae"
+            }
+        ]
+    },
+    "Wan": {
+        "diffusion_models": [
+            {
+                "name": "Wan2.2_Remix_NSFW_i2v_14b_high_lighting_v2.0.safetensors",
+                "url": "https://huggingface.co/FX-FeiHou/wan2.2-Remix/resolve/main/NSFW/Wan2.2_Remix_NSFW_i2v_14b_high_lighting_v2.0.safetensors?download=true",
+                "path": "diffusion_models",
+                "filename": "Wan2.2_Remix_NSFW_i2v_14b_high_lighting_v2.0.safetensors",
+                "category": "diffusion_models",
+                "_size": 0
+            },
+            {
+                "name": "Wan2.2_Remix_NSFW_i2v_14b_low_lighting_v2.0.safetensors",
+                "url": "https://huggingface.co/FX-FeiHou/wan2.2-Remix/resolve/main/NSFW/Wan2.2_Remix_NSFW_i2v_14b_low_lighting_v2.0.safetensors?download=true",
+                "path": "diffusion_models",
+                "filename": "Wan2.2_Remix_NSFW_i2v_14b_low_lighting_v2.0.safetensors",
+                "category": "diffusion_models",
+                "_size": 0
+            },
+            {
+                "name": "wan2.2_t2v_high_noise_14B_fp8_scaled.safetensors",
+                "url": "https://huggingface.co/Comfy-Org/Wan_2.2_ComfyUI_Repackaged/resolve/main/split_files/diffusion_models/wan2.2_t2v_high_noise_14B_fp8_scaled.safetensors?download=true",
+                "path": "diffusion_models",
+                "filename": "wan2.2_t2v_high_noise_14B_fp8_scaled.safetensors",
+                "category": "diffusion_models",
+                "_size": 0
+            },
+            {
+                "name": "wan2.2_t2v_low_noise_14B_fp8_scaled.safetensors",
+                "url": "https://huggingface.co/Comfy-Org/Wan_2.2_ComfyUI_Repackaged/resolve/main/split_files/diffusion_models/wan2.2_t2v_low_noise_14B_fp8_scaled.safetensors?download=true",
+                "path": "diffusion_models",
+                "filename": "wan2.2_t2v_low_noise_14B_fp8_scaled.safetensors",
+                "category": "diffusion_models",
+                "_size": 0
+            },
+            {
+                "name": "wan22EnhancedNSFWSVICamera_nolightningSVICfQ8H.gguf",
+                "url": "https://civitai.com/api/download/models/2668710?type=Model&format=GGUF&size=full&fp=fp8",
+                "path": "diffusion_models",
+                "category": "diffusion_models",
+                "filename": "wan22EnhancedNSFWSVICamera_nolightningSVICfQ8H.gguf"
+            },
+            {
+                "name": "wan22EnhancedNSFWSVICamera_nolightningSVICfQ8L.gguf",
+                "url": "https://civitai.com/api/download/models/2668712?type=Model&format=GGUF&size=full&fp=fp8",
+                "path": "diffusion_models",
+                "category": "diffusion_models",
+                "filename": "wan22EnhancedNSFWSVICamera_nolightningSVICfQ8L.gguf"
+            },
+            {
+                "name": "wan22EnhancedNSFWSVICamera_nolightningSVICfQ6KL.gguf",
+                "url": "https://civitai.com/api/download/models/2647328?type=Model&format=GGUF&size=full&fp=fp8",
+                "path": "diffusion_models",
+                "category": "diffusion_models",
+                "filename": "wan22EnhancedNSFWSVICamera_nolightningSVICfQ6KL.gguf"
+            },
+            {
+                "name": "wan22EnhancedNSFWSVICamera_nolightningSVICfQ6KH.gguf",
+                "url": "https://civitai.com/api/download/models/2647324?type=Model&format=GGUF&size=full&fp=fp8",
+                "path": "diffusion_models",
+                "category": "diffusion_models",
+                "filename": "wan22EnhancedNSFWSVICamera_nolightningSVICfQ6KH.gguf"
+            },
+            {
+                "name": "wan22EnhancedNSFWSVICamera_nolightninSVICfQ4KMH.gguf",
+                "url": "https://civitai.com/api/download/models/2625965?type=Model&format=GGUF&size=full&fp=fp8",
+                "path": "diffusion_models",
+                "category": "diffusion_models",
+                "filename": "wan22EnhancedNSFWSVICamera_nolightninSVICfQ4KMH.gguf"
+            },
+            {
+                "name": "wan22EnhancedNSFWSVICamera_nolightninSVICfQ4KML.gguf",
+                "url": "https://civitai.com/api/download/models/2625966?type=Model&format=GGUF&size=full&fp=fp8",
+                "path": "diffusion_models",
+                "category": "diffusion_models",
+                "filename": "wan22EnhancedNSFWSVICamera_nolightninSVICfQ4KML.gguf"
+            }
+        ],
+        "t2v": [],
+        "i2v": [],
+        "loras": [
+            {
+                "name": "Wan2.2-Lightning_I2V-A14B-4steps-lora_HIGH_fp16.safetensors",
+                "url": "https://huggingface.co/Aitrepreneur/FLX/resolve/main/Wan2.2-Lightning_I2V-A14B-4steps-lora_HIGH_fp16.safetensors?download=true",
+                "path": "loras",
+                "filename": "Wan2.2-Lightning_I2V-A14B-4steps-lora_HIGH_fp16.safetensors",
+                "category": "loras",
+                "_size": 0
+            },
+            {
+                "name": "Wan2.2-Lightning_I2V-A14B-4steps-lora_LOW_fp16.safetensors",
+                "url": "https://huggingface.co/Aitrepreneur/FLX/resolve/main/Wan2.2-Lightning_I2V-A14B-4steps-lora_LOW_fp16.safetensors?download=true",
+                "path": "loras",
+                "filename": "Wan2.2-Lightning_I2V-A14B-4steps-lora_LOW_fp16.safetensors",
+                "category": "loras",
+                "_size": 0
+            },
+            {
+                "name": "wan22_14b_i2v_orbit_high_noise.safetensors",
+                "url": "https://huggingface.co/ostris/wan22_i2v_14b_orbit_shot_lora/resolve/7b637fe0079bbf4ac0f977ff2c58971b8835b9c7/wan22_14b_i2v_orbit_high_noise.safetensors?download=true",
+                "path": "loras",
+                "filename": "wan22_14b_i2v_orbit_high_noise.safetensors",
+                "category": "loras",
+                "_size": 0
+            },
+            {
+                "name": "wan22_14b_i2v_orbit_low_noise.safetensors",
+                "url": "https://huggingface.co/ostris/wan22_i2v_14b_orbit_shot_lora/resolve/main/wan22_14b_i2v_orbit_low_noise.safetensors?download=true",
+                "path": "loras",
+                "filename": "wan22_14b_i2v_orbit_low_noise.safetensors",
+                "category": "loras",
+                "_size": 0
+            },
+            {
+                "name": "high_noise_model.safetensors",
+                "url": "https://huggingface.co/lightx2v/Wan2.2-Lightning/resolve/main/Wan2.2-T2V-A14B-4steps-lora-rank64-Seko-V1.1/high_noise_model.safetensors?download=true",
+                "path": "loras/Wan2.2-T2V-A14B-4steps-lora-rank64-Seko-V1.1",
+                "filename": "high_noise_model.safetensors",
+                "category": "loras",
+                "_size": 0
+            },
+            {
+                "name": "low_noise_model.safetensors",
+                "url": "https://huggingface.co/lightx2v/Wan2.2-Lightning/resolve/main/Wan2.2-T2V-A14B-4steps-lora-rank64-Seko-V1.1/low_noise_model.safetensors?download=true",
+                "path": "loras/Wan2.2-T2V-A14B-4steps-lora-rank64-Seko-V1.1",
+                "filename": "low_noise_model.safetensors",
+                "category": "loras",
+                "_size": 0
+            },
+            {
+                "name": "SVI_v2_PRO_Wan2.2-I2V-A14B_LOW_lora_rank_128_fp16.safetensors",
+                "url": "https://huggingface.co/Kijai/WanVideo_comfy/resolve/9de69f74aa43cef3c05e37206aff062f4f31e06d/LoRAs/Stable-Video-Infinity/v2.0/SVI_v2_PRO_Wan2.2-I2V-A14B_LOW_lora_rank_128_fp16.safetensors?download=true",
+                "path": "loras",
+                "category": "loras",
+                "filename": "SVI_v2_PRO_Wan2.2-I2V-A14B_LOW_lora_rank_128_fp16.safetensors"
+            }
+        ],
+        "vae": [
+            {
+                "name": "wan_2.1_vae.safetensors",
+                "url": "https://huggingface.co/Comfy-Org/Wan_2.1_ComfyUI_repackaged/resolve/main/split_files/vae/wan_2.1_vae.safetensors?download=true",
+                "path": "vae",
+                "filename": "wan_2.1_vae.safetensors",
+                "category": "vae",
+                "_size": 0
+            }
+        ],
+        "text_encoders": [
+            {
+                "name": "umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+                "url": "https://huggingface.co/f5aiteam/CLIP/resolve/main/umt5_xxl_fp8_e4m3fn_scaled.safetensors?download=true",
+                "path": "text_encoders",
+                "filename": "umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+                "category": "text_encoders",
+                "_size": 0
+            },
+            {
+                "name": "nsfw_wan_umt5-xxl_fp8_scaled.safetensors",
+                "url": "https://huggingface.co/NSFW-API/NSFW-Wan-UMT5-XXL/resolve/main/nsfw_wan_umt5-xxl_fp8_scaled.safetensors?download=true",
+                "path": "text_encoders",
+                "filename": "nsfw_wan_umt5-xxl_fp8_scaled.safetensors",
+                "category": "text_encoders",
+                "_size": 0
+            }
+        ]
+    },
+    "ACE-Step": {
+        "diffusion_models": [
+            {
+                "name": "ace_step_1.5_turbo_aio.safetensors",
+                "url": "https://huggingface.co/Comfy-Org/ace_step_1.5_ComfyUI_files/resolve/main/checkpoints/ace_step_1.5_turbo_aio.safetensors",
+                "path": "checkpoints",
+                "filename": "ace_step_1.5_turbo_aio.safetensors",
+                "_size": 0,
+                "category": "diffusion_models"
+            },
+            {
+                "name": "acestep_v1.5_turbo.safetensors",
+                "url": "https://huggingface.co/Comfy-Org/ace_step_1.5_ComfyUI_files/resolve/main/split_files/diffusion_models/acestep_v1.5_turbo.safetensors",
+                "path": "diffusion_models",
+                "filename": "acestep_v1.5_turbo.safetensors",
+                "_size": 0,
+                "category": "diffusion_models"
+            },
+            {
+                "name": "ace_step_v1_3.5b.safetensors",
+                "url": "https://huggingface.co/Comfy-Org/ACE-Step_ComfyUI_repackaged/resolve/main/all_in_one/ace_step_v1_3.5b.safetensors?download=true",
+                "path": "checkpoints",
+                "filename": "ace_step_v1_3.5b.safetensors",
+                "category": "diffusion_models",
+                "_size": 0
+            }
+        ],
+        "checkpoints": [],
+        "unet": [],
+        "text_encoders": [
+            {
+                "name": "qwen_0.6b_ace15.safetensors",
+                "url": "https://huggingface.co/Comfy-Org/ace_step_1.5_ComfyUI_files/resolve/main/split_files/text_encoders/qwen_0.6b_ace15.safetensors",
+                "path": "text_encoders",
+                "filename": "qwen_0.6b_ace15.safetensors",
+                "_size": 0,
+                "category": "text_encoders"
+            },
+            {
+                "name": "qwen_1.7b_ace15.safetensors",
+                "url": "https://huggingface.co/Comfy-Org/ace_step_1.5_ComfyUI_files/resolve/main/split_files/text_encoders/qwen_1.7b_ace15.safetensors",
+                "path": "text_encoders",
+                "filename": "qwen_1.7b_ace15.safetensors",
+                "_size": 0,
+                "category": "text_encoders"
+            }
+        ],
+        "vae": [
+            {
+                "name": "ace_1.5_vae.safetensors",
+                "url": "https://huggingface.co/Comfy-Org/ace_step_1.5_ComfyUI_files/resolve/main/split_files/vae/ace_1.5_vae.safetensors",
+                "path": "vae",
+                "filename": "ace_1.5_vae.safetensors",
+                "_size": 0,
+                "category": "vae"
+            }
+        ]
+    },
+    "Anima": {
+        "diffusion_models": [
+            {
+                "name": "anima-preview.safetensors",
+                "url": "https://huggingface.co/circlestone-labs/Anima/resolve/main/split_files/diffusion_models/anima-preview.safetensors?download=true",
+                "path": "diffusion_models",
+                "filename": "anima-preview.safetensors",
+                "_size": 0,
+                "category": "diffusion_models"
+            }
+        ],
+        "checkpoints": [],
+        "unet": [],
+        "text_encoders": [
+            {
+                "name": "qwen_3_06b_base.safetensors",
+                "url": "https://huggingface.co/circlestone-labs/Anima/resolve/main/split_files/text_encoders/qwen_3_06b_base.safetensors?download=true",
+                "path": "text_encoders",
+                "filename": "qwen_3_06b_base.safetensors",
+                "_size": 0,
+                "category": "text_encoders"
+            }
+        ],
+        "vae": []
+    },
+    "SeedVR": {
+        "upscale_models": [
+            {
+                "name": "ema_vae_fp16",
+                "url": "https://huggingface.co/numz/SeedVR2_comfyUI/resolve/main/ema_vae_fp16.safetensors?download=true",
+                "path": "SEEDVR2",
+                "category": "upscale_models",
+                "filename": "ema_vae_fp16.safetensors",
+                "_size": 0
+            },
+            {
+                "name": "seedvr2_ema_3b_fp16",
+                "url": "https://huggingface.co/numz/SeedVR2_comfyUI/resolve/main/seedvr2_ema_3b_fp16.safetensors?download=true",
+                "path": "SEEDVR2",
+                "category": "upscale_models",
+                "filename": "seedvr2_ema_3b_fp16.safetensors",
+                "_size": 0
+            },
+            {
+                "name": "seedvr2_ema_3b_fp8_e4m3fn",
+                "url": "https://huggingface.co/numz/SeedVR2_comfyUI/resolve/main/seedvr2_ema_3b_fp8_e4m3fn.safetensors?download=true",
+                "path": "SEEDVR2",
+                "category": "upscale_models",
+                "filename": "seedvr2_ema_3b_fp8_e4m3fn.safetensors",
+                "_size": 0
+            },
+            {
+                "name": "seedvr2_ema_7b_fp16",
+                "url": "https://huggingface.co/numz/SeedVR2_comfyUI/resolve/main/seedvr2_ema_7b_fp16.safetensors?download=true",
+                "path": "SEEDVR2",
+                "category": "upscale_models",
+                "filename": "seedvr2_ema_7b_fp16.safetensors",
+                "_size": 16479334424
+            },
+            {
+                "name": "seedvr2_ema_7b_fp8_e4m3fn",
+                "url": "https://huggingface.co/numz/SeedVR2_comfyUI/resolve/main/seedvr2_ema_7b_fp8_e4m3fn.safetensors?download=true",
+                "path": "SEEDVR2",
+                "category": "upscale_models",
+                "filename": "seedvr2_ema_7b_fp8_e4m3fn.safetensors",
+                "_size": 0
+            },
+            {
+                "name": "seedvr2_ema_7b_sharp_fp16",
+                "url": "https://huggingface.co/numz/SeedVR2_comfyUI/resolve/main/seedvr2_ema_7b_sharp_fp16.safetensors?download=true",
+                "path": "SEEDVR2",
+                "category": "upscale_models",
+                "filename": "seedvr2_ema_7b_sharp_fp16.safetensors",
+                "_size": 0
+            },
+            {
+                "name": "seedvr2_ema_7b_sharp_fp8_e4m3fn",
+                "url": "https://huggingface.co/numz/SeedVR2_comfyUI/resolve/main/seedvr2_ema_7b_sharp_fp8_e4m3fn.safetensors?download=true",
+                "path": "SEEDVR2",
+                "category": "upscale_models",
+                "filename": "seedvr2_ema_7b_sharp_fp8_e4m3fn.safetensors",
+                "_size": 0
+            },
+            {
+                "name": "seedvr2_ema_3b-Q3_K_M",
+                "url": "https://huggingface.co/cmeka/SeedVR2-GGUF/resolve/main/seedvr2_ema_3b-Q3_K_M.gguf?download=true",
+                "path": "SEEDVR2",
+                "category": "upscale_models",
+                "filename": "seedvr2_ema_3b-Q3_K_M.gguf",
+                "_size": 0
+            },
+            {
+                "name": "seedvr2_ema_3b-Q4_K_M",
+                "url": "https://huggingface.co/cmeka/SeedVR2-GGUF/resolve/main/seedvr2_ema_3b-Q4_K_M.gguf?download=true",
+                "path": "SEEDVR2",
+                "category": "upscale_models",
+                "filename": "seedvr2_ema_3b-Q4_K_M.gguf",
+                "_size": 1995344224
+            },
+            {
+                "name": "seedvr2_ema_3b-Q5_K_M",
+                "url": "https://huggingface.co/cmeka/SeedVR2-GGUF/resolve/main/seedvr2_ema_3b-Q5_K_M.gguf?download=true",
+                "path": "SEEDVR2",
+                "category": "upscale_models",
+                "filename": "seedvr2_ema_3b-Q5_K_M.gguf",
+                "_size": 0
+            },
+            {
+                "name": "seedvr2_ema_3b-Q6_K",
+                "url": "https://huggingface.co/cmeka/SeedVR2-GGUF/resolve/main/seedvr2_ema_3b-Q6_K.gguf?download=true",
+                "path": "SEEDVR2",
+                "category": "upscale_models",
+                "filename": "seedvr2_ema_3b-Q6_K.gguf",
+                "_size": 0
+            },
+            {
+                "name": "seedvr2_ema_3b-Q8_0",
+                "url": "https://huggingface.co/cmeka/SeedVR2-GGUF/resolve/main/seedvr2_ema_3b-Q8_0.gguf?download=true",
+                "path": "SEEDVR2",
+                "category": "upscale_models",
+                "filename": "seedvr2_ema_3b-Q8_0.gguf",
+                "_size": 0
+            },
+            {
+                "name": "seedvr2_ema_7b-Q3_K_M",
+                "url": "https://huggingface.co/cmeka/SeedVR2-GGUF/resolve/main/seedvr2_ema_7b-Q3_K_M.gguf?download=true",
+                "path": "SEEDVR2",
+                "category": "upscale_models",
+                "filename": "seedvr2_ema_7b-Q3_K_M.gguf",
+                "_size": 0
+            },
+            {
+                "name": "seedvr2_ema_7b-Q4_K_M",
+                "url": "https://huggingface.co/cmeka/SeedVR2-GGUF/resolve/main/seedvr2_ema_7b-Q4_K_M.gguf?download=true",
+                "path": "SEEDVR2",
+                "category": "upscale_models",
+                "filename": "seedvr2_ema_7b-Q4_K_M.gguf",
+                "_size": 0
+            },
+            {
+                "name": "seedvr2_ema_7b-Q5_K_M",
+                "url": "https://huggingface.co/cmeka/SeedVR2-GGUF/resolve/main/seedvr2_ema_7b-Q5_K_M.gguf?download=true",
+                "path": "SEEDVR2",
+                "category": "upscale_models",
+                "filename": "seedvr2_ema_7b-Q5_K_M.gguf",
+                "_size": 0
+            },
+            {
+                "name": "seedvr2_ema_7b-Q6_K",
+                "url": "https://huggingface.co/cmeka/SeedVR2-GGUF/resolve/main/seedvr2_ema_7b-Q6_K.gguf?download=true",
+                "path": "SEEDVR2",
+                "category": "upscale_models",
+                "filename": "seedvr2_ema_7b-Q6_K.gguf",
+                "_size": 0
+            },
+            {
+                "name": "seedvr2_ema_7b-Q8_0",
+                "url": "https://huggingface.co/cmeka/SeedVR2-GGUF/resolve/main/seedvr2_ema_7b-Q8_0.gguf?download=true",
+                "path": "SEEDVR2",
+                "category": "upscale_models",
+                "filename": "seedvr2_ema_7b-Q8_0.gguf",
+                "_size": 0
+            },
+            {
+                "name": "seedvr2_ema_7b_sharp-Q3_K_M",
+                "url": "https://huggingface.co/cmeka/SeedVR2-GGUF/resolve/main/seedvr2_ema_7b_sharp-Q3_K_M.gguf?download=true",
+                "path": "SEEDVR2",
+                "category": "upscale_models",
+                "filename": "seedvr2_ema_7b_sharp-Q3_K_M.gguf",
+                "_size": 0
+            },
+            {
+                "name": "seedvr2_ema_7b_sharp-Q4_K_M",
+                "url": "https://huggingface.co/cmeka/SeedVR2-GGUF/resolve/main/seedvr2_ema_7b_sharp-Q4_K_M.gguf?download=true",
+                "path": "SEEDVR2",
+                "category": "upscale_models",
+                "filename": "seedvr2_ema_7b_sharp-Q4_K_M.gguf",
+                "_size": 0
+            },
+            {
+                "name": "seedvr2_ema_7b_sharp-Q5_K_M",
+                "url": "https://huggingface.co/cmeka/SeedVR2-GGUF/resolve/main/seedvr2_ema_7b_sharp-Q5_K_M.gguf?download=true",
+                "path": "SEEDVR2",
+                "category": "upscale_models",
+                "filename": "seedvr2_ema_7b_sharp-Q5_K_M.gguf",
+                "_size": 0
+            },
+            {
+                "name": "seedvr2_ema_7b_sharp-Q6_K",
+                "url": "https://huggingface.co/cmeka/SeedVR2-GGUF/resolve/main/seedvr2_ema_7b_sharp-Q6_K.gguf?download=true",
+                "path": "SEEDVR2",
+                "category": "upscale_models",
+                "filename": "seedvr2_ema_7b_sharp-Q6_K.gguf",
+                "_size": 0
+            },
+            {
+                "name": "seedvr2_ema_7b_sharp-Q8_0",
+                "url": "https://huggingface.co/cmeka/SeedVR2-GGUF/resolve/main/seedvr2_ema_7b_sharp-Q8_0.gguf?download=true",
+                "path": "SEEDVR2",
+                "category": "upscale_models",
+                "filename": "seedvr2_ema_7b_sharp-Q8_0.gguf",
+                "_size": 0
+            }
+        ]
+    }
 }
