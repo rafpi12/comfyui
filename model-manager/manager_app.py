@@ -1,5 +1,5 @@
 import os, json, aria2p, subprocess, time, uvicorn, shutil, psutil, requests, base64, re
-from fastapi import FastAPI, Request, BackgroundTasks
+from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
 from urllib.parse import urlparse, unquote
 
@@ -109,12 +109,12 @@ async def get_config():
     return {}
 
 @app.post("/save-config")
-async def save_config(request: Request, background_tasks: BackgroundTasks):
+async def save_config(request: Request):
     data = await request.json()
     with open(CONFIG_PATH, 'w', encoding='utf-8') as f:
         json.dump(data, f, indent=4)
-    background_tasks.add_task(sync_to_github)
-    return {"status": "ok", "github_sync": "started"}
+    github_synced = sync_to_github()
+    return {"status": "ok", "github_sync": "ok" if github_synced else "failed"}
 
 @app.get("/scan-disk")
 async def scan_disk():
