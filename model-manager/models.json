@@ -1263,11 +1263,10 @@
             },
             {
                 "name": "Wan2.2-Lightning_I2V-A14B-4steps-lora_LOW_fp16.safetensors",
-                "url": "https://huggingface.co/Aitrepreneur/FLX/resolve/main/Wan2.2-Lightning_I2V-A14B-4steps-lora_LOW_fp16.safetensors?download=true",
+                "url": "https://huggingface.co/Kijai/WanVideo_comfy/resolve/main/LoRAs/Wan22-Lightning/old/Wan2.2-Lightning_I2V-A14B-4steps-lora_LOW_fp16.safetensors?download=true",
                 "path": "loras",
-                "filename": "Wan2.2-Lightning_I2V-A14B-4steps-lora_LOW_fp16.safetensors",
                 "category": "loras",
-                "_size": 0
+                "filename": "Wan2.2-Lightning_I2V-A14B-4steps-lora_LOW_fp16.safetensors"
             },
             {
                 "name": "wan22_14b_i2v_orbit_high_noise.safetensors",
