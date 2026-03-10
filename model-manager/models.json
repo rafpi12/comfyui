@@ -332,6 +332,13 @@
                 "filename": "FameGrid_Revolution_ZIB.safetensors",
                 "_size": 280243408,
                 "category": "loras"
+            },
+            {
+                "name": "Z-Image-Fun-Lora-Distill-8-Steps-2603-ComfyUI.safetensors",
+                "url": "https://huggingface.co/alibaba-pai/Z-Image-Fun-Lora-Distill/resolve/main/Z-Image-Fun-Lora-Distill-8-Steps-2603-ComfyUI.safetensors?download=true",
+                "path": "loras",
+                "category": "loras",
+                "filename": "Z-Image-Fun-Lora-Distill-8-Steps-2603-ComfyUI.safetensors"
             }
         ],
         "loras/Vyesna": [
