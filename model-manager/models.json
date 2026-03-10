@@ -88,6 +88,13 @@
                 "filename": "z-image-turbo-bf16-aio.safetensors",
                 "category": "diffusion_models",
                 "_size": 20522566986
+            },
+            {
+                "name": "redcraftMar0826LatestZib_zibDistilled.safetensors",
+                "url": "https://civitai.com/api/download/models/2754977?type=Model&format=SafeTensor&size=pruned&fp=bf16",
+                "path": "diffusion_models",
+                "category": "diffusion_models",
+                "filename": "redcraftMar0826LatestZib_zibDistilled.safetensors"
             }
         ],
         "unet": [
