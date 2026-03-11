@@ -1290,6 +1290,13 @@
                 "path": "diffusion_models",
                 "category": "diffusion_models",
                 "filename": "wan22RemixT2VI2V_i2vLowV21.safetensors"
+            },
+            {
+                "name": "wan22RemixT2VI2V_t2vHighV20.safetensors",
+                "url": "https://civitai.com/api/download/models/2424167?type=Model&format=SafeTensor&size=pruned&fp=fp8",
+                "path": "diffusion_models",
+                "category": "diffusion_models",
+                "filename": "wan22RemixT2VI2V_t2vHighV20.safetensors"
             }
         ],
         "t2v": [],
