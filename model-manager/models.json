@@ -1276,6 +1276,13 @@
                 "path": "diffusion_models",
                 "category": "diffusion_models",
                 "filename": "wan22EnhancedNSFWSVICamera_nolightninSVICfQ4KML.gguf"
+            },
+            {
+                "name": "wan22RemixT2VI2V_i2vHighV21.safetensors",
+                "url": "https://civitai.com/api/download/models/2567309?type=Model&format=SafeTensor&size=pruned&fp=fp8",
+                "path": "diffusion_models",
+                "category": "diffusion_models",
+                "filename": "wan22RemixT2VI2V_i2vHighV21.safetensors"
             }
         ],
         "t2v": [],
