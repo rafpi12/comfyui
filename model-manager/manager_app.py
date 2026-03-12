@@ -1,5 +1,5 @@
 import os, json, aria2p, subprocess, time, uvicorn, shutil, psutil, requests, base64, re
-from fastapi import FastAPI, Request, BackgroundTasks
+from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
 from urllib.parse import urlparse, unquote
 
@@ -18,6 +18,7 @@ REPO_NAME = "comfyui"
 GITHUB_FILE_PATH = "model-manager/models.json"
 
 ALLOWED_EXTENSIONS = {'.safetensors', '.pth', '.pt', '.gguf', '.bin', '.ckpt', '.yaml'}
+FOLDER_MODEL_CATEGORIES = {"prompt_generator", "LLM"}
 
 # Cache du quota RunPod (récupéré via API au premier appel)
 _workspace_quota_gb = None
@@ -109,14 +110,19 @@ async def get_config():
     return {}
 
 @app.post("/save-config")
-async def save_config(request: Request, background_tasks: BackgroundTasks):
+async def save_config(request: Request):
     data = await request.json()
     with open(CONFIG_PATH, 'w', encoding='utf-8') as f:
         json.dump(data, f, indent=4)
-    background_tasks.add_task(sync_to_github)
-    return {"status": "ok", "github_sync": "started"}
+    github_synced = sync_to_github()
+    return {"status": "ok", "github_sync": "ok" if github_synced else "failed"}
 
-FOLDER_MODEL_CATEGORIES = {"prompt_generator", "LLM"}
+@app.post("/sync-github")
+async def sync_github_endpoint():
+    result = sync_to_github()
+    if result:
+        return {"status": "ok"}
+    return {"status": "error", "message": "Sync échoué — vérifier GITHUB_TOKEN"}
 
 @app.get("/scan-disk")
 async def scan_disk():
@@ -125,7 +131,6 @@ async def scan_disk():
         for entry in os.scandir(BASE_MODELS_PATH):
             if entry.is_dir():
                 cat_name = entry.name
-                # Catégories spéciales : les sous-dossiers sont des modèles entiers
                 if cat_name in FOLDER_MODEL_CATEGORIES:
                     folders = []
                     for sub in os.scandir(entry.path):
