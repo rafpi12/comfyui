@@ -203,14 +203,6 @@
     });
 });
 
-            // PASSE 1 : calculer _diskSize avant le tri
-            allModels.forEach(model => {
-                const diskKey = model.path.split('/')[0];
-                const diskCategoryFiles = diskFiles[diskKey] || [];
-                const diskEntry = diskCategoryFiles.find(f => (f.path || f).toLowerCase() === model.filename.toLowerCase());
-                model._diskSize = diskEntry ? (diskEntry.size || 0) : 0;
-            });
-
             // TRI DYNAMIQUE
             allModels.sort((a, b) => {
                 if (sortState.key === 'size') {
@@ -221,7 +213,6 @@
 
             // Remplissage du select
             allModels.forEach(model => {
-                // category = affichage dans le browser, path = dossier disque réel
                 const displayCat = model.category || model.path.split('/')[0];
                 const diskKey = model.path.split('/')[0];
                 const diskCategoryFiles = diskFiles[diskKey] || [];
@@ -234,13 +225,33 @@
                 const label = (isPresent ? "● " : "○ ") + model.filename + (isPresent && fileSize ? "  [" + formatSize(fileSize) + "]" : "");
                 let o = new Option(label, model.filename);
                 o.dataset.url = model.url;
-                o.dataset.cat = model.path;       // chemin disque pour téléchargement
-                o.dataset.category = displayCat;  // catégorie d'affichage
-				o.dataset.env = model._env || ""; // "e" est la variable de la boucle envsToScan.forEach(e => {...})
+                o.dataset.cat = model.path;
+                o.dataset.category = displayCat;
+				o.dataset.env = model._env || "";
                 o.dataset.size = fileSize || 0;
                 if(isPresent) o.style.color = "#4ade80";
                 if (selectedValues.includes(model.filename)) o.selected = true;
                 m.add(o);
+            });
+
+            // Entrées disk-only : dossiers de prompt_generator et LLM
+            const folderCategories = ["prompt_generator", "LLM"];
+            folderCategories.forEach(cat => {
+                const entries = diskFiles[cat] || [];
+                entries.forEach(entry => {
+                    if (!entry.is_folder) return;
+                    const label = "● 📁 " + entry.path + "  [" + formatSize(entry.size) + "]";
+                    let o = new Option(label, entry.path);
+                    o.dataset.url = "";
+                    o.dataset.cat = cat;
+                    o.dataset.category = cat;
+                    o.dataset.env = "";
+                    o.dataset.size = entry.size || 0;
+                    o.dataset.isFolder = "true";
+                    o.style.color = "#4ade80";
+                    if (selectedValues.includes(entry.path)) o.selected = true;
+                    m.add(o);
+                });
             });
             
             m.scrollTop = targetFilename ? (Array.from(m.options).findIndex(o => o.selected) * 24) : savedScroll;
