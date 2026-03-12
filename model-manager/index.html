@@ -206,8 +206,11 @@
 });
 
             // Injecter les dossiers disk-only (prompt_generator, LLM) dans allModels
+            const folderCategoryMap = { "prompt_generator": "Qwen", "LLM": "Qwen" };
             const folderCategories = ["prompt_generator", "LLM"];
             folderCategories.forEach(cat => {
+                const ownerEnv = folderCategoryMap[cat];
+                if (env !== "__ALL__" && env !== ownerEnv) return;
                 (diskFiles[cat] || []).forEach(entry => {
                     if (!entry.is_folder) return;
                     if (!entry.path.toLowerCase().includes(search)) return;
