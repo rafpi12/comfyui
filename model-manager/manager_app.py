@@ -1,5 +1,5 @@
 import os, json, aria2p, subprocess, time, uvicorn, shutil, psutil, requests, base64, re
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, BackgroundTasks
 from fastapi.responses import HTMLResponse
 from urllib.parse import urlparse, unquote
 
@@ -109,12 +109,14 @@ async def get_config():
     return {}
 
 @app.post("/save-config")
-async def save_config(request: Request):
+async def save_config(request: Request, background_tasks: BackgroundTasks):
     data = await request.json()
     with open(CONFIG_PATH, 'w', encoding='utf-8') as f:
         json.dump(data, f, indent=4)
-    github_synced = sync_to_github()
-    return {"status": "ok", "github_sync": "ok" if github_synced else "failed"}
+    background_tasks.add_task(sync_to_github)
+    return {"status": "ok", "github_sync": "started"}
+
+FOLDER_MODEL_CATEGORIES = {"prompt_generator", "LLM"}
 
 @app.get("/scan-disk")
 async def scan_disk():
@@ -123,15 +125,30 @@ async def scan_disk():
         for entry in os.scandir(BASE_MODELS_PATH):
             if entry.is_dir():
                 cat_name = entry.name
-                files = []
-                for root, _, filenames in os.walk(entry.path):
-                    for f in filenames:
-                        if any(f.endswith(ext) for ext in ALLOWED_EXTENSIONS):
-                            rel_path = os.path.relpath(os.path.join(root, f), entry.path)
-                            full_path = os.path.join(root, f)
-                            size = os.path.getsize(full_path)
-                            files.append({"path": rel_path.replace("\\", "/"), "size": size})
-                res[cat_name] = files
+                # Catégories spéciales : les sous-dossiers sont des modèles entiers
+                if cat_name in FOLDER_MODEL_CATEGORIES:
+                    folders = []
+                    for sub in os.scandir(entry.path):
+                        if sub.is_dir():
+                            total_size = 0
+                            for root, _, filenames in os.walk(sub.path):
+                                for f in filenames:
+                                    try:
+                                        total_size += os.path.getsize(os.path.join(root, f))
+                                    except:
+                                        pass
+                            folders.append({"path": sub.name, "size": total_size, "is_folder": True})
+                    res[cat_name] = folders
+                else:
+                    files = []
+                    for root, _, filenames in os.walk(entry.path):
+                        for f in filenames:
+                            if any(f.endswith(ext) for ext in ALLOWED_EXTENSIONS):
+                                rel_path = os.path.relpath(os.path.join(root, f), entry.path)
+                                full_path = os.path.join(root, f)
+                                size = os.path.getsize(full_path)
+                                files.append({"path": rel_path.replace("\\", "/"), "size": size})
+                    res[cat_name] = files
     return res
 
 @app.post("/download")
@@ -328,15 +345,11 @@ async def disk_usage():
 async def delete(cat: str, file: str):
     clean_cat = cat.replace(BASE_MODELS_PATH, "").lstrip("/")
     p = os.path.join(BASE_MODELS_PATH, clean_cat, file)
-    if os.path.exists(p): os.remove(p)
+    if os.path.isdir(p):
+        shutil.rmtree(p)
+    elif os.path.exists(p):
+        os.remove(p)
     return {"status": "ok"}
-
-@app.post("/sync-github")
-async def sync_github_endpoint():
-    result = sync_to_github()
-    if result:
-        return {"status": "ok"}
-    return {"status": "error", "message": "Sync échoué — vérifier GITHUB_TOKEN"}
 
 @app.post("/purge")
 async def purge():
