@@ -161,6 +161,13 @@
                 "path": "text_encoders",
                 "category": "text_encoders",
                 "filename": "qwen_3_8b_fp8mixed.safetensors"
+            },
+            {
+                "name": "Qwen3-4B.i1-Q5_K_S.gguf",
+                "url": "https://huggingface.co/mradermacher/Qwen3-4B-i1-GGUF/resolve/main/Qwen3-4B.i1-Q5_K_S.gguf?download=true",
+                "path": "text_encoders",
+                "category": "text_encoders",
+                "filename": "Qwen3-4B.i1-Q5_K_S.gguf"
             }
         ],
         "loras": [
