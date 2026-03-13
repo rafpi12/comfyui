@@ -95,6 +95,13 @@
                 "path": "diffusion_models",
                 "category": "diffusion_models",
                 "filename": "redcraftMar0826LatestZib_zibDistilled.safetensors"
+            },
+            {
+                "name": "z_image_turbo-Q5_K_S.gguf",
+                "url": "https://huggingface.co/jayn7/Z-Image-Turbo-GGUF/resolve/main/z_image_turbo-Q5_K_S.gguf?download=true",
+                "path": "diffusion_models",
+                "category": "diffusion_models",
+                "filename": "z_image_turbo-Q5_K_S.gguf"
             }
         ],
         "unet": [
