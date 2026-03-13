@@ -339,6 +339,13 @@
                 "path": "loras",
                 "category": "loras",
                 "filename": "Z-Image-Fun-Lora-Distill-8-Steps-2603-ComfyUI.safetensors"
+            },
+            {
+                "name": "FameGrid_Revolution_ZIB_BOLD_.safetensors",
+                "url": "https://civitai.com/api/download/models/2733658?type=Model&format=SafeTensor",
+                "path": "loras",
+                "category": "loras",
+                "filename": "FameGrid_Revolution_ZIB_BOLD_.safetensors"
             }
         ],
         "loras/Vyesna": [
