@@ -160,6 +160,13 @@
                 "path": "text_encoders",
                 "category": "text_encoders",
                 "filename": "Qwen3-4B.i1-Q5_K_S.gguf"
+            },
+            {
+                "name": "Josiefied-Qwen3-4B-abliterated-v2.Q8_0.gguf",
+                "url": "https://huggingface.co/mradermacher/Josiefied-Qwen3-4B-abliterated-v2-GGUF/resolve/main/Josiefied-Qwen3-4B-abliterated-v2.Q8_0.gguf?download=true",
+                "path": "text_encoders",
+                "category": "text_encoders",
+                "filename": "Josiefied-Qwen3-4B-abliterated-v2.Q8_0.gguf"
             }
         ],
         "loras": [
