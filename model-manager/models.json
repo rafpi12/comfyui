@@ -359,6 +359,13 @@
                 "path": "loras",
                 "category": "loras",
                 "filename": "FameGrid_Revolution_ZIB_BOLD_.safetensors"
+            },
+            {
+                "name": "amateur_photography_zimagebase_v2_GTA6.safetensors",
+                "url": "https://civitai.com/api/download/models/2723187?type=Model&format=SafeTensor",
+                "path": "loras",
+                "category": "loras",
+                "filename": "amateur_photography_zimagebase_v2_GTA6.safetensors"
             }
         ],
         "loras/Vyesna": [
