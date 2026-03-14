@@ -148,14 +148,6 @@
                 "category": "text_encoders"
             },
             {
-                "name": "josiefied-qwen3-4b-abliterated-v2-q8_0.gguf",
-                "url": "https://huggingface.co/Triangle104/Josiefied-Qwen3-4B-abliterated-v2-Q8_0-GGUF/resolve/main/josiefied-qwen3-4b-abliterated-v2-q8_0.gguf?download=true",
-                "path": "text_encoders",
-                "filename": "josiefied-qwen3-4b-abliterated-v2-q8_0.gguf",
-                "_size": 4280405248,
-                "category": "text_encoders"
-            },
-            {
                 "name": "qwen_3_8b_fp8mixed.safetensors",
                 "url": "https://huggingface.co/Comfy-Org/flux2-klein-9B/resolve/main/split_files/text_encoders/qwen_3_8b_fp8mixed.safetensors",
                 "path": "text_encoders",
