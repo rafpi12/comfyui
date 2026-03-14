@@ -1331,6 +1331,13 @@
                 "path": "diffusion_models",
                 "category": "diffusion_models",
                 "filename": "wan22RemixT2VI2V_t2vLowV20.safetensors"
+            },
+            {
+                "name": "DasiwaWAN22I2V14BLightspeed_synthseductionHighV9.safetensors",
+                "url": "https://civitai.com/api/download/models/2555640?type=Model&format=SafeTensor&size=full&fp=fp8",
+                "path": "diffusion_models",
+                "category": "diffusion_models",
+                "filename": "DasiwaWAN22I2V14BLightspeed_synthseductionHighV9.safetensors"
             }
         ],
         "t2v": [],
