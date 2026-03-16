@@ -380,6 +380,13 @@
                 "path": "loras",
                 "category": "loras",
                 "filename": "amateur_photography_zimagebase_v2_GTA6.safetensors"
+            },
+            {
+                "name": "sagging_breasts_zbase_v1.safetensors",
+                "url": "https://civitai.com/api/download/models/2700803?type=Model&format=SafeTensor",
+                "path": "loras",
+                "category": "loras",
+                "filename": "sagging_breasts_zbase_v1.safetensors"
             }
         ],
         "loras/Vyesna": [
