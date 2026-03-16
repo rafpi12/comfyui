@@ -914,13 +914,6 @@
                 "path": "upscale_models",
                 "category": "upscale_models",
                 "filename": "8xNMKDFaces160000G_v10.pt"
-            },
-            {
-                "name": "vae-ft-mse-840000-ema-pruned.safetensors",
-                "url": "https://huggingface.co/stabilityai/sd-vae-ft-mse-original/resolve/main/vae-ft-mse-840000-ema-pruned.safetensors?download=true",
-                "path": "upscale_models",
-                "category": "upscale_models",
-                "filename": "vae-ft-mse-840000-ema-pruned.safetensors"
             }
         ],
         "controlnet": [
