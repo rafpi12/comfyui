@@ -143,6 +143,13 @@
                 "path": "vae",
                 "category": "vae",
                 "filename": "flux2-vae.safetensors"
+            },
+            {
+                "name": "vae-ft-mse-840000-ema-pruned.safetensors",
+                "url": "https://huggingface.co/stabilityai/sd-vae-ft-mse-original/resolve/main/vae-ft-mse-840000-ema-pruned.safetensors?download=true",
+                "path": "vae",
+                "category": "vae",
+                "filename": "vae-ft-mse-840000-ema-pruned.safetensors"
             }
         ],
         "text_encoders": [
