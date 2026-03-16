@@ -102,6 +102,13 @@
                 "path": "diffusion_models",
                 "category": "diffusion_models",
                 "filename": "z_image_turbo-Q5_K_S.gguf"
+            },
+            {
+                "name": "lotus-depth-d-v1-1.safetensors",
+                "url": "https://huggingface.co/Comfy-Org/lotus/resolve/main/lotus-depth-d-v1-1.safetensors?download=true",
+                "path": "diffusion_models",
+                "category": "diffusion_models",
+                "filename": "lotus-depth-d-v1-1.safetensors"
             }
         ],
         "unet": [
