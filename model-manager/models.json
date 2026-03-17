@@ -1240,6 +1240,13 @@
                 "path": "llm/GGUF",
                 "category": "text_encoders",
                 "filename": "Qwen2.5-VL-7B-Instruct-abliterated.Q8_0.gguf"
+            },
+            {
+                "name": "Qwen2.5-VL-7B-Instruct-abliterated.Q4_K_M.gguf",
+                "url": "https://huggingface.co/mradermacher/Qwen2.5-VL-7B-Instruct-abliterated-GGUF/resolve/main/Qwen2.5-VL-7B-Instruct-abliterated.Q4_K_M.gguf",
+                "path": "llm/GGUF/mradermacher",
+                "category": "text_encoders",
+                "filename": "Qwen2.5-VL-7B-Instruct-abliterated.Q4_K_M.gguf"
             }
         ],
         "loras": [
