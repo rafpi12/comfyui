@@ -387,6 +387,13 @@
                 "path": "loras",
                 "category": "loras",
                 "filename": "sagging_breasts_zbase_v1.safetensors"
+            },
+            {
+                "name": "zit_sda_v1.safetensors",
+                "url": "https://huggingface.co/F16/z-image-turbo-sda/resolve/main/zit_sda_v1.safetensors?download=true",
+                "path": "loras",
+                "category": "loras",
+                "filename": "zit_sda_v1.safetensors"
             }
         ],
         "loras/Vyesna": [
