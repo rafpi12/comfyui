@@ -394,6 +394,13 @@
                 "path": "loras",
                 "category": "loras",
                 "filename": "zit_sda_v1.safetensors"
+            },
+            {
+                "name": "amat_nude_selfie_z-img-base_&_turbo_aidoc.safetensors",
+                "url": "https://civitai.com/api/download/models/2639244?type=Model&format=SafeTensor",
+                "path": "loras",
+                "category": "loras",
+                "filename": "amat_nude_selfie_z-img-base_&_turbo_aidoc.safetensors"
             }
         ],
         "loras/Vyesna": [
