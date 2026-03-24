@@ -1856,6 +1856,15 @@
                 "category": "vae",
                 "filename": "LTX2_video_vae_bf16.safetensors"
             }
+        ],
+        "text_encoders": [
+            {
+                "name": "gemma_3_12B_it_fp8_e4m3fn.safetensors",
+                "url": "https://huggingface.co/GitMylo/LTX-2-comfy_gemma_fp8_e4m3fn/resolve/main/gemma_3_12B_it_fp8_e4m3fn.safetensors?download=true",
+                "path": "text_encoders",
+                "category": "text_encoders",
+                "filename": "gemma_3_12B_it_fp8_e4m3fn.safetensors"
+            }
         ]
     }
 }
