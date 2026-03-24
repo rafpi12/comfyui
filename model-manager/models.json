@@ -1847,6 +1847,15 @@
                 "category": "loras",
                 "_size": 0
             }
+        ],
+        "vae": [
+            {
+                "name": "LTX2_video_vae_bf16.safetensors",
+                "url": "https://huggingface.co/Kijai/LTXV2_comfy/resolve/main/VAE/LTX2_video_vae_bf16.safetensors?download=true",
+                "path": "vae",
+                "category": "vae",
+                "filename": "LTX2_video_vae_bf16.safetensors"
+            }
         ]
     }
 }
