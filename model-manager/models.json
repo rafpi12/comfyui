@@ -1864,6 +1864,13 @@
                 "path": "text_encoders",
                 "category": "text_encoders",
                 "filename": "gemma_3_12B_it_fp8_e4m3fn.safetensors"
+            },
+            {
+                "name": "ltx-2.3_text_projection_bf16.safetensors",
+                "url": "https://huggingface.co/Kijai/LTX2.3_comfy/resolve/main/text_encoders/ltx-2.3_text_projection_bf16.safetensors?download=true",
+                "path": "text_encoders",
+                "category": "text_encoders",
+                "filename": "ltx-2.3_text_projection_bf16.safetensors"
             }
         ]
     }
