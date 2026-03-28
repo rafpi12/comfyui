@@ -1862,6 +1862,13 @@
                 "path": "vae",
                 "category": "vae",
                 "filename": "LTX2_audio_vae_bf16.safetensors"
+            },
+            {
+                "name": "LTX23_audio_vae_bf16.safetensors",
+                "url": "https://huggingface.co/Kijai/LTX2.3_comfy/resolve/main/vae/LTX23_audio_vae_bf16.safetensors?download=true",
+                "path": "vae",
+                "category": "vae",
+                "filename": "LTX23_audio_vae_bf16.safetensors"
             }
         ],
         "text_encoders": [
