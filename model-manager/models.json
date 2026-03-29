@@ -408,6 +408,13 @@
                 "path": "loras",
                 "category": "loras",
                 "filename": "amat_nude_selfie_z-img-base_&_turbo_aidoc.safetensors"
+            },
+            {
+                "name": "gta6_amateur_photography_zimagebase_v2.safetensors",
+                "url": "https://civitai.com/api/download/models/2772577?type=Model&format=SafeTensor",
+                "path": "loras",
+                "category": "loras",
+                "filename": "gta6_amateur_photography_zimagebase_v2.safetensors"
             }
         ],
         "loras/Vyesna": [
