@@ -1218,6 +1218,13 @@
                 "path": "checkpoints",
                 "category": "diffusion_models",
                 "filename": "sd_xl_base_1.0.safetensors"
+            },
+            {
+                "name": "mopMixtureOfPerverts_v61DMD.safetensors",
+                "url": "https://civitai.com/api/download/models/2557010?type=Model&format=SafeTensor&size=pruned&fp=fp16",
+                "path": "checkpoints",
+                "category": "diffusion_models",
+                "filename": "mopMixtureOfPerverts_v61DMD.safetensors"
             }
         ],
         "loras": [
