@@ -1160,6 +1160,15 @@
                 "_size": 0,
                 "category": "loras"
             }
+        ],
+        "unet": [
+            {
+                "name": "gonzalomoXLFluxPony_v30FluxDQ4UNET.gguf",
+                "url": "https://civitai.com/api/download/models/2760003?type=Model&format=GGUF&size=pruned&fp=nf4",
+                "path": "unet",
+                "category": "unet",
+                "filename": "gonzalomoXLFluxPony_v30FluxDQ4UNET.gguf"
+            }
         ]
     },
     "SDXL": {
