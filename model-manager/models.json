@@ -123,6 +123,13 @@
                 "path": "diffusion_models",
                 "category": "diffusion_models",
                 "filename": "gonzalomoZpop_insta.safetensors"
+            },
+            {
+                "name": "RedZFUN-v6-ZIB-Distilled-AGILE-8steps-BF16-ComfyUI.safetensors",
+                "url": "https://huggingface.co/GuangyuanSD/Z-Image-Distilled/resolve/main/RedZFUN-v6-ZIB-Distilled-AGILE-8steps-BF16-ComfyUI.safetensors?download=true",
+                "path": "diffusion_models",
+                "category": "diffusion_models",
+                "filename": "RedZFUN-v6-ZIB-Distilled-AGILE-8steps-BF16-ComfyUI.safetensors"
             }
         ],
         "unet": [
