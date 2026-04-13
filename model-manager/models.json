@@ -130,6 +130,13 @@
                 "path": "diffusion_models",
                 "category": "diffusion_models",
                 "filename": "RedZFUN-v6-ZIB-Distilled-AGILE-8steps-BF16-ComfyUI.safetensors"
+            },
+            {
+                "name": "zImageTurbo-Deedeemegadoodo_v10.safetensors",
+                "url": "https://civitai.com/api/download/models/2852497?type=Model&format=SafeTensor&size=full&fp=bf16",
+                "path": "diffusion_models",
+                "category": "diffusion_models",
+                "filename": "zImageTurbo-Deedeemegadoodo_v10.safetensors"
             }
         ],
         "unet": [
