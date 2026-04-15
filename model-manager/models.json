@@ -1023,6 +1023,21 @@
             }
         ]
     },
+    "Ernie": {
+    "diffusion_models": [
+        {
+            "name": "Nom du Modèle Ernie",
+            "url": "https://lien-de-telechargement.com/modele.safetensors",
+            "path": "diffusion_models",
+            "filename": "ernie_model_v1.safetensors",
+            "category": "diffusion_models"
+        }
+    ],
+    "unet": [],
+    "vae": [],
+    "text_encoders": [],
+    "loras": []
+},
     "Flux": {
         "text_encoders": [
             {
