@@ -1024,20 +1024,27 @@
         ]
     },
     "Ernie": {
-    "diffusion_models": [
-        {
-            "name": "Nom du Modèle Ernie",
-            "url": "https://lien-de-telechargement.com/modele.safetensors",
-            "path": "diffusion_models",
-            "filename": "ernie_model_v1.safetensors",
-            "category": "diffusion_models"
-        }
-    ],
-    "unet": [],
-    "vae": [],
-    "text_encoders": [],
-    "loras": []
-},
+        "diffusion_models": [
+            {
+                "name": "Nom du Mod\u00e8le Ernie",
+                "url": "https://lien-de-telechargement.com/modele.safetensors",
+                "path": "diffusion_models",
+                "filename": "ernie_model_v1.safetensors",
+                "category": "diffusion_models"
+            },
+            {
+                "name": "ernie-image-turbo.safetensors",
+                "url": "https://huggingface.co/Comfy-Org/ERNIE-Image/resolve/main/diffusion_models/ernie-image-turbo.safetensors",
+                "path": "diffusion_models",
+                "category": "diffusion_models",
+                "filename": "ernie-image-turbo.safetensors"
+            }
+        ],
+        "unet": [],
+        "vae": [],
+        "text_encoders": [],
+        "loras": []
+    },
     "Flux": {
         "text_encoders": [
             {
