@@ -135,28 +135,34 @@
         }
 
         async function start() {
-            async function start() {
-    try {
-        const r = await fetch('/config'); cfg = await r.json();
-        const envSelector = document.getElementById('env-ui'); envSelector.innerHTML = "";
-        
-        // 1. On récupère la liste des clés (Z-Image, Ernie, etc.)
-        const environments = Object.keys(cfg).sort((a, b) => a.localeCompare(b));
-        
-        // --- AJOUT ICI ---
-        const editEnv = document.getElementById('edit-env'); 
-        editEnv.innerHTML = ""; // On vide les options codées en dur
-        environments.forEach(env => editEnv.add(new Option(env, env))); // On ajoute chaque env au catalogue
-        // -----------------
+            try {
+                const r = await fetch('/config'); cfg = await r.json();
+                const envSelector = document.getElementById('env-ui'); 
+                const editEnv = document.getElementById('edit-env');
+                
+                envSelector.innerHTML = "";
+                editEnv.innerHTML = "";
 
-        envSelector.add(new Option("Tous les environnements", "__ALL__"));
-        environments.forEach(env => envSelector.add(new Option(env, env)));
-        envSelector.value = "__ALL__"; 
-        
-        await updateDiskState(); loadModels(); renderCatalogue(); setInterval(loop, 2000); updateDiskWidget(); setInterval(updateDiskWidget, 30000);
-        setTimeout(async () => { await updateDiskState(); loadModels(); }, 3000);
-    } catch(e) { }
-}
+                const environments = Object.keys(cfg).sort((a, b) => a.localeCompare(b));
+
+                // Remplissage Sélecteur Principal
+                envSelector.add(new Option("Tous les environnements", "__ALL__"));
+                environments.forEach(env => envSelector.add(new Option(env, env)));
+                envSelector.value = "__ALL__";
+
+                // Remplissage Sélecteur Éditeur (Dynamique !)
+                environments.forEach(env => editEnv.add(new Option(env, env)));
+                
+                await updateDiskState(); 
+                loadModels(); 
+                renderCatalogue(); 
+                setInterval(loop, 2000); 
+                updateDiskWidget(); 
+                setInterval(updateDiskWidget, 30000);
+                
+                setTimeout(async () => { await updateDiskState(); loadModels(); }, 3000);
+            } catch(e) { console.error(e); }
+        }
 
         async function updateDiskState() { const r = await fetch('/scan-disk'); diskFiles = await r.json(); }
 
@@ -175,7 +181,6 @@
                         document.getElementById('ws-bar').style.width = ws.used_pct + '%';
                         document.getElementById('ws-bar').className = 'h-1.5 rounded-full transition-all duration-500 ' + color;
                     } else {
-                        // Pas de quota défini : on cache total/libre/barre
                         document.getElementById('ws-total').textContent = '? Go';
                         document.getElementById('ws-free').textContent = '—';
                         document.getElementById('ws-bar').style.width = '0%';
@@ -192,50 +197,26 @@
             if (env !== "__ALL__" && !cfg[env]) return;
 
             let allModels = [];
-
-            // Environnements à parcourir : un seul ou tous
             const envsToScan = env === "__ALL__" ? Object.keys(cfg) : [env];
 
             envsToScan.forEach(e => {
-    Object.keys(cfg[e]).forEach(cat => {
-        let matchType = (type === 'all');
-        if (!matchType) {
-            if (type === 'clip') matchType = (cat.includes('clip') || cat.includes('text_encoders'));
-            else if (type === 'unet') matchType = (cat.includes('unet') || cat.includes('diffusion_models'));
-            else matchType = cat.toLowerCase().includes(type.toLowerCase());
-        }
-        if (matchType) {
-            cfg[e][cat].forEach(model => {
-                if(model.filename.toLowerCase().includes(search)) {
-                    allModels.push({ ...model, _env: e });  // ← on copie le modèle avec son env
-                }
-            });
-        }
-    });
-});
-
-            // Injecter les dossiers disk-only (prompt_generator, LLM) dans allModels
-            const folderCategoryMap = { "prompt_generator": "Qwen", "LLM": "Qwen" };
-            const folderCategories = ["prompt_generator", "LLM"];
-            folderCategories.forEach(cat => {
-                const ownerEnv = folderCategoryMap[cat];
-                if (env !== "__ALL__" && env !== ownerEnv) return;
-                (diskFiles[cat] || []).forEach(entry => {
-                    if (!entry.is_folder) return;
-                    if (!entry.path.toLowerCase().includes(search)) return;
-                    allModels.push({
-                        filename: entry.path,
-                        path: cat,
-                        category: cat,
-                        url: "",
-                        _env: "",
-                        _isFolder: true,
-                        _folderSize: entry.size || 0,
-                    });
+                Object.keys(cfg[e]).forEach(cat => {
+                    let matchType = (type === 'all');
+                    if (!matchType) {
+                        if (type === 'clip') matchType = (cat.includes('clip') || cat.includes('text_encoders'));
+                        else if (type === 'unet') matchType = (cat.includes('unet') || cat.includes('diffusion_models'));
+                        else matchType = cat.toLowerCase().includes(type.toLowerCase());
+                    }
+                    if (matchType) {
+                        cfg[e][cat].forEach(model => {
+                            if(model.filename.toLowerCase().includes(search)) {
+                                allModels.push({ ...model, _env: e });
+                            }
+                        });
+                    }
                 });
             });
 
-            // PASSE 1 : calculer _diskSize sur tous les modèles avant le tri
             allModels.forEach(model => {
                 if (model._isFolder) {
                     model._diskSize = model._folderSize || 0;
@@ -247,48 +228,30 @@
                 }
             });
 
-            // TRI DYNAMIQUE
             allModels.sort((a, b) => {
-                if (sortState.key === 'size') {
-                    return ((a._diskSize || 0) - (b._diskSize || 0)) * sortState.dir;
-                }
+                if (sortState.key === 'size') return ((a._diskSize || 0) - (b._diskSize || 0)) * sortState.dir;
                 return a.filename.localeCompare(b.filename) * sortState.dir;
             });
 
-            // Remplissage du select
             allModels.forEach(model => {
-                let label, o;
-                if (model._isFolder) {
-                    label = "● 📁 " + model.filename + "  [" + formatSize(model._folderSize) + "]";
-                    o = new Option(label, model.filename);
-                    o.dataset.url = "";
-                    o.dataset.cat = model.path;
-                    o.dataset.category = model.category;
-                    o.dataset.env = "";
-                    o.dataset.size = model._folderSize || 0;
-                    o.dataset.isFolder = "true";
-                    o.style.color = "#4ade80";
-                } else {
-                    const displayCat = model.category || model.path.split('/')[0];
-                    const diskKey = model.path.split('/')[0];
-                    const diskCategoryFiles = diskFiles[diskKey] || [];
-                    const diskEntry = diskCategoryFiles.find(f => (f.path || f).toLowerCase() === model.filename.toLowerCase());
-                    const isPresent = !!diskEntry;
-                    const fileSize = diskEntry ? diskEntry.size : null;
-                    label = (isPresent ? "● " : "○ ") + model.filename + (isPresent && fileSize ? "  [" + formatSize(fileSize) + "]" : "");
-                    o = new Option(label, model.filename);
-                    o.dataset.url = model.url;
-                    o.dataset.cat = model.path;
-                    o.dataset.category = displayCat;
-                    o.dataset.env = model._env || "";
-                    o.dataset.size = fileSize || 0;
-                    if(isPresent) o.style.color = "#4ade80";
-                }
+                const displayCat = model.category || model.path.split('/')[0];
+                const diskKey = model.path.split('/')[0];
+                const diskCategoryFiles = diskFiles[diskKey] || [];
+                const diskEntry = diskCategoryFiles.find(f => (f.path || f).toLowerCase() === model.filename.toLowerCase());
+                const isPresent = !!diskEntry;
+                const fileSize = diskEntry ? diskEntry.size : null;
+                const label = (isPresent ? "● " : "○ ") + model.filename + (isPresent && fileSize ? "  [" + formatSize(fileSize) + "]" : "");
+                const o = new Option(label, model.filename);
+                o.dataset.url = model.url;
+                o.dataset.cat = model.path;
+                o.dataset.category = displayCat;
+                o.dataset.env = model._env || "";
+                o.dataset.size = fileSize || 0;
+                if(isPresent) o.style.color = "#4ade80";
                 if (selectedValues.includes(model.filename)) o.selected = true;
                 m.add(o);
             });
-            
-            m.scrollTop = targetFilename ? (Array.from(m.options).findIndex(o => o.selected) * 24) : savedScroll;
+            m.scrollTop = savedScroll;
         }
 
         async function checkStatus() {
@@ -307,7 +270,7 @@
             document.getElementById('edit-path').value = BASE_PATH + o.dataset.cat;
             document.getElementById('edit-url').value = o.dataset.url;
             document.getElementById('edit-file').value = cleanName;
-			renderCatalogue(cleanName); // ← cette ligne manquait
+            renderCatalogue(cleanName);
         }
 
         async function startSmartDownload() {
@@ -324,8 +287,7 @@
                 for(let o of s) {
                     const name = o.value.replace(/^[●○]\s/, "");
                     await fetch('/download', { 
-                        method:'POST', 
-                        headers: {'Content-Type': 'application/json'}, 
+                        method:'POST', headers: {'Content-Type': 'application/json'}, 
                         body: JSON.stringify({url: o.dataset.url, path: o.dataset.cat, filename: name}) 
                     });
                     addLog(`Ajout file d'attente : ${name}`);
@@ -385,84 +347,50 @@
                     const isError = t.status.includes('error') || t.status.includes('Erreur');
                     const isDone = t.status === 'complete';
                     const isActive = t.status === 'active';
-                    const isWaiting = isActive && t.progress === 0 && t.speed === '0 o/s';
                     const borderColor = isError ? 'border-red-500' : (isDone ? 'border-green-500' : 'border-blue-500');
                     const barColor = isError ? 'bg-red-500' : (isDone ? 'bg-green-500' : 'bg-blue-500');
                     const pct = Math.round(t.progress || 0);
-                    const statusLabel = isError ? t.status : (isDone ? 'TERMINÉ' : (isActive ? 'EN COURS' : t.status.toUpperCase()));
-                    const bar = isWaiting
-                        ? `<div class="h-2 rounded-full bg-slate-600 animate-pulse" style="width:100%"></div>`
-                        : `<div class="${barColor} h-2 rounded-full transition-all duration-500" style="width:${pct}%"></div>`;
-                    const speedLabel = isWaiting ? '⏳ En attente...' : (isActive ? '⚡ ' + t.speed : (isDone ? '✅ Terminé' : ''));
-                    const pctLabel = isWaiting ? '' : (pct + '%' + (isActive && t.eta ? ' · ETA ' + t.eta : ''));
                     return `<div class="bg-slate-900/80 p-4 rounded-xl border-l-4 ${borderColor}">
-                        <div class="flex justify-between text-[11px] mb-2 font-bold">
-                            <span class="truncate max-w-[60%] text-white">${t.name}</span>
-                            <span class="${isError ? 'text-red-400' : (isDone ? 'text-green-400' : 'text-blue-300')}">${statusLabel}</span>
-                        </div>
-                        <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden mb-2">${bar}</div>
-                        <div class="flex justify-between text-[10px] text-slate-400">
-                            <span>${speedLabel}</span>
-                            <span class="font-mono font-bold ${isDone ? 'text-green-400' : 'text-white'}">${pctLabel}</span>
-                        </div>
+                        <div class="flex justify-between text-[11px] mb-2 font-bold text-white"><span class="truncate max-w-[60%]">${t.name}</span><span>${pct}%</span></div>
+                        <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden"><div class="${barColor} h-2 rounded-full" style="width:${pct}%"></div></div>
                     </div>`;
                 }).join('');
             } catch(e) {}
         }
         async function saveToCatalogue() {
-    const env = document.getElementById('edit-env').value;
-    const cat = document.getElementById('edit-cat').value;
-    const fullPath = document.getElementById('edit-path').value;
-    const url = document.getElementById('edit-url').value;
-    const file = document.getElementById('edit-file').value;
-
-    // Validation : bloquer toute sauvegarde incomplète
-    if (!env || !cat || !file || !url) {
-        addLog('⚠️ Environnement, catégorie, fichier et URL sont obligatoires.', true);
-        return;
-    }
-
-    const relPath = fullPath.replace(BASE_PATH, "").replace(/^\/+/, "");
-    const obj = { name: file, url: url, path: relPath, category: cat, filename: file };
-    if (!cfg[env]) cfg[env] = {};
-    if (!cfg[env][cat]) cfg[env][cat] = [];
-    const idx = cfg[env][cat].findIndex(m => m.filename === file);
-    if (idx > -1) cfg[env][cat][idx] = obj; else cfg[env][cat].push(obj);
-    const r = await fetch('/save-config', { method: 'POST', body: JSON.stringify(cfg) });
-    if ((await r.json()).github_sync) showGitHubToast();
-    loadModels(file);
-    renderCatalogue(file);
-}
+            const env = document.getElementById('edit-env').value;
+            const cat = document.getElementById('edit-cat').value;
+            const fullPath = document.getElementById('edit-path').value;
+            const url = document.getElementById('edit-url').value;
+            const file = document.getElementById('edit-file').value;
+            if (!env || !cat || !file || !url) { addLog('⚠️ Données incomplètes', true); return; }
+            const relPath = fullPath.replace(BASE_PATH, "").replace(/^\/+/, "");
+            const obj = { name: file, url: url, path: relPath, category: cat, filename: file };
+            if (!cfg[env]) cfg[env] = {}; if (!cfg[env][cat]) cfg[env][cat] = [];
+            const idx = cfg[env][cat].findIndex(m => m.filename === file);
+            if (idx > -1) cfg[env][cat][idx] = obj; else cfg[env][cat].push(obj);
+            const r = await fetch('/save-config', { method: 'POST', body: JSON.stringify(cfg) });
+            if ((await r.json()).github_sync) showGitHubToast();
+            loadModels(file); renderCatalogue(file);
+        }
         function renderCatalogue(filterFile = null) {
             const list = document.getElementById('catalogue-list'); list.innerHTML = "";
             Object.keys(cfg).forEach(env => Object.keys(cfg[env]).forEach(cat => cfg[env][cat].forEach((m, idx) => {
-        if (filterFile && m.filename !== filterFile) return;
-        list.innerHTML += `<div class="flex justify-between items-center bg-black/40 p-2 mb-1 border border-white/5 rounded ${filterFile ? 'file-highlight' : ''}" id="cat-entry-${m.filename.replace(/\W/g,'_')}"><div class="flex flex-col"><span class="text-blue-400 font-bold uppercase" style="font-size:8px">${env} / ${cat}</span><span class="truncate italic text-slate-300">${m.filename}</span></div><button onclick="removeFromCatalogue('${env}','${cat}',${idx})" class="text-red-500 ml-2"><i class="fas fa-times"></i></button></div>`;
-    })));
-    // Scroll interne à la liste catalogue uniquement (sans focus page)
-    if (filterFile) {
-        const id = "cat-entry-" + filterFile.replace(/\W/g, '_');
-        const el = document.getElementById(id);
-        if (el) setTimeout(() => {
-            const list = document.getElementById('catalogue-list');
-            list.scrollTop = el.offsetTop - list.offsetTop - 10;
-        }, 50);
-    }
-}
-        async function removeFromCatalogue(e,c,i) { if(confirm('Supprimer du JSON ?')) { cfg[e][c].splice(i, 1); await fetch('/save-config', { method: 'POST', body: JSON.stringify(cfg) }); renderCatalogue(); loadModels(); } }
-        
+                if (filterFile && m.filename !== filterFile) return;
+                list.innerHTML += `<div class="flex justify-between items-center bg-black/40 p-2 mb-1 border border-white/5 rounded" id="cat-entry-${m.filename.replace(/\W/g,'_')}">
+                    <div class="flex flex-col"><span class="text-blue-400 font-bold uppercase text-[8px]">${env} / ${cat}</span><span class="truncate italic text-slate-300">${m.filename}</span></div>
+                    <button onclick="removeFromCatalogue('${env}','${cat}',${idx})" class="text-red-500 ml-2"><i class="fas fa-times"></i></button></div>`;
+            })));
+        }
+        async function removeFromCatalogue(e,c,i) { if(confirm('Supprimer ?')) { cfg[e][c].splice(i, 1); await fetch('/save-config', { method: 'POST', body: JSON.stringify(cfg) }); renderCatalogue(); loadModels(); } }
         function setSortAndReload(key) {
-            if (sortState.key === key) sortState.dir *= -1;
-            else { sortState.key = key; sortState.dir = 1; }
-            updateSortIcons();
-            loadModels();
+            if (sortState.key === key) sortState.dir *= -1; else { sortState.key = key; sortState.dir = 1; }
+            updateSortIcons(); loadModels();
         }
         function updateSortIcons() {
             const arrow = sortState.dir === 1 ? '↑' : '↓';
             document.getElementById('sort-name-icon').textContent = sortState.key === 'name' ? arrow : '↕';
             document.getElementById('sort-size-icon').textContent = sortState.key === 'size' ? arrow : '↕';
-            document.getElementById('sort-name').className = `flex-1 cursor-pointer flex items-center gap-1 ${sortState.key === 'name' ? 'text-blue-400' : 'text-slate-500 hover:text-blue-400'}`;
-            document.getElementById('sort-size').className = `w-20 text-right cursor-pointer flex items-center justify-end gap-1 ${sortState.key === 'size' ? 'text-blue-400' : 'text-slate-500 hover:text-blue-400'}`;
         }
         start();
     </script>
