@@ -1042,7 +1042,15 @@
         ],
         "unet": [],
         "vae": [],
-        "text_encoders": [],
+        "text_encoders": [
+            {
+                "name": "ministral-3-3b.safetensors",
+                "url": "https://huggingface.co/Comfy-Org/ERNIE-Image/resolve/main/text_encoders/ministral-3-3b.safetensors",
+                "path": "text_encoders",
+                "category": "text_encoders",
+                "filename": "ministral-3-3b.safetensors"
+            }
+        ],
         "loras": []
     },
     "Flux": {
