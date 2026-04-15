@@ -1026,13 +1026,6 @@
     "Ernie": {
         "diffusion_models": [
             {
-                "name": "Nom du Mod\u00e8le Ernie",
-                "url": "https://lien-de-telechargement.com/modele.safetensors",
-                "path": "diffusion_models",
-                "filename": "ernie_model_v1.safetensors",
-                "category": "diffusion_models"
-            },
-            {
                 "name": "ernie-image-turbo.safetensors",
                 "url": "https://huggingface.co/Comfy-Org/ERNIE-Image/resolve/main/diffusion_models/ernie-image-turbo.safetensors",
                 "path": "diffusion_models",
