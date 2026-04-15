@@ -1031,6 +1031,13 @@
                 "path": "diffusion_models",
                 "category": "diffusion_models",
                 "filename": "ernie-image-turbo.safetensors"
+            },
+            {
+                "name": "ernie-image.safetensors",
+                "url": "https://huggingface.co/Comfy-Org/ERNIE-Image/resolve/main/diffusion_models/ernie-image.safetensors",
+                "path": "diffusion_models",
+                "category": "diffusion_models",
+                "filename": "ernie-image.safetensors"
             }
         ],
         "unet": [],
