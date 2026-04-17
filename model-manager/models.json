@@ -1283,6 +1283,13 @@
                 "path": "checkpoints",
                 "category": "diffusion_models",
                 "filename": "mopMixtureOfPerverts_v61DMD.safetensors"
+            },
+            {
+                "name": "realisticVisionV60B1_v51HyperVAE.safetensors",
+                "url": "https://civitai.com/api/download/models/501240?type=Model&format=SafeTensor&size=full&fp=fp16",
+                "path": "checkpoints",
+                "category": "diffusion_models",
+                "filename": "realisticVisionV60B1_v51HyperVAE.safetensors"
             }
         ],
         "loras": [
