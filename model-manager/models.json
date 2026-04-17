@@ -1297,6 +1297,13 @@
                 "path": "checkpoints",
                 "category": "diffusion_models",
                 "filename": "realisticVisionV60B1_v51HyperInpaintVAE.safetensors"
+            },
+            {
+                "name": "realisticVisionV60B1_v51VAE.safetensors",
+                "url": "https://civitai.com/api/download/models/130072?type=Model&format=SafeTensor&size=full&fp=fp16",
+                "path": "checkpoints",
+                "category": "diffusion_models",
+                "filename": "realisticVisionV60B1_v51VAE.safetensors"
             }
         ],
         "loras": [
