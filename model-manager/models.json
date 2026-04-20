@@ -1093,6 +1093,13 @@
                 "filename": "EVA02_CLIP_L_336_psz14_s6B.pt",
                 "_size": 0,
                 "category": "text_encoders"
+            },
+            {
+                "name": "qwen_3_8b_fp4mixed.safetensors",
+                "url": "https://huggingface.co/Comfy-Org/vae-text-encorder-for-flux-klein-9b/resolve/main/split_files/text_encoders/qwen_3_8b_fp4mixed.safetensors?download=true",
+                "path": "clip",
+                "category": "text_encoders",
+                "filename": "qwen_3_8b_fp4mixed.safetensors"
             }
         ],
         "diffusion_models": [
