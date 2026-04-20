@@ -89,28 +89,36 @@ async def fetch_civitai_name(url: str):
         if not is_civitai:
             return {"filename": ""}
 
-        headers = {"Authorization": f"Bearer {CIVITAI_TOKEN}"} if CIVITAI_TOKEN else {}
-        headers["User-Agent"] = "Mozilla/5.0"
+        hdr = {"User-Agent": "Mozilla/5.0"}
+        if CIVITAI_TOKEN:
+            hdr["Authorization"] = f"Bearer {CIVITAI_TOKEN}"
 
         # Cas 1 : URL de telechargement direct /api/download/models/{version_id}
-        dl_match = re.search(r'/api/download/models/(\d+)', url)
+        dl_match = re.search(r"/api/download/models/(\d+)", url)
         if dl_match:
             version_id = dl_match.group(1)
             api_url = f"https://civitai.com/api/v1/model-versions/{version_id}"
-            resp = requests.get(api_url, headers=headers, timeout=8)
+            resp = requests.get(api_url, headers=hdr, timeout=8)
             if resp.status_code == 200:
                 data = resp.json()
-                for file in data.get('files', []):
-                    if file.get('primary'): return {"filename": file.get('name')}
-                if data.get('files'): return {"filename": data['files'][0].get('name')}
-            # Fallback : resoudre la redirection et extraire le nom depuis Content-Disposition
+                for file in data.get("files", []):
+                    if file.get("primary"):
+                        return {"filename": file.get("name")}
+                if data.get("files"):
+                    return {"filename": data["files"][0].get("name")}
+            # Fallback : HEAD pour lire Content-Disposition
             try:
-                r = requests.head(url, headers=headers, allow_redirects=True, timeout=8)
+                r = requests.head(url, headers=hdr, allow_redirects=True, timeout=8)
                 cd = r.headers.get("Content-Disposition", "")
-                fn_match = re.search(r'filename="?([^";
-]+)"?', cd)
-                if fn_match:
-                    return {"filename": fn_match.group(1).strip()}
+                # Extraire le nom de fichier depuis Content-Disposition
+                cd_parts = [p.strip() for p in cd.split(";")]
+                fn = ""
+                for part in cd_parts:
+                    if part.lower().startswith("filename="):
+                        fn = part.split("=", 1)[1].strip().strip('"')
+                        break
+                if fn:
+                    return {"filename": fn}
                 final_name = unquote(r.url.split("/")[-1].split("?")[0])
                 if final_name and "." in final_name:
                     return {"filename": final_name}
@@ -119,31 +127,36 @@ async def fetch_civitai_name(url: str):
             return {"filename": ""}
 
         # Cas 2 : URL de page modele /models/{model_id}
-        if '/models/' in url:
-            mv_match = re.search(r'modelVersionId=(\d+)', url)
+        if "/models/" in url:
+            mv_match = re.search(r"modelVersionId=(\d+)", url)
             if mv_match:
                 version_id = mv_match.group(1)
                 api_url = f"https://civitai.com/api/v1/model-versions/{version_id}"
-                resp = requests.get(api_url, headers=headers, timeout=8)
+                resp = requests.get(api_url, headers=hdr, timeout=8)
                 if resp.status_code == 200:
                     data = resp.json()
-                    for file in data.get('files', []):
-                        if file.get('primary'): return {"filename": file.get('name')}
-                    if data.get('files'): return {"filename": data['files'][0].get('name')}
+                    for file in data.get("files", []):
+                        if file.get("primary"):
+                            return {"filename": file.get("name")}
+                    if data.get("files"):
+                        return {"filename": data["files"][0].get("name")}
             else:
-                model_id = url.split('/models/')[1].split('?')[0].split('/')[0]
+                model_id = url.split("/models/")[1].split("?")[0].split("/")[0]
                 api_url = f"https://civitai.com/api/v1/models/{model_id}"
-                resp = requests.get(api_url, headers=headers, timeout=8)
+                resp = requests.get(api_url, headers=hdr, timeout=8)
                 if resp.status_code == 200:
                     data = resp.json()
-                    versions = data.get('modelVersions', [])
+                    versions = data.get("modelVersions", [])
                     if versions:
-                        for file in versions[0].get('files', []):
-                            if file.get('primary'): return {"filename": file.get('name')}
-                        if versions[0].get('files'): return {"filename": versions[0]['files'][0].get('name')}
+                        for file in versions[0].get("files", []):
+                            if file.get("primary"):
+                                return {"filename": file.get("name")}
+                        if versions[0].get("files"):
+                            return {"filename": versions[0]["files"][0].get("name")}
 
         return {"filename": ""}
-    except: return {"filename": ""}
+    except:
+        return {"filename": ""}
 
 @app.get("/", response_class=HTMLResponse)
 async def index():
