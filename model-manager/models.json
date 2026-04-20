@@ -1224,6 +1224,13 @@
                 "filename": "Skintastic_Flux_v1.safetensors",
                 "_size": 0,
                 "category": "loras"
+            },
+            {
+                "name": "70sSciFiKlein9b.safetensors",
+                "url": "https://civitai.red/api/download/models/2692094?type=Model&format=SafeTensor",
+                "path": "loras",
+                "category": "loras",
+                "filename": "70sSciFiKlein9b.safetensors"
             }
         ],
         "unet": [
