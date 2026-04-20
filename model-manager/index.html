@@ -362,7 +362,7 @@
             const fileInput = document.getElementById('edit-file'); if (!url) return;
             fileInput.value = "⏳...";
             if (url.includes('huggingface.co')) fileInput.value = url.split('/').pop().split('?')[0];
-            else if (url.includes('civitai.com')) {
+            else if (url.includes('civitai.com') || url.includes('civitai.red')) {
                 const r = await fetch(`/fetch-civitai-name?url=${encodeURIComponent(url)}`);
                 const d = await r.json(); fileInput.value = d.filename || "";
             }
