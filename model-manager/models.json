@@ -1010,6 +1010,13 @@
                 "filename": "Z-Image-Turbo-Fun-Controlnet-Union-2.1-2601-8steps.safetensors",
                 "_size": 0,
                 "category": "controlnet"
+            },
+            {
+                "name": "Z-Image-Turbo-Fun-Controlnet-Union.safetensors",
+                "url": "https://huggingface.co/alibaba-pai/Z-Image-Turbo-Fun-Controlnet-Union/resolve/main/Z-Image-Turbo-Fun-Controlnet-Union.safetensors",
+                "path": "model_patches",
+                "category": "controlnet",
+                "filename": "Z-Image-Turbo-Fun-Controlnet-Union.safetensors"
             }
         ],
         "clip": [
