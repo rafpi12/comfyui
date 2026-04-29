@@ -104,12 +104,7 @@ header {
 .status-pill.done     { background: var(--green-l); border-color: var(--green); color: var(--green); }
 .status-pill.error    { background: var(--red-l); border-color: var(--red); color: var(--red); }
 
-.dot {
-  width: 6px; height: 6px;
-  border-radius: 50%;
-  background: currentColor;
-  flex-shrink: 0;
-}
+.dot { width:6px; height:6px; border-radius:50%; background:currentColor; flex-shrink:0; }
 .status-pill.loading .dot,
 .status-pill.downloading .dot,
 .status-pill.running .dot { animation: blink 1s infinite; }
@@ -118,7 +113,7 @@ header {
 /* ── LAYOUT ── */
 .app {
   display: grid;
-  grid-template-columns: 300px 1fr 340px;
+  grid-template-columns: 320px 1fr 340px;
   flex: 1;
   height: calc(100vh - 56px);
   overflow: hidden;
@@ -132,87 +127,215 @@ header {
   overflow: hidden;
   background: var(--surface);
 }
-
 .panel:last-child { border-right: none; }
 
 .panel-head {
-  padding: 14px 16px 12px;
+  padding: 10px 14px 9px;
   border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-shrink: 0;
+  background: var(--surface2);
 }
 
 .panel-title {
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 500;
-  letter-spacing: 0.8px;
+  letter-spacing: 0.9px;
   text-transform: uppercase;
   color: var(--text2);
 }
 
-.panel-body {
+/* ── LEFT PANEL — two sub-frames stacked ── */
+.left-panel {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-right: 1px solid var(--border);
+  background: var(--surface);
+}
+
+/* WAV frame */
+.wav-frame {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0;
+  min-height: 0;
+  border-bottom: 2px solid var(--border2);
+  overflow: hidden;
+}
+
+.frame-head {
+  padding: 8px 12px 7px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  background: var(--surface2);
+}
+
+.frame-title {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.9px;
+  text-transform: uppercase;
+  color: var(--text2);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.frame-count {
+  font-size: 10px;
+  color: var(--text3);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  padding: 1px 7px;
+  letter-spacing: 0;
+  text-transform: none;
+  font-weight: 400;
+}
+
+.frame-actions {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.frame-body {
   flex: 1;
   overflow-y: auto;
-  padding: 12px;
+  padding: 8px;
+}
+.frame-body::-webkit-scrollbar { width: 3px; }
+.frame-body::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+/* Captions frame */
+.cap-frame {
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 240px;
+  overflow: hidden;
+  transition: flex 0.2s;
+}
+.cap-frame.expanded {
+  flex: 1 1 0;
 }
 
-.panel-body::-webkit-scrollbar { width: 4px; }
-.panel-body::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
-
-/* ── FILE TREE ── */
-.tree-node {
+/* ── SELECT ALL BAR ── */
+.select-all-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 8px;
+  background: var(--accent-l);
+  border: 1px solid var(--accent);
+  border-radius: var(--r);
+  margin-bottom: 7px;
+  cursor: pointer;
+  transition: background 0.15s;
   user-select: none;
 }
+.select-all-bar:hover { background: #f0d8ca; }
+.sa-check {
+  width: 13px; height: 13px;
+  border: 1.5px solid var(--accent);
+  border-radius: 3px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 8px; color: white; background: var(--surface); flex-shrink: 0;
+}
+.sa-check.checked { background: var(--accent); }
+.sa-label { font-size: 11px; color: var(--accent); font-weight: 500; flex: 1; }
+.sa-count { font-size: 10px; color: var(--accent); }
+
+/* ── DELETE SELECTION BAR ── */
+.delete-bar {
+  display: none;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 8px;
+  background: var(--red-l);
+  border: 1px solid var(--red);
+  border-radius: var(--r);
+  margin-bottom: 7px;
+}
+.delete-bar.visible { display: flex; }
+.delete-bar span { flex: 1; font-size: 11px; color: var(--red); }
+
+/* ── SMALL BUTTONS ── */
+.btn {
+  padding: 6px 10px;
+  border: 1px solid var(--border2);
+  background: var(--surface);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.4px;
+  cursor: pointer;
+  border-radius: var(--r);
+  transition: all 0.15s;
+  font-weight: 500;
+}
+.btn:hover:not(:disabled) { background: var(--surface2); }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: white; }
+.btn.primary:hover:not(:disabled) { background: #b04d18; border-color: #b04d18; }
+.btn.ghost { color: var(--text2); }
+.btn.ghost:hover:not(:disabled) { color: var(--text); }
+.btn.danger { color: var(--red); border-color: var(--red); background: var(--red-l); }
+.btn.danger:hover:not(:disabled) { background: var(--red); color: white; }
+.btn.sm { padding: 3px 8px; font-size: 10px; }
+
+/* ── FILE TREE ── */
+.tree-node { user-select: none; }
 
 .tree-item {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 5px 8px;
+  gap: 5px;
+  padding: 4px 6px;
   border-radius: var(--r);
   cursor: pointer;
   transition: background 0.1s;
-  position: relative;
 }
-
 .tree-item:hover { background: var(--surface2); }
-.tree-item.selected { background: var(--accent-l); color: var(--accent); }
+.tree-item.selected { background: var(--accent-l); }
 .tree-item.selected .tree-name { color: var(--accent); font-weight: 500; }
 
-.tree-icon { font-size: 13px; flex-shrink: 0; width: 18px; text-align: center; }
-.tree-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text); }
+.tree-icon { font-size: 11px; flex-shrink: 0; width: 15px; text-align: center; }
+.tree-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text); font-size: 12px; }
 .tree-size { font-size: 10px; color: var(--text3); flex-shrink: 0; }
+.tree-children { padding-left: 16px; }
 
-.tree-children { padding-left: 20px; }
-
-.tree-dir > .tree-item .tree-icon::before { content: '▶'; font-size: 9px; color: var(--text3); }
+.tree-dir > .tree-item .tree-icon::before { content: '▶'; font-size: 8px; color: var(--text3); }
 .tree-dir.open > .tree-item .tree-icon::before { content: '▼'; }
-.tree-dir > .tree-item .tree-icon { font-size: 10px; }
+.tree-dir > .tree-item .tree-icon { font-size: 9px; }
 
-.tree-file .tree-icon { color: var(--text3); }
-.tree-file.done .tree-icon { color: var(--green); }
-.tree-file.queued .tree-icon { color: var(--accent); }
-
-/* ── CHECKBOXES ── */
+/* Checkboxes */
 .tree-check {
-  width: 14px; height: 14px;
+  width: 13px; height: 13px;
   border: 1.5px solid var(--border2);
   border-radius: 3px;
   flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: flex; align-items: center; justify-content: center;
   transition: all 0.15s;
   background: var(--surface);
+  font-size: 8px;
 }
+.tree-check.checked { background: var(--accent); border-color: var(--accent); color: white; }
+.tree-check.partial { background: var(--accent-l); border-color: var(--accent); color: var(--accent); }
 
-.tree-check.checked {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: white;
+.dir-badge {
   font-size: 9px;
+  color: var(--text3);
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  padding: 0 5px;
+  flex-shrink: 0;
 }
 
 /* ── CONTEXT MENU ── */
@@ -227,20 +350,13 @@ header {
   overflow: hidden;
   display: none;
 }
-
 .ctx-menu.visible { display: block; }
-
 .ctx-item {
-  padding: 8px 14px;
-  cursor: pointer;
-  font-size: 12px;
-  color: var(--text);
+  padding: 7px 13px;
+  cursor: pointer; font-size: 12px; color: var(--text);
   transition: background 0.1s;
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  display: flex; align-items: center; gap: 8px;
 }
-
 .ctx-item:hover { background: var(--surface2); }
 .ctx-item.danger { color: var(--red); }
 .ctx-item.danger:hover { background: var(--red-l); }
@@ -249,309 +365,159 @@ header {
 /* ── MIDDLE PANEL ── */
 .middle {
   border-right: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  background: var(--bg);
+  display: flex; flex-direction: column;
+  overflow: hidden; background: var(--bg);
 }
 
-/* ── DROPZONE ── */
+/* Dropzone */
 .dropzone {
-  margin: 16px;
+  margin: 12px;
   border: 1.5px dashed var(--border2);
   border-radius: var(--r);
-  padding: 28px 20px;
-  text-align: center;
-  cursor: pointer;
-  transition: all 0.2s;
-  background: var(--surface);
+  padding: 20px 16px;
+  text-align: center; cursor: pointer;
+  transition: all 0.2s; background: var(--surface);
 }
-
-.dropzone:hover, .dropzone.drag-over {
-  border-color: var(--accent);
-  background: var(--accent-l);
-}
-
-.dropzone-icon { font-size: 24px; margin-bottom: 8px; }
+.dropzone:hover, .dropzone.drag-over { border-color: var(--accent); background: var(--accent-l); }
+.dropzone-icon { font-size: 20px; margin-bottom: 5px; }
 .dropzone p { color: var(--text2); font-size: 12px; line-height: 1.6; }
 .dropzone p strong { color: var(--accent); }
-.dropzone-target { font-size: 10px; color: var(--text3); margin-top: 6px; }
+.dropzone-target { font-size: 10px; color: var(--text3); margin-top: 3px; }
 
-/* ── QUEUE ── */
-.queue-section { padding: 0 16px 8px; flex: 1; overflow-y: auto; }
+/* Queue */
+.queue-section { padding: 0 12px 8px; flex: 1; overflow-y: auto; }
 .queue-section::-webkit-scrollbar { width: 4px; }
 .queue-section::-webkit-scrollbar-thumb { background: var(--border2); }
 
-.queue-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 8px 0;
-  margin-bottom: 4px;
-  font-size: 11px;
-  color: var(--text2);
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-  font-weight: 500;
-}
-
 .queue-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 7px 10px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  margin-bottom: 4px;
-  transition: all 0.2s;
-  font-size: 12px;
+  display: flex; align-items: center; gap: 7px;
+  padding: 5px 8px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--r); margin-bottom: 4px;
+  transition: all 0.2s; font-size: 12px;
 }
-
-.queue-item.active {
-  border-color: var(--accent);
-  background: var(--accent-l);
-}
-
-.queue-item.done {
-  border-color: var(--green);
-  background: var(--green-l);
-}
-
-.queue-item.error { border-color: var(--red); background: var(--red-l); }
-
+.queue-item.active  { border-color: var(--accent); background: var(--accent-l); }
+.queue-item.done    { border-color: var(--green);  background: var(--green-l); }
+.queue-item.error   { border-color: var(--red);    background: var(--red-l); }
 .queue-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.queue-status { font-size: 14px; flex-shrink: 0; }
+.queue-status { font-size: 13px; flex-shrink: 0; }
 
-/* ── OUTPUT DIR ── */
+/* Output dir */
 .output-section {
-  margin: 0 16px 12px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  padding: 10px 12px;
+  margin: 0 12px 10px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--r); padding: 8px 10px;
 }
-
-.output-label {
-  font-size: 10px;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-  color: var(--text3);
-  margin-bottom: 6px;
-  font-weight: 500;
-}
-
+.output-label { font-size: 10px; letter-spacing: 0.5px; text-transform: uppercase; color: var(--text3); margin-bottom: 4px; font-weight: 500; }
 .output-input {
-  width: 100%;
-  padding: 6px 8px;
-  border: 1px solid var(--border2);
-  border-radius: 4px;
-  font-family: var(--mono);
-  font-size: 11px;
-  color: var(--text);
-  background: var(--bg);
-  outline: none;
-  transition: border-color 0.15s;
+  width: 100%; padding: 5px 7px;
+  border: 1px solid var(--border2); border-radius: 4px;
+  font-family: var(--mono); font-size: 11px; color: var(--text);
+  background: var(--bg); outline: none; transition: border-color 0.15s;
 }
-
 .output-input:focus { border-color: var(--accent); }
 
-/* ── ACTIONS ── */
+/* Actions */
 .actions {
-  padding: 12px 16px;
+  padding: 10px 12px;
   border-top: 1px solid var(--border);
   background: var(--surface);
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  flex-shrink: 0;
+  display: flex; flex-direction: column; gap: 7px; flex-shrink: 0;
 }
-
-.progress-bar {
-  height: 3px;
-  background: var(--border);
-  border-radius: 2px;
-  overflow: hidden;
-}
-
-.progress-fill {
-  height: 100%;
-  background: var(--accent);
-  width: 0%;
-  transition: width 0.5s ease;
-  border-radius: 2px;
-}
-
-.btn-row { display: flex; gap: 8px; }
-
-.btn {
-  flex: 1;
-  padding: 9px 14px;
-  border: 1px solid var(--border2);
-  background: var(--surface);
-  color: var(--text);
-  font-family: var(--mono);
-  font-size: 11px;
-  letter-spacing: 0.5px;
-  cursor: pointer;
-  border-radius: var(--r);
-  transition: all 0.15s;
-  font-weight: 500;
-}
-
-.btn:hover:not(:disabled) { background: var(--surface2); border-color: var(--border2); }
-.btn:disabled { opacity: 0.4; cursor: not-allowed; }
-
-.btn.primary {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: white;
-}
-
-.btn.primary:hover:not(:disabled) {
-  background: #b04d18;
-  border-color: #b04d18;
-}
-
-.btn.ghost { color: var(--text2); }
-.btn.ghost:hover:not(:disabled) { color: var(--red); border-color: var(--red); background: var(--red-l); }
+.progress-bar { height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; }
+.progress-fill { height: 100%; background: var(--accent); width: 0%; transition: width 0.5s ease; border-radius: 2px; }
+.btn-row { display: flex; gap: 7px; }
+.btn-full { flex: 1; }
 
 /* ── LOG PANEL ── */
-.log-panel {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  background: var(--surface);
-}
-
-.log-body {
-  flex: 1;
-  overflow-y: auto;
-  padding: 12px 16px;
-  font-size: 11.5px;
-  line-height: 1.7;
-}
-
+.log-panel { display: flex; flex-direction: column; overflow: hidden; background: var(--surface); }
+.log-body { flex: 1; overflow-y: auto; padding: 10px 14px; font-size: 11.5px; line-height: 1.7; }
 .log-body::-webkit-scrollbar { width: 4px; }
 .log-body::-webkit-scrollbar-thumb { background: var(--border2); }
-
-.log-entry {
-  display: flex;
-  gap: 10px;
-  padding: 1px 0;
-  animation: fade-in 0.25s ease;
-}
-
-@keyframes fade-in {
-  from { opacity: 0; transform: translateY(3px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
+.log-entry { display: flex; gap: 10px; padding: 1px 0; animation: fade-in 0.25s ease; }
+@keyframes fade-in { from{opacity:0;transform:translateY(3px)} to{opacity:1;transform:translateY(0)} }
 .log-time { color: var(--text3); flex-shrink: 0; font-size: 10px; padding-top: 2px; }
 .log-msg { color: var(--text2); white-space: pre-wrap; word-break: break-word; }
 .log-msg.success { color: var(--green); }
 .log-msg.error   { color: var(--red); }
-.log-msg.info    { color: var(--text2); }
 
-/* ── STATS ── */
-.stats {
-  display: flex;
-  gap: 0;
-  border-top: 1px solid var(--border);
-  flex-shrink: 0;
-}
-
-.stat {
-  flex: 1;
-  padding: 10px 14px;
-  text-align: center;
-  border-right: 1px solid var(--border);
-}
-
+/* Stats */
+.stats { display: flex; border-top: 1px solid var(--border); flex-shrink: 0; }
+.stat { flex: 1; padding: 9px 12px; text-align: center; border-right: 1px solid var(--border); }
 .stat:last-child { border-right: none; }
 .stat-val { font-size: 18px; font-family: var(--serif); color: var(--text); line-height: 1; }
-.stat-lbl { font-size: 10px; color: var(--text3); margin-top: 2px; letter-spacing: 0.3px; }
+.stat-lbl { font-size: 10px; color: var(--text3); margin-top: 2px; }
 
-/* ── LOADING OVERLAY ── */
+/* ── OVERLAY ── */
 .overlay {
-  position: fixed;
-  inset: 0;
+  position: fixed; inset: 0;
   background: rgba(245,243,239,0.92);
   backdrop-filter: blur(8px);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  z-index: 500;
-  gap: 20px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  z-index: 500; gap: 20px;
 }
-
 .overlay.hidden { display: none; }
+.overlay-title { font-family: var(--serif); font-size: 26px; color: var(--text); }
+.overlay-msg { font-size: 12px; color: var(--text2); max-width: 380px; text-align: center; line-height: 1.7; }
+.spinner { width:36px; height:36px; border:2px solid var(--border2); border-top-color:var(--accent); border-radius:50%; animation:spin 0.7s linear infinite; }
+@keyframes spin { to{transform:rotate(360deg)} }
+.overlay-log { background:var(--surface); border:1px solid var(--border); border-radius:var(--r); padding:12px 16px; max-width:440px; width:90%; max-height:160px; overflow-y:auto; font-size:11px; color:var(--text2); line-height:1.6; }
 
-.overlay-title {
-  font-family: var(--serif);
-  font-size: 26px;
-  color: var(--text);
+/* ── CAPTION ITEMS ── */
+.cap-item {
+  display: flex; align-items: flex-start; gap: 7px;
+  padding: 6px 8px;
+  border: 1px solid var(--border); border-radius: var(--r);
+  margin-bottom: 4px; background: var(--surface);
+  transition: all 0.15s; cursor: default;
 }
+.cap-item:hover { background: var(--blue-l); border-color: #a8c0de; }
+.cap-item.cap-selected { background: var(--red-l); border-color: #d08082; }
 
-.overlay-msg {
-  font-size: 12px;
-  color: var(--text2);
-  max-width: 380px;
-  text-align: center;
-  line-height: 1.7;
-  padding: 0 20px;
+.cap-check {
+  width: 13px; height: 13px;
+  border: 1.5px solid var(--border2); border-radius: 3px;
+  flex-shrink: 0; margin-top: 2px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s; background: var(--surface);
+  font-size: 8px; cursor: pointer;
 }
+.cap-check.checked { background: var(--red); border-color: var(--red); color: white; }
 
-.spinner {
-  width: 36px; height: 36px;
-  border: 2px solid var(--border2);
-  border-top-color: var(--accent);
-  border-radius: 50%;
-  animation: spin 0.7s linear infinite;
+.cap-info { flex: 1; min-width: 0; }
+.cap-name { font-size: 11px; font-weight: 500; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cap-meta { font-size: 10px; color: var(--text3); margin-top: 1px; }
+.cap-preview {
+  font-size: 10px; color: var(--text3); margin-top: 3px;
+  overflow: hidden;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  line-height: 1.4; white-space: pre-wrap; word-break: break-word;
 }
+.cap-item:hover .cap-preview { -webkit-line-clamp: 6; }
 
-@keyframes spin { to { transform: rotate(360deg); } }
-
-.overlay-log {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  padding: 12px 16px;
-  max-width: 440px;
-  width: 90%;
-  max-height: 160px;
-  overflow-y: auto;
-  font-size: 11px;
-  color: var(--text2);
-  line-height: 1.6;
+.cap-del-btn {
+  opacity: 0; font-size: 12px; color: var(--red); cursor: pointer;
+  padding: 2px 4px; border-radius: 3px; transition: opacity 0.15s, background 0.1s;
+  flex-shrink: 0; margin-top: 1px;
 }
+.cap-item:hover .cap-del-btn { opacity: 1; }
+.cap-del-btn:hover { background: var(--red-l); }
 
-/* ── INLINE RENAME ── */
-.rename-input {
-  font-family: var(--mono);
-  font-size: 12px;
-  padding: 2px 6px;
-  border: 1px solid var(--accent);
-  border-radius: 3px;
-  outline: none;
-  color: var(--text);
-  background: var(--surface);
-  flex: 1;
+/* Empty */
+.empty { text-align: center; padding: 28px 14px; color: var(--text3); }
+.empty-icon { font-size: 22px; margin-bottom: 7px; }
+.empty p { font-size: 11px; line-height: 1.6; }
+
+/* Caps delete bar inside frame-body */
+.caps-del-bar {
+  display: none;
+  align-items: center; gap: 7px;
+  padding: 5px 8px;
+  background: var(--red-l); border: 1px solid var(--red);
+  border-radius: var(--r); margin-bottom: 7px; flex-shrink: 0;
 }
-
-/* ── EMPTY STATE ── */
-.empty {
-  text-align: center;
-  padding: 40px 20px;
-  color: var(--text3);
-}
-
-.empty-icon { font-size: 28px; margin-bottom: 10px; }
-.empty p { font-size: 12px; line-height: 1.6; }
-
-/* ── TOOLTIP ── */
-[title] { cursor: help; }
+.caps-del-bar.visible { display: flex; }
+.caps-del-bar span { flex: 1; font-size: 11px; color: var(--red); }
 </style>
 </head>
 <body>
@@ -589,18 +555,71 @@ header {
 <!-- APP -->
 <div class="app">
 
-  <!-- LEFT — FILE TREE -->
-  <div class="panel">
-    <div class="panel-head">
-      <span class="panel-title">Datasets</span>
-      <div style="display:flex;gap:6px">
-        <button class="btn ghost" style="flex:none;padding:4px 8px;font-size:10px" id="btn-new-folder" title="Nouveau dossier">+ Dossier</button>
-        <button class="btn ghost" style="flex:none;padding:4px 8px;font-size:10px" id="btn-refresh" title="Rafraîchir">↺</button>
+  <!-- LEFT — WAV FRAME + CAPTIONS FRAME -->
+  <div class="left-panel">
+
+    <!-- ── WAV FRAME ── -->
+    <div class="wav-frame">
+      <div class="frame-head">
+        <div class="frame-title">
+          🎵 Fichiers WAV
+          <span class="frame-count" id="wav-count">0</span>
+        </div>
+        <div class="frame-actions">
+          <button class="btn sm ghost" id="btn-new-folder">+ Dossier</button>
+          <button class="btn sm ghost" id="btn-refresh">↺</button>
+        </div>
+      </div>
+      <div class="frame-body" id="wav-frame-body">
+
+        <!-- Select all bar -->
+        <div class="select-all-bar" id="select-all-bar" style="display:none">
+          <div class="sa-check" id="sa-check"></div>
+          <span class="sa-label">Tout sélectionner</span>
+          <span class="sa-count" id="sa-count"></span>
+        </div>
+
+        <!-- Delete selection bar (WAV) -->
+        <div class="delete-bar" id="delete-bar">
+          <span id="delete-bar-label"></span>
+          <button class="btn sm danger" id="btn-delete-selection">🗑 Supprimer</button>
+          <button class="btn sm ghost" id="btn-cancel-delete">✕</button>
+        </div>
+
+        <!-- Tree nodes -->
+        <div id="tree-nodes">
+          <div class="empty"><div class="empty-icon">📂</div><p>Aucun fichier WAV<br>dans /workspace/datasets</p></div>
+        </div>
       </div>
     </div>
-    <div class="panel-body" id="tree-container">
-      <div class="empty"><div class="empty-icon">📂</div><p>Aucun fichier WAV<br>dans /workspace/datasets</p></div>
+
+    <!-- ── CAPTIONS FRAME ── -->
+    <div class="cap-frame" id="cap-frame">
+      <div class="frame-head">
+        <div class="frame-title">
+          📄 Captions
+          <span class="frame-count" id="cap-count">0</span>
+        </div>
+        <div class="frame-actions">
+          <button class="btn sm ghost" id="btn-refresh-caps">↺</button>
+          <button class="btn sm ghost" id="btn-expand-caps" title="Agrandir/Réduire">⤢</button>
+        </div>
+      </div>
+      <div class="frame-body" id="cap-frame-body">
+
+        <!-- Captions delete bar -->
+        <div class="caps-del-bar" id="caps-del-bar">
+          <span id="caps-del-label"></span>
+          <button class="btn sm danger" id="btn-delete-caps">🗑 Supprimer</button>
+          <button class="btn sm ghost" id="btn-cancel-caps-del">✕</button>
+        </div>
+
+        <div id="cap-list">
+          <div class="empty"><div class="empty-icon">📄</div><p>Aucune caption<br>dans /workspace/datasets</p></div>
+        </div>
+      </div>
     </div>
+
   </div>
 
   <!-- MIDDLE — QUEUE + ACTIONS -->
@@ -610,7 +629,6 @@ header {
       <span id="queue-count" style="font-size:11px;color:var(--text3)">0 fichier</span>
     </div>
 
-    <!-- Drop zone -->
     <div class="dropzone" id="dropzone">
       <input type="file" id="file-input" multiple accept=".wav" style="display:none">
       <div class="dropzone-icon">⬆️</div>
@@ -618,26 +636,23 @@ header {
       <div class="dropzone-target" id="drop-target-label">→ /workspace/datasets/</div>
     </div>
 
-    <!-- Queue list -->
     <div class="queue-section" id="queue-list">
-      <div class="empty"><div class="empty-icon">☑️</div><p>Sélectionnez des fichiers WAV<br>dans l'arbre à gauche</p></div>
+      <div class="empty"><div class="empty-icon">☑️</div><p>Sélectionnez des fichiers WAV<br>dans le cadre à gauche</p></div>
     </div>
 
-    <!-- Output dir -->
     <div class="output-section">
       <div class="output-label">Dossier de sortie des captions</div>
       <input class="output-input" type="text" id="output-dir" value="/workspace/datasets/captions" placeholder="/workspace/datasets/mon_projet/captions">
     </div>
 
-    <!-- Actions -->
     <div class="actions">
       <div class="progress-bar">
         <div class="progress-fill" id="progress-fill"></div>
       </div>
       <div class="btn-row">
-        <button class="btn primary" id="btn-start" disabled>▶ Lancer</button>
-        <button class="btn" id="btn-download" disabled>⬇ ZIP</button>
-        <button class="btn ghost" id="btn-clear-queue" title="Vider la sélection">✕</button>
+        <button class="btn primary btn-full" id="btn-start" disabled>▶ Lancer</button>
+        <button class="btn btn-full" id="btn-download" disabled>⬇ ZIP</button>
+        <button class="btn ghost" id="btn-clear-queue" style="flex:none;padding:6px 10px">✕</button>
       </div>
     </div>
   </div>
@@ -670,12 +685,14 @@ header {
 <script>
 const API = '';
 let treeData = [];
-let selectedFiles = new Set(); // paths
+let allWavPaths = [];
+let selectedFiles = new Set();
+let selectedCaps  = new Set();
 let currentCtxNode = null;
-let currentStatus = 'idle';
+let currentStatus  = 'idle';
 let uploadTargetDir = '/workspace/datasets';
+let capsExpanded = false;
 
-// ── UTILS ──────────────────────────────────────────────
 function esc(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
@@ -692,65 +709,49 @@ async function pollStatus() {
 function updateStatus(d) {
   currentStatus = d.status;
   const pill = document.getElementById('status-pill');
-  const text = document.getElementById('status-text');
-  const overlay = document.getElementById('overlay');
-
   pill.className = `status-pill ${d.status}`;
+  const labels = { idle:'Prêt', downloading:'Téléchargement…', loading:'Chargement modèles…', running:'Captioning…', done:'Terminé', error:'Erreur' };
+  document.getElementById('status-text').textContent = labels[d.status] || d.status;
 
-  const labels = {
-    idle: 'Prêt', downloading: 'Téléchargement…',
-    loading: 'Chargement modèles…', running: 'Captioning…',
-    done: 'Terminé', error: 'Erreur'
-  };
-  text.textContent = labels[d.status] || d.status;
-
-  // Overlay
   if (!d.models_ready) {
-    overlay.classList.remove('hidden');
+    document.getElementById('overlay').classList.remove('hidden');
     const last = d.log.length > 0 ? d.log[d.log.length-1].msg : 'Initialisation…';
     document.getElementById('overlay-msg').textContent = last;
-    // Show last 5 log lines in overlay
     const ol = document.getElementById('overlay-log');
     ol.innerHTML = d.log.slice(-8).map(e =>
       `<div style="color:${e.level==='error'?'#9b2226':e.level==='success'?'#2d6a4f':'#6b6560'}">${esc(e.msg)}</div>`
     ).join('');
     ol.scrollTop = ol.scrollHeight;
   } else {
-    overlay.classList.add('hidden');
+    document.getElementById('overlay').classList.add('hidden');
   }
 
-  // Progress
   document.getElementById('progress-fill').style.width = d.progress + '%';
-
-  // Stats
   document.getElementById('stat-processed').textContent = d.processed;
   document.getElementById('stat-errors').textContent    = d.errors;
   document.getElementById('stat-total').textContent     = d.total_files;
 
-  // Buttons
   document.getElementById('btn-start').disabled =
     !d.models_ready || d.status === 'running' || selectedFiles.size === 0;
   document.getElementById('btn-download').disabled = d.status !== 'done';
 
-  // Log
   renderLog(d.log);
 
-  // Queue items highlight
   if (d.current_file && d.status === 'running') {
-    document.querySelectorAll('.queue-item').forEach(el => {
-      el.classList.toggle('active', el.dataset.name === d.current_file);
-    });
+    document.querySelectorAll('.queue-item').forEach(el =>
+      el.classList.toggle('active', el.dataset.name === d.current_file));
   }
   if (d.status === 'done') {
     document.querySelectorAll('.queue-item').forEach(el => el.classList.add('done'));
     loadTree();
+    loadCaptions();
   }
 }
 
 // ── LOG ────────────────────────────────────────────────
 let logRendered = 0;
 function renderLog(logs) {
-  const body  = document.getElementById('log-body');
+  const body = document.getElementById('log-body');
   const count = document.getElementById('log-count');
   for (let i = logRendered; i < logs.length; i++) {
     const e = logs[i];
@@ -764,98 +765,149 @@ function renderLog(logs) {
   body.scrollTop = body.scrollHeight;
 }
 
-// ── TREE ───────────────────────────────────────────────
+// ── WAV TREE ───────────────────────────────────────────
+function collectWavPaths(nodes) {
+  let r = [];
+  for (const n of nodes) {
+    if (n.type === 'file') r.push(n.path);
+    else if (n.children) r = r.concat(collectWavPaths(n.children));
+  }
+  return r;
+}
+
 async function loadTree() {
   try {
     const r = await fetch(`${API}/tree`);
     treeData = await r.json();
-    renderTree(treeData);
+    allWavPaths = collectWavPaths(treeData);
+    renderTree();
   } catch(e) {}
 }
 
-function renderTree(nodes, container = document.getElementById('tree-container')) {
+function renderTree() {
+  const container = document.getElementById('tree-nodes');
+  const saBar     = document.getElementById('select-all-bar');
   container.innerHTML = '';
-  if (!nodes.length) {
+
+  document.getElementById('wav-count').textContent = allWavPaths.length;
+
+  if (!allWavPaths.length) {
     container.innerHTML = '<div class="empty"><div class="empty-icon">📂</div><p>Aucun fichier WAV<br>dans /workspace/datasets</p></div>';
+    saBar.style.display = 'none';
+    updateDeleteBar();
     return;
   }
-  nodes.forEach(node => {
-    container.appendChild(buildNode(node));
-  });
+
+  saBar.style.display = 'flex';
+  updateSelectAllBar();
+  updateDeleteBar();
+  treeData.forEach(node => container.appendChild(buildNode(node)));
 }
+
+function updateSelectAllBar() {
+  const saCheck = document.getElementById('sa-check');
+  const saCount = document.getElementById('sa-count');
+  const total = allWavPaths.length;
+  const sel   = selectedFiles.size;
+  saCount.textContent = sel > 0 ? `${sel}/${total}` : `${total} WAV`;
+  if (sel === 0)     { saCheck.className = 'sa-check'; saCheck.textContent = ''; }
+  else if (sel === total) { saCheck.className = 'sa-check checked'; saCheck.textContent = '✓'; }
+  else               { saCheck.className = 'sa-check checked'; saCheck.textContent = '—'; }
+}
+
+function updateDeleteBar() {
+  const bar   = document.getElementById('delete-bar');
+  const label = document.getElementById('delete-bar-label');
+  if (selectedFiles.size > 0) {
+    bar.classList.add('visible');
+    label.textContent = `${selectedFiles.size} sélectionné${selectedFiles.size > 1 ? 's' : ''}`;
+  } else {
+    bar.classList.remove('visible');
+  }
+}
+
+document.getElementById('select-all-bar').addEventListener('click', () => {
+  if (selectedFiles.size === allWavPaths.length) selectedFiles.clear();
+  else allWavPaths.forEach(p => selectedFiles.add(p));
+  renderTree();
+  updateQueue();
+});
 
 function buildNode(node) {
   const wrap = document.createElement('div');
   if (node.type === 'dir') {
     wrap.className = 'tree-node tree-dir';
+    const dirPaths = collectWavPaths(node.children || []);
+    const selCount = dirPaths.filter(p => selectedFiles.has(p)).length;
+    const allSel   = dirPaths.length > 0 && selCount === dirPaths.length;
+    const partSel  = selCount > 0 && !allSel;
+
     const item = document.createElement('div');
     item.className = 'tree-item';
-    item.innerHTML = `<span class="tree-icon"></span><span class="tree-name">${esc(node.name)}</span>`;
-    item.addEventListener('click', () => {
-      wrap.classList.toggle('open');
-      uploadTargetDir = node.path;
-      document.getElementById('drop-target-label').textContent = `→ ${node.path}`;
-      // Set default output dir
-      document.getElementById('output-dir').value = node.path + '/captions';
+    item.innerHTML = `
+      <div class="tree-check ${allSel ? 'checked' : partSel ? 'partial' : ''}">${allSel ? '✓' : partSel ? '—' : ''}</div>
+      <span class="tree-icon"></span>
+      <span class="tree-name">${esc(node.name)}</span>
+      <span class="dir-badge">${node.wav_count || dirPaths.length}</span>
+    `;
+
+    const chkEl = item.querySelector('.tree-check');
+    chkEl.addEventListener('click', e => {
+      e.stopPropagation();
+      if (allSel) dirPaths.forEach(p => selectedFiles.delete(p));
+      else        dirPaths.forEach(p => selectedFiles.add(p));
+      renderTree(); updateQueue();
     });
-    item.addEventListener('contextmenu', e => showCtx(e, node));
 
     const children = document.createElement('div');
     children.className = 'tree-children';
     children.style.display = 'none';
-    node.children.forEach(child => children.appendChild(buildNode(child)));
+    (node.children || []).forEach(c => children.appendChild(buildNode(c)));
+
+    item.addEventListener('click', e => {
+      if (e.target === chkEl || chkEl.contains(e.target)) return;
+      wrap.classList.toggle('open');
+      children.style.display = wrap.classList.contains('open') ? 'block' : 'none';
+      uploadTargetDir = node.path;
+      document.getElementById('drop-target-label').textContent = `→ ${node.path}`;
+      document.getElementById('output-dir').value = node.path + '/captions';
+    });
+    item.addEventListener('contextmenu', e => showCtx(e, node));
 
     wrap.appendChild(item);
     wrap.appendChild(children);
-
-    // Toggle display
-    item.addEventListener('click', () => {
-      children.style.display = wrap.classList.contains('open') ? 'block' : 'none';
-    });
   } else {
-    // WAV file
     wrap.className = 'tree-node tree-file';
-    const isSelected = selectedFiles.has(node.path);
-    const item = document.createElement('div');
-    item.className = `tree-item${isSelected ? ' selected' : ''}`;
+    const isSel = selectedFiles.has(node.path);
+    const item  = document.createElement('div');
+    item.className = `tree-item${isSel ? ' selected' : ''}`;
     item.dataset.path = node.path;
     item.innerHTML = `
-      <div class="tree-check${isSelected ? ' checked' : ''}">${isSelected ? '✓' : ''}</div>
+      <div class="tree-check${isSel ? ' checked' : ''}">${isSel ? '✓' : ''}</div>
       <span class="tree-icon">🎵</span>
       <span class="tree-name">${esc(node.name)}</span>
       <span class="tree-size">${node.size_mb}MB</span>
     `;
-
-    item.addEventListener('click', () => toggleSelect(node, item));
+    item.addEventListener('click', () => {
+      if (selectedFiles.has(node.path)) selectedFiles.delete(node.path);
+      else selectedFiles.add(node.path);
+      renderTree(); updateQueue();
+    });
     item.addEventListener('contextmenu', e => showCtx(e, node));
     wrap.appendChild(item);
   }
   return wrap;
 }
 
-function toggleSelect(node, itemEl) {
-  if (selectedFiles.has(node.path)) {
-    selectedFiles.delete(node.path);
-    itemEl.classList.remove('selected');
-    itemEl.querySelector('.tree-check').className = 'tree-check';
-    itemEl.querySelector('.tree-check').textContent = '';
-  } else {
-    selectedFiles.add(node.path);
-    itemEl.classList.add('selected');
-    itemEl.querySelector('.tree-check').className = 'tree-check checked';
-    itemEl.querySelector('.tree-check').textContent = '✓';
-  }
-  updateQueue();
-}
-
 function updateQueue() {
-  const list = document.getElementById('queue-list');
+  const list  = document.getElementById('queue-list');
   const count = document.getElementById('queue-count');
   count.textContent = `${selectedFiles.size} fichier${selectedFiles.size > 1 ? 's' : ''}`;
 
   if (selectedFiles.size === 0) {
-    list.innerHTML = '<div class="empty"><div class="empty-icon">☑️</div><p>Sélectionnez des fichiers WAV<br>dans l\'arbre à gauche</p></div>';
+    list.innerHTML = '<div class="empty"><div class="empty-icon">☑️</div><p>Sélectionnez des fichiers WAV<br>dans le cadre à gauche</p></div>';
     document.getElementById('btn-start').disabled = true;
+    updateDeleteBar();
     return;
   }
 
@@ -868,24 +920,37 @@ function updateQueue() {
     div.innerHTML = `
       <span class="queue-status">○</span>
       <span class="queue-name">${esc(name)}</span>
-      <span style="font-size:10px;color:var(--text3);cursor:pointer" data-path="${esc(path)}" class="remove-btn">✕</span>
+      <span style="font-size:10px;color:var(--text3);cursor:pointer;flex-shrink:0" data-path="${esc(path)}" class="remove-btn">✕</span>
     `;
     div.querySelector('.remove-btn').addEventListener('click', e => {
       e.stopPropagation();
       selectedFiles.delete(path);
-      // Uncheck in tree
-      document.querySelectorAll(`.tree-item[data-path="${CSS.escape(path)}"]`).forEach(el => {
-        el.classList.remove('selected');
-        el.querySelector('.tree-check').className = 'tree-check';
-        el.querySelector('.tree-check').textContent = '';
-      });
-      updateQueue();
+      renderTree(); updateQueue();
     });
     list.appendChild(div);
   });
 
   document.getElementById('btn-start').disabled = currentStatus === 'running';
+  updateDeleteBar();
 }
+
+// ── DELETE SELECTION (WAV) ─────────────────────────────
+document.getElementById('btn-delete-selection').addEventListener('click', async () => {
+  if (!selectedFiles.size) return;
+  if (!confirm(`Supprimer définitivement les ${selectedFiles.size} fichiers WAV sélectionnés ?`)) return;
+  await fetch(`${API}/delete-many`, {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ paths: Array.from(selectedFiles) })
+  });
+  selectedFiles.clear();
+  await loadTree();
+  updateQueue();
+});
+
+document.getElementById('btn-cancel-delete').addEventListener('click', () => {
+  selectedFiles.clear();
+  renderTree(); updateQueue();
+});
 
 // ── CONTEXT MENU ───────────────────────────────────────
 function showCtx(e, node) {
@@ -895,8 +960,6 @@ function showCtx(e, node) {
   menu.style.left = e.clientX + 'px';
   menu.style.top  = e.clientY + 'px';
   menu.classList.add('visible');
-
-  // Show/hide select option only for files
   document.getElementById('ctx-select').style.display = node.type === 'file' ? 'flex' : 'none';
 }
 
@@ -907,8 +970,7 @@ document.getElementById('ctx-rename').addEventListener('click', async () => {
   const newName = prompt('Nouveau nom :', currentCtxNode.name);
   if (!newName || newName === currentCtxNode.name) return;
   await fetch(`${API}/rename`, {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
+    method: 'POST', headers: {'Content-Type':'application/json'},
     body: JSON.stringify({ path: currentCtxNode.path, new_name: newName })
   });
   await loadTree();
@@ -917,18 +979,17 @@ document.getElementById('ctx-rename').addEventListener('click', async () => {
 document.getElementById('ctx-select').addEventListener('click', () => {
   if (!currentCtxNode || currentCtxNode.type !== 'file') return;
   selectedFiles.add(currentCtxNode.path);
-  updateQueue();
-  loadTree();
+  renderTree(); updateQueue();
 });
 
 document.getElementById('ctx-delete').addEventListener('click', async () => {
   if (!currentCtxNode) return;
-  const label = currentCtxNode.type === 'dir' ? `le dossier "${currentCtxNode.name}" et son contenu` : `"${currentCtxNode.name}"`;
+  const label = currentCtxNode.type === 'dir'
+    ? `le dossier "${currentCtxNode.name}" et son contenu` : `"${currentCtxNode.name}"`;
   if (!confirm(`Supprimer ${label} ?`)) return;
   await fetch(`${API}/file?path=${encodeURIComponent(currentCtxNode.path)}`, { method: 'DELETE' });
   selectedFiles.delete(currentCtxNode.path);
-  await loadTree();
-  updateQueue();
+  await loadTree(); updateQueue();
 });
 
 // ── NEW FOLDER ─────────────────────────────────────────
@@ -937,8 +998,7 @@ document.getElementById('btn-new-folder').addEventListener('click', async () => 
   if (!name) return;
   const path = uploadTargetDir.replace(/\/$/, '') + '/' + name;
   await fetch(`${API}/mkdir`, {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
+    method: 'POST', headers: {'Content-Type':'application/json'},
     body: JSON.stringify({ path })
   });
   await loadTree();
@@ -952,12 +1012,10 @@ const fileInput = document.getElementById('file-input');
 
 dropzone.addEventListener('click', () => fileInput.click());
 fileInput.addEventListener('change', e => uploadFiles(Array.from(e.target.files)));
-
 dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('drag-over'); });
 dropzone.addEventListener('dragleave', () => dropzone.classList.remove('drag-over'));
 dropzone.addEventListener('drop', e => {
-  e.preventDefault();
-  dropzone.classList.remove('drag-over');
+  e.preventDefault(); dropzone.classList.remove('drag-over');
   uploadFiles(Array.from(e.dataTransfer.files));
 });
 
@@ -970,19 +1028,117 @@ async function uploadFiles(files) {
   await loadTree();
 }
 
-// ── START ──────────────────────────────────────────────
+// ── CAPTIONS ───────────────────────────────────────────
+async function loadCaptions() {
+  try {
+    const r = await fetch(`${API}/captions`);
+    const caps = await r.json();
+    renderCaptions(caps);
+  } catch(e) {}
+}
+
+function renderCaptions(caps) {
+  const list  = document.getElementById('cap-list');
+  const count = document.getElementById('cap-count');
+  count.textContent = caps.length;
+  selectedCaps.clear();
+  updateCapsDeleteBar();
+
+  if (!caps.length) {
+    list.innerHTML = '<div class="empty"><div class="empty-icon">📄</div><p>Aucune caption<br>dans /workspace/datasets</p></div>';
+    return;
+  }
+
+  list.innerHTML = '';
+  caps.forEach(cap => {
+    const div = document.createElement('div');
+    div.className = 'cap-item';
+    div.dataset.path = cap.path;
+    div.innerHTML = `
+      <div class="cap-check" data-path="${esc(cap.path)}"></div>
+      <div class="cap-info">
+        <div class="cap-name">${esc(cap.name)}</div>
+        <div class="cap-meta">${esc(cap.rel_path)} · ${cap.size_kb} KB</div>
+        <div class="cap-preview">${esc(cap.preview)}</div>
+      </div>
+      <span class="cap-del-btn" title="Supprimer">🗑</span>
+    `;
+
+    div.querySelector('.cap-del-btn').addEventListener('click', async e => {
+      e.stopPropagation();
+      if (!confirm(`Supprimer "${cap.name}" ?`)) return;
+      await fetch(`${API}/file?path=${encodeURIComponent(cap.path)}`, { method: 'DELETE' });
+      await loadCaptions();
+    });
+
+    const chk = div.querySelector('.cap-check');
+    chk.addEventListener('click', e => {
+      e.stopPropagation();
+      if (selectedCaps.has(cap.path)) {
+        selectedCaps.delete(cap.path);
+        chk.className = 'cap-check'; chk.textContent = '';
+        div.classList.remove('cap-selected');
+      } else {
+        selectedCaps.add(cap.path);
+        chk.className = 'cap-check checked'; chk.textContent = '✓';
+        div.classList.add('cap-selected');
+      }
+      updateCapsDeleteBar();
+    });
+
+    list.appendChild(div);
+  });
+}
+
+function updateCapsDeleteBar() {
+  const bar   = document.getElementById('caps-del-bar');
+  const label = document.getElementById('caps-del-label');
+  if (selectedCaps.size > 0) {
+    bar.classList.add('visible');
+    label.textContent = `${selectedCaps.size} caption${selectedCaps.size > 1 ? 's' : ''} sélectionnée${selectedCaps.size > 1 ? 's' : ''}`;
+  } else {
+    bar.classList.remove('visible');
+  }
+}
+
+document.getElementById('btn-delete-caps').addEventListener('click', async () => {
+  if (!selectedCaps.size) return;
+  if (!confirm(`Supprimer les ${selectedCaps.size} captions sélectionnées ?`)) return;
+  await fetch(`${API}/delete-many`, {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ paths: Array.from(selectedCaps) })
+  });
+  selectedCaps.clear();
+  await loadCaptions();
+});
+
+document.getElementById('btn-cancel-caps-del').addEventListener('click', () => {
+  selectedCaps.clear();
+  document.querySelectorAll('.cap-check.checked').forEach(el => { el.className='cap-check'; el.textContent=''; });
+  document.querySelectorAll('.cap-item.cap-selected').forEach(el => el.classList.remove('cap-selected'));
+  updateCapsDeleteBar();
+});
+
+document.getElementById('btn-refresh-caps').addEventListener('click', loadCaptions);
+
+document.getElementById('btn-expand-caps').addEventListener('click', () => {
+  capsExpanded = !capsExpanded;
+  document.getElementById('cap-frame').classList.toggle('expanded', capsExpanded);
+  document.getElementById('btn-expand-caps').textContent = capsExpanded ? '⤡' : '⤢';
+});
+
+// ── START / DOWNLOAD ───────────────────────────────────
 document.getElementById('btn-start').addEventListener('click', async () => {
   const output_dir = document.getElementById('output-dir').value.trim();
   if (!output_dir) { alert('Spécifiez un dossier de sortie'); return; }
   logRendered = 0;
   document.getElementById('log-body').innerHTML = '';
   const r = await fetch(`${API}/start`, {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
+    method: 'POST', headers: {'Content-Type':'application/json'},
     body: JSON.stringify({ files: Array.from(selectedFiles), output_dir })
   });
   const d = await r.json();
-  if (d.error) { alert(d.error); return; }
+  if (d.error) { alert(d.error); }
 });
 
 document.getElementById('btn-download').addEventListener('click', () => {
@@ -991,18 +1147,15 @@ document.getElementById('btn-download').addEventListener('click', () => {
 
 document.getElementById('btn-clear-queue').addEventListener('click', () => {
   selectedFiles.clear();
-  document.querySelectorAll('.tree-item.selected').forEach(el => {
-    el.classList.remove('selected');
-    const chk = el.querySelector('.tree-check');
-    if (chk) { chk.className = 'tree-check'; chk.textContent = ''; }
-  });
-  updateQueue();
+  renderTree(); updateQueue();
 });
 
 // ── INIT ───────────────────────────────────────────────
 (async () => {
   await loadTree();
+  await loadCaptions();
   setInterval(pollStatus, 1000);
+  setInterval(loadCaptions, 15000);
 })();
 </script>
 </body>
