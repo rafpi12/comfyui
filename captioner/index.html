@@ -7,522 +7,173 @@
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg:       #f5f3ef;
-  --surface:  #ffffff;
-  --surface2: #f0ede8;
-  --border:   #e2ddd8;
-  --border2:  #cdc8c2;
-  --text:     #1a1816;
-  --text2:    #6b6560;
-  --text3:    #9e9890;
-  --accent:   #c4561a;
-  --accent-l: #f5e6dc;
-  --green:    #2d6a4f;
-  --green-l:  #d8f3dc;
-  --red:      #9b2226;
-  --red-l:    #fce4e4;
-  --blue:     #1d4e89;
-  --blue-l:   #dbe9f4;
-  --shadow:   0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
-  --shadow-md:0 4px 12px rgba(0,0,0,0.1);
-  --r:        6px;
-  --mono:     'Geist Mono', monospace;
-  --serif:    'Instrument Serif', serif;
+  --bg:#111210;--surface:#1a1c1a;--surface2:#222420;--border:#2e302c;--border2:#3d4039;
+  --text:#e8e6e0;--text2:#9a9890;--text3:#5e6059;
+  --accent:#c4561a;--accent-l:#2a1a0e;
+  --green:#4a9e6f;--green-l:#0e2018;
+  --red:#c4484a;--red-l:#220e0e;
+  --blue:#4a7ec4;--blue-l:#0e1a2a;
+  --shadow:0 1px 4px rgba(0,0,0,.4);--shadow-md:0 4px 16px rgba(0,0,0,.5);
+  --r:5px;--mono:'Geist Mono',monospace;--serif:'Instrument Serif',serif;
 }
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:var(--mono);font-size:12px;height:100vh;display:flex;flex-direction:column;overflow:hidden;}
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
+header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 20px;height:50px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;box-shadow:var(--shadow);}
+.logo{font-family:var(--serif);font-size:18px;color:var(--text);display:flex;align-items:center;gap:10px;}
+.logo-sub{font-size:10px;color:var(--text3);padding:2px 8px;background:var(--surface2);border-radius:100px;border:1px solid var(--border);}
+.status-pill{display:flex;align-items:center;gap:5px;padding:3px 10px;border-radius:100px;border:1px solid var(--border);background:var(--surface2);font-size:11px;transition:all .3s;}
+.status-pill.downloading,.status-pill.loading{background:var(--blue-l);border-color:var(--blue);color:var(--blue);}
+.status-pill.running{background:var(--accent-l);border-color:var(--accent);color:var(--accent);}
+.status-pill.done{background:var(--green-l);border-color:var(--green);color:var(--green);}
+.status-pill.error{background:var(--red-l);border-color:var(--red);color:var(--red);}
+.dot{width:6px;height:6px;border-radius:50%;background:currentColor;flex-shrink:0;}
+.status-pill.loading .dot,.status-pill.downloading .dot,.status-pill.running .dot{animation:blink 1s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
 
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: var(--mono);
-  font-size: 13px;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
+.app{display:flex;flex:1;overflow:hidden;min-height:0;}
 
-/* ── HEADER ── */
-header {
-  background: var(--surface);
-  border-bottom: 1px solid var(--border);
-  padding: 0 24px;
-  height: 56px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  box-shadow: var(--shadow);
-}
+.h-resizer{width:5px;background:var(--border);cursor:col-resize;flex-shrink:0;transition:background .15s;z-index:10;}
+.h-resizer:hover,.h-resizer.dragging{background:var(--accent);}
+.v-resizer{height:5px;background:var(--border2);cursor:row-resize;flex-shrink:0;transition:background .15s;}
+.v-resizer:hover,.v-resizer.dragging{background:var(--accent);}
 
-.logo {
-  font-family: var(--serif);
-  font-size: 20px;
-  color: var(--text);
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
+.left-panel{width:300px;min-width:180px;max-width:520px;display:flex;flex-direction:column;overflow:hidden;background:var(--surface);flex-shrink:0;}
+.wav-frame{display:flex;flex-direction:column;overflow:hidden;flex:0 0 auto;}
+.cap-frame{display:flex;flex-direction:column;overflow:hidden;flex:1 1 0;min-height:60px;}
 
-.logo-sub {
-  font-family: var(--mono);
-  font-size: 11px;
-  color: var(--text3);
-  letter-spacing: 0.5px;
-  font-style: normal;
-  padding: 2px 8px;
-  background: var(--surface2);
-  border-radius: 100px;
-  border: 1px solid var(--border);
-}
+.frame-head{padding:7px 10px 6px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:var(--surface2);}
+.frame-title{font-size:10px;font-weight:500;letter-spacing:.8px;text-transform:uppercase;color:var(--text2);display:flex;align-items:center;gap:6px;}
+.frame-count{font-size:10px;color:var(--text3);background:var(--surface);border:1px solid var(--border);border-radius:100px;padding:0 6px;letter-spacing:0;text-transform:none;font-weight:400;}
+.frame-actions{display:flex;gap:4px;align-items:center;}
+.frame-body{flex:1;overflow-y:auto;padding:7px;}
+.frame-body::-webkit-scrollbar{width:3px;}
+.frame-body::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
 
-.header-status {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 12px;
-  color: var(--text2);
-}
+.middle{flex:1;min-width:220px;display:flex;flex-direction:column;overflow:hidden;background:var(--bg);}
+.right-panel{width:320px;min-width:180px;max-width:540px;display:flex;flex-direction:column;overflow:hidden;background:var(--surface);flex-shrink:0;border-left:1px solid var(--border);}
 
-.status-pill {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 10px;
-  border-radius: 100px;
-  border: 1px solid var(--border);
-  background: var(--surface2);
-  font-size: 11px;
-  transition: all 0.3s;
-}
+.panel-head{padding:7px 12px 6px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:var(--surface2);}
+.panel-title{font-size:10px;font-weight:500;letter-spacing:.8px;text-transform:uppercase;color:var(--text2);}
 
-.status-pill.downloading,
-.status-pill.loading { background: var(--blue-l); border-color: var(--blue); color: var(--blue); }
-.status-pill.running  { background: var(--accent-l); border-color: var(--accent); color: var(--accent); }
-.status-pill.done     { background: var(--green-l); border-color: var(--green); color: var(--green); }
-.status-pill.error    { background: var(--red-l); border-color: var(--red); color: var(--red); }
+.btn{padding:5px 9px;border:1px solid var(--border2);background:var(--surface2);color:var(--text2);font-family:var(--mono);font-size:10px;cursor:pointer;border-radius:var(--r);transition:all .12s;font-weight:500;}
+.btn:hover:not(:disabled){background:var(--border);color:var(--text);}
+.btn:disabled{opacity:.35;cursor:not-allowed;}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff;}
+.btn.primary:hover:not(:disabled){background:#a84715;}
+.btn.danger{color:var(--red);border-color:var(--red);background:var(--red-l);}
+.btn.danger:hover:not(:disabled){background:var(--red);color:#fff;}
+.btn.ghost{background:transparent;border-color:transparent;color:var(--text3);}
+.btn.ghost:hover:not(:disabled){background:var(--surface2);color:var(--text2);}
 
-.dot { width:6px; height:6px; border-radius:50%; background:currentColor; flex-shrink:0; }
-.status-pill.loading .dot,
-.status-pill.downloading .dot,
-.status-pill.running .dot { animation: blink 1s infinite; }
-@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+.select-all-bar{display:flex;align-items:center;gap:7px;padding:5px 7px;background:var(--accent-l);border:1px solid var(--accent);border-radius:var(--r);margin-bottom:6px;cursor:pointer;user-select:none;}
+.select-all-bar:hover{border-color:#e06520;}
+.sa-check{width:12px;height:12px;border:1.5px solid var(--accent);border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:8px;color:#fff;background:var(--surface2);flex-shrink:0;}
+.sa-check.checked{background:var(--accent);}
+.sa-label{font-size:10px;color:var(--accent);font-weight:500;flex:1;}
+.sa-count{font-size:10px;color:var(--accent);}
 
-/* ── LAYOUT ── */
-.app {
-  display: grid;
-  grid-template-columns: 320px 1fr 340px;
-  flex: 1;
-  height: calc(100vh - 56px);
-  overflow: hidden;
-}
+.delete-bar{display:none;align-items:center;gap:6px;padding:4px 7px;background:var(--red-l);border:1px solid var(--red);border-radius:var(--r);margin-bottom:6px;}
+.delete-bar.visible{display:flex;}
+.delete-bar>span{flex:1;font-size:10px;color:var(--red);}
 
-/* ── PANEL BASE ── */
-.panel {
-  border-right: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  background: var(--surface);
-}
-.panel:last-child { border-right: none; }
+.tree-node{user-select:none;}
+.tree-item{display:flex;align-items:center;gap:5px;padding:3px 6px;border-radius:var(--r);cursor:pointer;transition:background .1s;}
+.tree-item:hover{background:var(--surface2);}
+.tree-item.selected{background:var(--accent-l);}
+.tree-item.selected .tree-name{color:var(--accent);}
+.tree-icon{font-size:11px;flex-shrink:0;width:14px;text-align:center;}
+.tree-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;}
+.tree-size{font-size:10px;color:var(--text3);flex-shrink:0;}
+.tree-children{padding-left:14px;}
+.tree-dir>.tree-item .tree-icon::before{content:'▶';font-size:7px;color:var(--text3);}
+.tree-dir.open>.tree-item .tree-icon::before{content:'▼';}
+.tree-check{width:12px;height:12px;border:1.5px solid var(--border2);border-radius:3px;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .12s;background:var(--surface2);font-size:7px;}
+.tree-check.checked{background:var(--accent);border-color:var(--accent);color:#fff;}
+.tree-check.partial{background:var(--accent-l);border-color:var(--accent);color:var(--accent);}
+.dir-badge{font-size:9px;color:var(--text3);background:var(--surface2);border:1px solid var(--border);border-radius:100px;padding:0 5px;flex-shrink:0;}
 
-.panel-head {
-  padding: 10px 14px 9px;
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-shrink: 0;
-  background: var(--surface2);
-}
+.ctx-menu{position:fixed;background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);box-shadow:var(--shadow-md);z-index:999;min-width:155px;overflow:hidden;display:none;}
+.ctx-menu.visible{display:block;}
+.ctx-item{padding:6px 12px;cursor:pointer;font-size:11px;color:var(--text);transition:background .1s;display:flex;align-items:center;gap:7px;}
+.ctx-item:hover{background:var(--surface2);}
+.ctx-item.danger{color:var(--red);}
+.ctx-item.danger:hover{background:var(--red-l);}
+.ctx-sep{height:1px;background:var(--border);margin:3px 0;}
 
-.panel-title {
-  font-size: 10px;
-  font-weight: 500;
-  letter-spacing: 0.9px;
-  text-transform: uppercase;
-  color: var(--text2);
-}
+.dropzone{margin:10px;border:1.5px dashed var(--border2);border-radius:var(--r);padding:18px 14px;text-align:center;cursor:pointer;transition:all .2s;background:var(--surface);}
+.dropzone:hover,.dropzone.drag-over{border-color:var(--accent);background:var(--accent-l);}
+.dropzone-icon{font-size:18px;margin-bottom:5px;}
+.dropzone p{color:var(--text2);font-size:11px;line-height:1.6;}
+.dropzone p strong{color:var(--accent);}
+.dropzone-target{font-size:10px;color:var(--text3);margin-top:3px;}
 
-/* ── LEFT PANEL — two sub-frames stacked ── */
-.left-panel {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  border-right: 1px solid var(--border);
-  background: var(--surface);
-}
+.queue-section{padding:0 10px 8px;flex:1;overflow-y:auto;}
+.queue-section::-webkit-scrollbar{width:3px;}
+.queue-section::-webkit-scrollbar-thumb{background:var(--border2);}
+.queue-item{display:flex;align-items:center;gap:7px;padding:5px 8px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);margin-bottom:3px;transition:all .2s;font-size:11px;}
+.queue-item.active{border-color:var(--accent);background:var(--accent-l);}
+.queue-item.done{border-color:var(--green);background:var(--green-l);}
+.queue-item.error{border-color:var(--red);background:var(--red-l);}
+.queue-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 
-/* WAV frame */
-.wav-frame {
-  display: flex;
-  flex-direction: column;
-  flex: 1 1 0;
-  min-height: 0;
-  border-bottom: 2px solid var(--border2);
-  overflow: hidden;
-}
+.output-section{margin:0 10px 8px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:7px 9px;}
+.output-label{font-size:9px;letter-spacing:.5px;text-transform:uppercase;color:var(--text3);margin-bottom:4px;font-weight:500;}
+.output-input{width:100%;padding:5px 7px;border:1px solid var(--border2);border-radius:4px;font-family:var(--mono);font-size:10px;color:var(--text);background:var(--bg);outline:none;transition:border-color .15s;}
+.output-input:focus{border-color:var(--accent);}
 
-.frame-head {
-  padding: 8px 12px 7px;
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-shrink: 0;
-  background: var(--surface2);
-}
+.actions{padding:8px 10px;border-top:1px solid var(--border);background:var(--surface);display:flex;flex-direction:column;gap:6px;flex-shrink:0;}
+.progress-bar{height:2px;background:var(--border);border-radius:2px;overflow:hidden;}
+.progress-fill{height:100%;background:var(--accent);width:0%;transition:width .5s ease;}
+.btn-row{display:flex;gap:6px;}
 
-.frame-title {
-  font-size: 10px;
-  font-weight: 500;
-  letter-spacing: 0.9px;
-  text-transform: uppercase;
-  color: var(--text2);
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
+.log-body{flex:1;overflow-y:auto;padding:8px 12px;font-size:11px;line-height:1.7;}
+.log-body::-webkit-scrollbar{width:3px;}
+.log-body::-webkit-scrollbar-thumb{background:var(--border2);}
+.log-entry{display:flex;gap:9px;padding:1px 0;animation:fade-in .2s ease;}
+@keyframes fade-in{from{opacity:0;transform:translateY(2px)}to{opacity:1;transform:translateY(0)}}
+.log-time{color:var(--text3);flex-shrink:0;font-size:9px;padding-top:2px;}
+.log-msg{color:var(--text2);white-space:pre-wrap;word-break:break-word;}
+.log-msg.success{color:var(--green);}
+.log-msg.error{color:var(--red);}
 
-.frame-count {
-  font-size: 10px;
-  color: var(--text3);
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 100px;
-  padding: 1px 7px;
-  letter-spacing: 0;
-  text-transform: none;
-  font-weight: 400;
-}
+.stats{display:flex;border-top:1px solid var(--border);flex-shrink:0;}
+.stat{flex:1;padding:8px 10px;text-align:center;border-right:1px solid var(--border);}
+.stat:last-child{border-right:none;}
+.stat-val{font-size:17px;font-family:var(--serif);color:var(--text);line-height:1;}
+.stat-lbl{font-size:9px;color:var(--text3);margin-top:2px;}
 
-.frame-actions {
-  display: flex;
-  gap: 4px;
-  align-items: center;
-}
+.cap-item{display:flex;align-items:flex-start;gap:6px;padding:5px 7px;border:1px solid var(--border);border-radius:var(--r);margin-bottom:3px;background:var(--surface);transition:all .12s;}
+.cap-item:hover{background:var(--blue-l);border-color:var(--blue);}
+.cap-item.cap-selected{background:var(--red-l);border-color:var(--red);}
+.cap-check{width:12px;height:12px;border:1.5px solid var(--border2);border-radius:3px;flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;background:var(--surface2);font-size:7px;cursor:pointer;transition:all .12s;}
+.cap-check.checked{background:var(--red);border-color:var(--red);color:#fff;}
+.cap-info{flex:1;min-width:0;}
+.cap-name{font-size:10px;font-weight:500;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.cap-meta{font-size:9px;color:var(--text3);margin-top:1px;}
+.cap-preview{font-size:9px;color:var(--text3);margin-top:2px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;line-height:1.4;white-space:pre-wrap;word-break:break-word;}
+.cap-item:hover .cap-preview{-webkit-line-clamp:6;}
+.cap-del-btn{opacity:0;font-size:11px;color:var(--red);cursor:pointer;padding:1px 4px;border-radius:3px;transition:opacity .12s;flex-shrink:0;}
+.cap-item:hover .cap-del-btn{opacity:1;}
+.caps-del-bar{display:none;align-items:center;gap:6px;padding:4px 7px;background:var(--red-l);border:1px solid var(--red);border-radius:var(--r);margin-bottom:6px;}
+.caps-del-bar.visible{display:flex;}
+.caps-del-bar>span{flex:1;font-size:10px;color:var(--red);}
 
-.frame-body {
-  flex: 1;
-  overflow-y: auto;
-  padding: 8px;
-}
-.frame-body::-webkit-scrollbar { width: 3px; }
-.frame-body::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+.empty{text-align:center;padding:24px 12px;color:var(--text3);}
+.empty-icon{font-size:20px;margin-bottom:6px;}
+.empty p{font-size:10px;line-height:1.6;}
 
-/* Captions frame */
-.cap-frame {
-  display: flex;
-  flex-direction: column;
-  flex: 0 0 240px;
-  overflow: hidden;
-  transition: flex 0.2s;
-}
-.cap-frame.expanded {
-  flex: 1 1 0;
-}
-
-/* ── SELECT ALL BAR ── */
-.select-all-bar {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 5px 8px;
-  background: var(--accent-l);
-  border: 1px solid var(--accent);
-  border-radius: var(--r);
-  margin-bottom: 7px;
-  cursor: pointer;
-  transition: background 0.15s;
-  user-select: none;
-}
-.select-all-bar:hover { background: #f0d8ca; }
-.sa-check {
-  width: 13px; height: 13px;
-  border: 1.5px solid var(--accent);
-  border-radius: 3px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 8px; color: white; background: var(--surface); flex-shrink: 0;
-}
-.sa-check.checked { background: var(--accent); }
-.sa-label { font-size: 11px; color: var(--accent); font-weight: 500; flex: 1; }
-.sa-count { font-size: 10px; color: var(--accent); }
-
-/* ── DELETE SELECTION BAR ── */
-.delete-bar {
-  display: none;
-  align-items: center;
-  gap: 7px;
-  padding: 5px 8px;
-  background: var(--red-l);
-  border: 1px solid var(--red);
-  border-radius: var(--r);
-  margin-bottom: 7px;
-}
-.delete-bar.visible { display: flex; }
-.delete-bar span { flex: 1; font-size: 11px; color: var(--red); }
-
-/* ── SMALL BUTTONS ── */
-.btn {
-  padding: 6px 10px;
-  border: 1px solid var(--border2);
-  background: var(--surface);
-  color: var(--text);
-  font-family: var(--mono);
-  font-size: 11px;
-  letter-spacing: 0.4px;
-  cursor: pointer;
-  border-radius: var(--r);
-  transition: all 0.15s;
-  font-weight: 500;
-}
-.btn:hover:not(:disabled) { background: var(--surface2); }
-.btn:disabled { opacity: 0.4; cursor: not-allowed; }
-.btn.primary { background: var(--accent); border-color: var(--accent); color: white; }
-.btn.primary:hover:not(:disabled) { background: #b04d18; border-color: #b04d18; }
-.btn.ghost { color: var(--text2); }
-.btn.ghost:hover:not(:disabled) { color: var(--text); }
-.btn.danger { color: var(--red); border-color: var(--red); background: var(--red-l); }
-.btn.danger:hover:not(:disabled) { background: var(--red); color: white; }
-.btn.sm { padding: 3px 8px; font-size: 10px; }
-
-/* ── FILE TREE ── */
-.tree-node { user-select: none; }
-
-.tree-item {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  padding: 4px 6px;
-  border-radius: var(--r);
-  cursor: pointer;
-  transition: background 0.1s;
-}
-.tree-item:hover { background: var(--surface2); }
-.tree-item.selected { background: var(--accent-l); }
-.tree-item.selected .tree-name { color: var(--accent); font-weight: 500; }
-
-.tree-icon { font-size: 11px; flex-shrink: 0; width: 15px; text-align: center; }
-.tree-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text); font-size: 12px; }
-.tree-size { font-size: 10px; color: var(--text3); flex-shrink: 0; }
-.tree-children { padding-left: 16px; }
-
-.tree-dir > .tree-item .tree-icon::before { content: '▶'; font-size: 8px; color: var(--text3); }
-.tree-dir.open > .tree-item .tree-icon::before { content: '▼'; }
-.tree-dir > .tree-item .tree-icon { font-size: 9px; }
-
-/* Checkboxes */
-.tree-check {
-  width: 13px; height: 13px;
-  border: 1.5px solid var(--border2);
-  border-radius: 3px;
-  flex-shrink: 0;
-  display: flex; align-items: center; justify-content: center;
-  transition: all 0.15s;
-  background: var(--surface);
-  font-size: 8px;
-}
-.tree-check.checked { background: var(--accent); border-color: var(--accent); color: white; }
-.tree-check.partial { background: var(--accent-l); border-color: var(--accent); color: var(--accent); }
-
-.dir-badge {
-  font-size: 9px;
-  color: var(--text3);
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 100px;
-  padding: 0 5px;
-  flex-shrink: 0;
-}
-
-/* ── CONTEXT MENU ── */
-.ctx-menu {
-  position: fixed;
-  background: var(--surface);
-  border: 1px solid var(--border2);
-  border-radius: var(--r);
-  box-shadow: var(--shadow-md);
-  z-index: 999;
-  min-width: 160px;
-  overflow: hidden;
-  display: none;
-}
-.ctx-menu.visible { display: block; }
-.ctx-item {
-  padding: 7px 13px;
-  cursor: pointer; font-size: 12px; color: var(--text);
-  transition: background 0.1s;
-  display: flex; align-items: center; gap: 8px;
-}
-.ctx-item:hover { background: var(--surface2); }
-.ctx-item.danger { color: var(--red); }
-.ctx-item.danger:hover { background: var(--red-l); }
-.ctx-sep { height: 1px; background: var(--border); margin: 4px 0; }
-
-/* ── MIDDLE PANEL ── */
-.middle {
-  border-right: 1px solid var(--border);
-  display: flex; flex-direction: column;
-  overflow: hidden; background: var(--bg);
-}
-
-/* Dropzone */
-.dropzone {
-  margin: 12px;
-  border: 1.5px dashed var(--border2);
-  border-radius: var(--r);
-  padding: 20px 16px;
-  text-align: center; cursor: pointer;
-  transition: all 0.2s; background: var(--surface);
-}
-.dropzone:hover, .dropzone.drag-over { border-color: var(--accent); background: var(--accent-l); }
-.dropzone-icon { font-size: 20px; margin-bottom: 5px; }
-.dropzone p { color: var(--text2); font-size: 12px; line-height: 1.6; }
-.dropzone p strong { color: var(--accent); }
-.dropzone-target { font-size: 10px; color: var(--text3); margin-top: 3px; }
-
-/* Queue */
-.queue-section { padding: 0 12px 8px; flex: 1; overflow-y: auto; }
-.queue-section::-webkit-scrollbar { width: 4px; }
-.queue-section::-webkit-scrollbar-thumb { background: var(--border2); }
-
-.queue-item {
-  display: flex; align-items: center; gap: 7px;
-  padding: 5px 8px;
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: var(--r); margin-bottom: 4px;
-  transition: all 0.2s; font-size: 12px;
-}
-.queue-item.active  { border-color: var(--accent); background: var(--accent-l); }
-.queue-item.done    { border-color: var(--green);  background: var(--green-l); }
-.queue-item.error   { border-color: var(--red);    background: var(--red-l); }
-.queue-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.queue-status { font-size: 13px; flex-shrink: 0; }
-
-/* Output dir */
-.output-section {
-  margin: 0 12px 10px;
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: var(--r); padding: 8px 10px;
-}
-.output-label { font-size: 10px; letter-spacing: 0.5px; text-transform: uppercase; color: var(--text3); margin-bottom: 4px; font-weight: 500; }
-.output-input {
-  width: 100%; padding: 5px 7px;
-  border: 1px solid var(--border2); border-radius: 4px;
-  font-family: var(--mono); font-size: 11px; color: var(--text);
-  background: var(--bg); outline: none; transition: border-color 0.15s;
-}
-.output-input:focus { border-color: var(--accent); }
-
-/* Actions */
-.actions {
-  padding: 10px 12px;
-  border-top: 1px solid var(--border);
-  background: var(--surface);
-  display: flex; flex-direction: column; gap: 7px; flex-shrink: 0;
-}
-.progress-bar { height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; }
-.progress-fill { height: 100%; background: var(--accent); width: 0%; transition: width 0.5s ease; border-radius: 2px; }
-.btn-row { display: flex; gap: 7px; }
-.btn-full { flex: 1; }
-
-/* ── LOG PANEL ── */
-.log-panel { display: flex; flex-direction: column; overflow: hidden; background: var(--surface); }
-.log-body { flex: 1; overflow-y: auto; padding: 10px 14px; font-size: 11.5px; line-height: 1.7; }
-.log-body::-webkit-scrollbar { width: 4px; }
-.log-body::-webkit-scrollbar-thumb { background: var(--border2); }
-.log-entry { display: flex; gap: 10px; padding: 1px 0; animation: fade-in 0.25s ease; }
-@keyframes fade-in { from{opacity:0;transform:translateY(3px)} to{opacity:1;transform:translateY(0)} }
-.log-time { color: var(--text3); flex-shrink: 0; font-size: 10px; padding-top: 2px; }
-.log-msg { color: var(--text2); white-space: pre-wrap; word-break: break-word; }
-.log-msg.success { color: var(--green); }
-.log-msg.error   { color: var(--red); }
-
-/* Stats */
-.stats { display: flex; border-top: 1px solid var(--border); flex-shrink: 0; }
-.stat { flex: 1; padding: 9px 12px; text-align: center; border-right: 1px solid var(--border); }
-.stat:last-child { border-right: none; }
-.stat-val { font-size: 18px; font-family: var(--serif); color: var(--text); line-height: 1; }
-.stat-lbl { font-size: 10px; color: var(--text3); margin-top: 2px; }
-
-/* ── OVERLAY ── */
-.overlay {
-  position: fixed; inset: 0;
-  background: rgba(245,243,239,0.92);
-  backdrop-filter: blur(8px);
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  z-index: 500; gap: 20px;
-}
-.overlay.hidden { display: none; }
-.overlay-title { font-family: var(--serif); font-size: 26px; color: var(--text); }
-.overlay-msg { font-size: 12px; color: var(--text2); max-width: 380px; text-align: center; line-height: 1.7; }
-.spinner { width:36px; height:36px; border:2px solid var(--border2); border-top-color:var(--accent); border-radius:50%; animation:spin 0.7s linear infinite; }
-@keyframes spin { to{transform:rotate(360deg)} }
-.overlay-log { background:var(--surface); border:1px solid var(--border); border-radius:var(--r); padding:12px 16px; max-width:440px; width:90%; max-height:160px; overflow-y:auto; font-size:11px; color:var(--text2); line-height:1.6; }
-
-/* ── CAPTION ITEMS ── */
-.cap-item {
-  display: flex; align-items: flex-start; gap: 7px;
-  padding: 6px 8px;
-  border: 1px solid var(--border); border-radius: var(--r);
-  margin-bottom: 4px; background: var(--surface);
-  transition: all 0.15s; cursor: default;
-}
-.cap-item:hover { background: var(--blue-l); border-color: #a8c0de; }
-.cap-item.cap-selected { background: var(--red-l); border-color: #d08082; }
-
-.cap-check {
-  width: 13px; height: 13px;
-  border: 1.5px solid var(--border2); border-radius: 3px;
-  flex-shrink: 0; margin-top: 2px;
-  display: flex; align-items: center; justify-content: center;
-  transition: all 0.15s; background: var(--surface);
-  font-size: 8px; cursor: pointer;
-}
-.cap-check.checked { background: var(--red); border-color: var(--red); color: white; }
-
-.cap-info { flex: 1; min-width: 0; }
-.cap-name { font-size: 11px; font-weight: 500; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.cap-meta { font-size: 10px; color: var(--text3); margin-top: 1px; }
-.cap-preview {
-  font-size: 10px; color: var(--text3); margin-top: 3px;
-  overflow: hidden;
-  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
-  line-height: 1.4; white-space: pre-wrap; word-break: break-word;
-}
-.cap-item:hover .cap-preview { -webkit-line-clamp: 6; }
-
-.cap-del-btn {
-  opacity: 0; font-size: 12px; color: var(--red); cursor: pointer;
-  padding: 2px 4px; border-radius: 3px; transition: opacity 0.15s, background 0.1s;
-  flex-shrink: 0; margin-top: 1px;
-}
-.cap-item:hover .cap-del-btn { opacity: 1; }
-.cap-del-btn:hover { background: var(--red-l); }
-
-/* Empty */
-.empty { text-align: center; padding: 28px 14px; color: var(--text3); }
-.empty-icon { font-size: 22px; margin-bottom: 7px; }
-.empty p { font-size: 11px; line-height: 1.6; }
-
-/* Caps delete bar inside frame-body */
-.caps-del-bar {
-  display: none;
-  align-items: center; gap: 7px;
-  padding: 5px 8px;
-  background: var(--red-l); border: 1px solid var(--red);
-  border-radius: var(--r); margin-bottom: 7px; flex-shrink: 0;
-}
-.caps-del-bar.visible { display: flex; }
-.caps-del-bar span { flex: 1; font-size: 11px; color: var(--red); }
+.overlay{position:fixed;inset:0;background:rgba(10,12,10,.88);backdrop-filter:blur(8px);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:500;gap:18px;}
+.overlay.hidden{display:none;}
+.overlay-title{font-family:var(--serif);font-size:24px;color:var(--text);}
+.overlay-msg{font-size:11px;color:var(--text2);max-width:360px;text-align:center;line-height:1.7;}
+.spinner{width:32px;height:32px;border:2px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.overlay-log{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:10px 14px;max-width:420px;width:90%;max-height:150px;overflow-y:auto;font-size:10px;color:var(--text2);line-height:1.6;}
 </style>
 </head>
 <body>
 
-<!-- LOADING OVERLAY -->
 <div class="overlay" id="overlay">
   <div class="spinner"></div>
   <div class="overlay-title">ACE-Step Captioner</div>
@@ -530,7 +181,6 @@ header {
   <div class="overlay-log" id="overlay-log"></div>
 </div>
 
-<!-- CONTEXT MENU -->
 <div class="ctx-menu" id="ctx-menu">
   <div class="ctx-item" id="ctx-rename">✏️ Renommer</div>
   <div class="ctx-item" id="ctx-select">☑️ Sélectionner pour caption</div>
@@ -538,625 +188,343 @@ header {
   <div class="ctx-item danger" id="ctx-delete">🗑️ Supprimer</div>
 </div>
 
-<!-- HEADER -->
 <header>
-  <div class="logo">
-    ACE-Step Captioner
-    <span class="logo-sub">Radio Giscard</span>
-  </div>
-  <div class="header-status">
-    <div class="status-pill idle" id="status-pill">
-      <div class="dot"></div>
-      <span id="status-text">Initialisation</span>
-    </div>
-  </div>
+  <div class="logo">ACE-Step Captioner <span class="logo-sub">Radio Giscard</span></div>
+  <div class="status-pill idle" id="status-pill"><div class="dot"></div><span id="status-text">Initialisation</span></div>
 </header>
 
-<!-- APP -->
-<div class="app">
+<div class="app" id="app">
 
-  <!-- LEFT — WAV FRAME + CAPTIONS FRAME -->
-  <div class="left-panel">
+  <div class="left-panel" id="left-panel">
 
-    <!-- ── WAV FRAME ── -->
-    <div class="wav-frame">
+    <div class="wav-frame" id="wav-frame" style="height:55%">
       <div class="frame-head">
-        <div class="frame-title">
-          🎵 Fichiers WAV
-          <span class="frame-count" id="wav-count">0</span>
-        </div>
+        <div class="frame-title">🎵 WAV <span class="frame-count" id="wav-count">0</span></div>
         <div class="frame-actions">
-          <button class="btn sm ghost" id="btn-new-folder">+ Dossier</button>
-          <button class="btn sm ghost" id="btn-refresh">↺</button>
+          <button class="btn ghost" id="btn-new-folder">+ Dossier</button>
+          <button class="btn ghost" id="btn-refresh">↺</button>
         </div>
       </div>
       <div class="frame-body" id="wav-frame-body">
-
-        <!-- Select all bar -->
         <div class="select-all-bar" id="select-all-bar" style="display:none">
           <div class="sa-check" id="sa-check"></div>
           <span class="sa-label">Tout sélectionner</span>
           <span class="sa-count" id="sa-count"></span>
         </div>
-
-        <!-- Delete selection bar (WAV) -->
         <div class="delete-bar" id="delete-bar">
           <span id="delete-bar-label"></span>
-          <button class="btn sm danger" id="btn-delete-selection">🗑 Supprimer</button>
-          <button class="btn sm ghost" id="btn-cancel-delete">✕</button>
+          <button class="btn danger" style="font-size:10px;padding:3px 7px" id="btn-delete-selection">🗑 Supprimer</button>
+          <button class="btn ghost" style="padding:3px 6px" id="btn-cancel-delete">✕</button>
         </div>
-
-        <!-- Tree nodes -->
         <div id="tree-nodes">
           <div class="empty"><div class="empty-icon">📂</div><p>Aucun fichier WAV<br>dans /workspace/datasets</p></div>
         </div>
       </div>
     </div>
 
-    <!-- ── CAPTIONS FRAME ── -->
+    <div class="v-resizer" id="v-resizer"></div>
+
     <div class="cap-frame" id="cap-frame">
       <div class="frame-head">
-        <div class="frame-title">
-          📄 Captions
-          <span class="frame-count" id="cap-count">0</span>
-        </div>
+        <div class="frame-title">📄 Captions <span class="frame-count" id="cap-count">0</span></div>
         <div class="frame-actions">
-          <button class="btn sm ghost" id="btn-refresh-caps">↺</button>
-          <button class="btn sm ghost" id="btn-expand-caps" title="Agrandir/Réduire">⤢</button>
+          <button class="btn ghost" id="btn-refresh-caps">↺</button>
         </div>
       </div>
       <div class="frame-body" id="cap-frame-body">
-
-        <!-- Captions delete bar -->
         <div class="caps-del-bar" id="caps-del-bar">
           <span id="caps-del-label"></span>
-          <button class="btn sm danger" id="btn-delete-caps">🗑 Supprimer</button>
-          <button class="btn sm ghost" id="btn-cancel-caps-del">✕</button>
+          <button class="btn danger" style="font-size:10px;padding:3px 7px" id="btn-delete-caps">🗑 Supprimer</button>
+          <button class="btn ghost" style="padding:3px 6px" id="btn-cancel-caps-del">✕</button>
         </div>
-
         <div id="cap-list">
-          <div class="empty"><div class="empty-icon">📄</div><p>Aucune caption<br>dans /workspace/datasets</p></div>
+          <div class="empty"><div class="empty-icon">📄</div><p>Aucune caption trouvée</p></div>
         </div>
       </div>
     </div>
 
   </div>
 
-  <!-- MIDDLE — QUEUE + ACTIONS -->
-  <div class="middle">
+  <div class="h-resizer" id="h-resizer-left"></div>
+
+  <div class="middle" id="middle-panel">
     <div class="panel-head" style="background:var(--surface)">
       <span class="panel-title">File d'attente</span>
-      <span id="queue-count" style="font-size:11px;color:var(--text3)">0 fichier</span>
+      <span id="queue-count" style="font-size:10px;color:var(--text3)">0 fichier</span>
     </div>
-
     <div class="dropzone" id="dropzone">
       <input type="file" id="file-input" multiple accept=".wav" style="display:none">
       <div class="dropzone-icon">⬆️</div>
       <p><strong>Glisser des WAV ici</strong><br>ou cliquer pour uploader</p>
       <div class="dropzone-target" id="drop-target-label">→ /workspace/datasets/</div>
     </div>
-
     <div class="queue-section" id="queue-list">
-      <div class="empty"><div class="empty-icon">☑️</div><p>Sélectionnez des fichiers WAV<br>dans le cadre à gauche</p></div>
+      <div class="empty"><div class="empty-icon">☑️</div><p>Sélectionnez des WAV à gauche</p></div>
     </div>
-
     <div class="output-section">
-      <div class="output-label">Dossier de sortie des captions</div>
-      <input class="output-input" type="text" id="output-dir" value="/workspace/datasets/captions" placeholder="/workspace/datasets/mon_projet/captions">
+      <div class="output-label">Dossier de sortie</div>
+      <input class="output-input" type="text" id="output-dir" value="/workspace/datasets/captions">
     </div>
-
     <div class="actions">
-      <div class="progress-bar">
-        <div class="progress-fill" id="progress-fill"></div>
-      </div>
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
       <div class="btn-row">
-        <button class="btn primary btn-full" id="btn-start" disabled>▶ Lancer</button>
-        <button class="btn btn-full" id="btn-download" disabled>⬇ ZIP</button>
-        <button class="btn ghost" id="btn-clear-queue" style="flex:none;padding:6px 10px">✕</button>
+        <button class="btn primary" id="btn-start" disabled style="flex:1">▶ Lancer</button>
+        <button class="btn" id="btn-download" disabled style="flex:1">⬇ ZIP</button>
+        <button class="btn ghost" id="btn-clear-queue" style="padding:5px 8px">✕</button>
       </div>
     </div>
   </div>
 
-  <!-- RIGHT — LOG -->
-  <div class="log-panel panel">
+  <div class="h-resizer" id="h-resizer-right"></div>
+
+  <div class="right-panel" id="right-panel">
     <div class="panel-head">
       <span class="panel-title">Journal</span>
-      <span id="log-count" style="font-size:10px;color:var(--text3)"></span>
+      <span id="log-count" style="font-size:9px;color:var(--text3)"></span>
     </div>
     <div class="log-body" id="log-body"></div>
     <div class="stats">
-      <div class="stat">
-        <div class="stat-val" id="stat-processed">0</div>
-        <div class="stat-lbl">Traités</div>
-      </div>
-      <div class="stat">
-        <div class="stat-val" id="stat-errors">0</div>
-        <div class="stat-lbl">Erreurs</div>
-      </div>
-      <div class="stat">
-        <div class="stat-val" id="stat-total">0</div>
-        <div class="stat-lbl">Total</div>
-      </div>
+      <div class="stat"><div class="stat-val" id="stat-processed">0</div><div class="stat-lbl">Traités</div></div>
+      <div class="stat"><div class="stat-val" id="stat-errors">0</div><div class="stat-lbl">Erreurs</div></div>
+      <div class="stat"><div class="stat-val" id="stat-total">0</div><div class="stat-lbl">Total</div></div>
     </div>
   </div>
 
 </div>
 
 <script>
-const API = '';
-let treeData = [];
-let allWavPaths = [];
-let selectedFiles = new Set();
-let selectedCaps  = new Set();
-let currentCtxNode = null;
-let currentStatus  = 'idle';
-let uploadTargetDir = '/workspace/datasets';
-let capsExpanded = false;
+const API='';
+let treeData=[],allWavPaths=[],selectedFiles=new Set(),selectedCaps=new Set();
+let currentCtxNode=null,currentStatus='idle',uploadTargetDir='/workspace/datasets';
+const openDirs={};
 
-function esc(s) {
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+// ── RESIZERS ──
+function makeHResizer(id,leftEl,rightEl,leftFixed){
+  const rz=document.getElementById(id);let sx,sw;
+  rz.addEventListener('mousedown',e=>{
+    e.preventDefault();rz.classList.add('dragging');sx=e.clientX;
+    sw=leftFixed?leftEl.offsetWidth:rightEl.offsetWidth;
+    const mv=ev=>{const d=ev.clientX-sx;if(leftFixed){leftEl.style.width=Math.max(180,Math.min(520,sw+d))+'px';}else{rightEl.style.width=Math.max(180,Math.min(540,sw-d))+'px';}};
+    const up=()=>{rz.classList.remove('dragging');document.removeEventListener('mousemove',mv);document.removeEventListener('mouseup',up);};
+    document.addEventListener('mousemove',mv);document.addEventListener('mouseup',up);
+  });
 }
-
-// ── STATUS POLL ────────────────────────────────────────
-async function pollStatus() {
-  try {
-    const r = await fetch(`${API}/status`);
-    const d = await r.json();
-    updateStatus(d);
-  } catch(e) {}
+function makeVResizer(id,topEl){
+  const rz=document.getElementById(id);let sy,sh;
+  rz.addEventListener('mousedown',e=>{
+    e.preventDefault();rz.classList.add('dragging');sy=e.clientY;sh=topEl.offsetHeight;
+    const mv=ev=>{const d=ev.clientY-sy;const ph=topEl.parentElement.offsetHeight;const nh=Math.max(60,Math.min(ph-60-rz.offsetHeight,sh+d));topEl.style.height=nh+'px';topEl.style.flex='none';};
+    const up=()=>{rz.classList.remove('dragging');document.removeEventListener('mousemove',mv);document.removeEventListener('mouseup',up);};
+    document.addEventListener('mousemove',mv);document.addEventListener('mouseup',up);
+  });
 }
+makeHResizer('h-resizer-left',document.getElementById('left-panel'),null,true);
+makeHResizer('h-resizer-right',null,document.getElementById('right-panel'),false);
+makeVResizer('v-resizer',document.getElementById('wav-frame'));
 
-function updateStatus(d) {
-  currentStatus = d.status;
-  const pill = document.getElementById('status-pill');
-  pill.className = `status-pill ${d.status}`;
-  const labels = { idle:'Prêt', downloading:'Téléchargement…', loading:'Chargement modèles…', running:'Captioning…', done:'Terminé', error:'Erreur' };
-  document.getElementById('status-text').textContent = labels[d.status] || d.status;
-
-  if (!d.models_ready) {
+// ── STATUS ──
+async function pollStatus(){try{const r=await fetch(API+'/status');updateStatus(await r.json());}catch(e){}}
+function updateStatus(d){
+  currentStatus=d.status;
+  const pill=document.getElementById('status-pill');
+  pill.className='status-pill '+d.status;
+  const L={idle:'Prêt',downloading:'Téléchargement…',loading:'Chargement modèles…',running:'Captioning…',done:'Terminé',error:'Erreur'};
+  document.getElementById('status-text').textContent=L[d.status]||d.status;
+  if(!d.models_ready){
     document.getElementById('overlay').classList.remove('hidden');
-    const last = d.log.length > 0 ? d.log[d.log.length-1].msg : 'Initialisation…';
-    document.getElementById('overlay-msg').textContent = last;
-    const ol = document.getElementById('overlay-log');
-    ol.innerHTML = d.log.slice(-8).map(e =>
-      `<div style="color:${e.level==='error'?'#9b2226':e.level==='success'?'#2d6a4f':'#6b6560'}">${esc(e.msg)}</div>`
-    ).join('');
-    ol.scrollTop = ol.scrollHeight;
-  } else {
-    document.getElementById('overlay').classList.add('hidden');
-  }
-
-  document.getElementById('progress-fill').style.width = d.progress + '%';
-  document.getElementById('stat-processed').textContent = d.processed;
-  document.getElementById('stat-errors').textContent    = d.errors;
-  document.getElementById('stat-total').textContent     = d.total_files;
-
-  document.getElementById('btn-start').disabled =
-    !d.models_ready || d.status === 'running' || selectedFiles.size === 0;
-  document.getElementById('btn-download').disabled = d.status !== 'done';
-
-  renderLog(d.log);
-
-  if (d.current_file && d.status === 'running') {
-    document.querySelectorAll('.queue-item').forEach(el =>
-      el.classList.toggle('active', el.dataset.name === d.current_file));
-  }
-  if (d.status === 'done') {
-    document.querySelectorAll('.queue-item').forEach(el => el.classList.add('done'));
-    loadTree();
-    loadCaptions();
-  }
+    document.getElementById('overlay-msg').textContent=d.log.length?d.log[d.log.length-1].msg:'Initialisation…';
+    const ol=document.getElementById('overlay-log');
+    ol.innerHTML=d.log.slice(-8).map(e=>`<div style="color:${e.level==='error'?'#c4484a':e.level==='success'?'#4a9e6f':'#9a9890'}">${esc(e.msg)}</div>`).join('');
+    ol.scrollTop=ol.scrollHeight;
+  }else{document.getElementById('overlay').classList.add('hidden');}
+  document.getElementById('progress-fill').style.width=d.progress+'%';
+  document.getElementById('stat-processed').textContent=d.processed;
+  document.getElementById('stat-errors').textContent=d.errors;
+  document.getElementById('stat-total').textContent=d.total_files;
+  document.getElementById('btn-start').disabled=!d.models_ready||d.status==='running'||selectedFiles.size===0;
+  document.getElementById('btn-download').disabled=d.status!=='done';
+  appendLog(d.log);
+  if(d.current_file&&d.status==='running')document.querySelectorAll('.queue-item').forEach(el=>el.classList.toggle('active',el.dataset.name===d.current_file));
+  if(d.status==='done'){document.querySelectorAll('.queue-item').forEach(el=>el.classList.add('done'));loadTree();loadCaptions();}
 }
 
-// ── LOG ────────────────────────────────────────────────
-let logRendered = 0;
-function renderLog(logs) {
-  const body = document.getElementById('log-body');
-  const count = document.getElementById('log-count');
-  for (let i = logRendered; i < logs.length; i++) {
-    const e = logs[i];
-    const div = document.createElement('div');
-    div.className = 'log-entry';
-    div.innerHTML = `<span class="log-time">${esc(e.time)}</span><span class="log-msg ${e.level||'info'}">${esc(e.msg)}</span>`;
+// ── LOG — append only ──
+let logRendered=0;
+function appendLog(logs){
+  const body=document.getElementById('log-body');
+  for(let i=logRendered;i<logs.length;i++){
+    const e=logs[i],div=document.createElement('div');
+    div.className='log-entry';
+    div.innerHTML=`<span class="log-time">${esc(e.time)}</span><span class="log-msg ${e.level||'info'}">${esc(e.msg)}</span>`;
     body.appendChild(div);
   }
-  logRendered = logs.length;
-  count.textContent = `${logs.length} lignes`;
-  body.scrollTop = body.scrollHeight;
+  logRendered=logs.length;
+  document.getElementById('log-count').textContent=logs.length+' lignes';
+  body.scrollTop=body.scrollHeight;
 }
 
-// ── WAV TREE ───────────────────────────────────────────
-function collectWavPaths(nodes) {
-  let r = [];
-  for (const n of nodes) {
-    if (n.type === 'file') r.push(n.path);
-    else if (n.children) r = r.concat(collectWavPaths(n.children));
-  }
-  return r;
+// ── TREE ──
+function collectWavPaths(nodes){let r=[];for(const n of nodes){if(n.type==='file')r.push(n.path);else if(n.children)r=r.concat(collectWavPaths(n.children));}return r;}
+
+async function loadTree(){try{const r=await fetch(API+'/tree');treeData=await r.json();allWavPaths=collectWavPaths(treeData);renderTree();}catch(e){}}
+
+function renderTree(){
+  const c=document.getElementById('tree-nodes'),sa=document.getElementById('select-all-bar');
+  c.innerHTML='';
+  document.getElementById('wav-count').textContent=allWavPaths.length;
+  if(!allWavPaths.length){c.innerHTML='<div class="empty"><div class="empty-icon">📂</div><p>Aucun fichier WAV<br>dans /workspace/datasets</p></div>';sa.style.display='none';updateDeleteBar();return;}
+  sa.style.display='flex';updateSelectAllBar();updateDeleteBar();
+  treeData.forEach(n=>c.appendChild(buildNode(n)));
 }
 
-async function loadTree() {
-  try {
-    const r = await fetch(`${API}/tree`);
-    treeData = await r.json();
-    allWavPaths = collectWavPaths(treeData);
-    renderTree();
-  } catch(e) {}
+function updateSelectAllBar(){
+  const sc=document.getElementById('sa-check'),sn=document.getElementById('sa-count');
+  const t=allWavPaths.length,s=selectedFiles.size;
+  sn.textContent=s>0?s+'/'+t:t+' WAV';
+  if(s===0){sc.className='sa-check';sc.textContent='';}
+  else if(s===t){sc.className='sa-check checked';sc.textContent='✓';}
+  else{sc.className='sa-check checked';sc.textContent='—';}
 }
 
-function renderTree() {
-  const container = document.getElementById('tree-nodes');
-  const saBar     = document.getElementById('select-all-bar');
-  container.innerHTML = '';
-
-  document.getElementById('wav-count').textContent = allWavPaths.length;
-
-  if (!allWavPaths.length) {
-    container.innerHTML = '<div class="empty"><div class="empty-icon">📂</div><p>Aucun fichier WAV<br>dans /workspace/datasets</p></div>';
-    saBar.style.display = 'none';
-    updateDeleteBar();
-    return;
-  }
-
-  saBar.style.display = 'flex';
-  updateSelectAllBar();
-  updateDeleteBar();
-  treeData.forEach(node => container.appendChild(buildNode(node)));
+function updateDeleteBar(){
+  const bar=document.getElementById('delete-bar');
+  document.getElementById('delete-bar-label').textContent=selectedFiles.size+' sélectionné'+(selectedFiles.size>1?'s':'');
+  bar.classList.toggle('visible',selectedFiles.size>0);
 }
 
-function updateSelectAllBar() {
-  const saCheck = document.getElementById('sa-check');
-  const saCount = document.getElementById('sa-count');
-  const total = allWavPaths.length;
-  const sel   = selectedFiles.size;
-  saCount.textContent = sel > 0 ? `${sel}/${total}` : `${total} WAV`;
-  if (sel === 0)     { saCheck.className = 'sa-check'; saCheck.textContent = ''; }
-  else if (sel === total) { saCheck.className = 'sa-check checked'; saCheck.textContent = '✓'; }
-  else               { saCheck.className = 'sa-check checked'; saCheck.textContent = '—'; }
-}
-
-function updateDeleteBar() {
-  const bar   = document.getElementById('delete-bar');
-  const label = document.getElementById('delete-bar-label');
-  if (selectedFiles.size > 0) {
-    bar.classList.add('visible');
-    label.textContent = `${selectedFiles.size} sélectionné${selectedFiles.size > 1 ? 's' : ''}`;
-  } else {
-    bar.classList.remove('visible');
-  }
-}
-
-document.getElementById('select-all-bar').addEventListener('click', () => {
-  if (selectedFiles.size === allWavPaths.length) selectedFiles.clear();
-  else allWavPaths.forEach(p => selectedFiles.add(p));
-  renderTree();
-  updateQueue();
+document.getElementById('select-all-bar').addEventListener('click',()=>{
+  if(selectedFiles.size===allWavPaths.length)selectedFiles.clear();else allWavPaths.forEach(p=>selectedFiles.add(p));
+  renderTree();updateQueue();
 });
 
-function buildNode(node) {
-  const wrap = document.createElement('div');
-  if (node.type === 'dir') {
-    wrap.className = 'tree-node tree-dir';
-    const dirPaths = collectWavPaths(node.children || []);
-    const selCount = dirPaths.filter(p => selectedFiles.has(p)).length;
-    const allSel   = dirPaths.length > 0 && selCount === dirPaths.length;
-    const partSel  = selCount > 0 && !allSel;
-
-    const item = document.createElement('div');
-    item.className = 'tree-item';
-    item.innerHTML = `
-      <div class="tree-check ${allSel ? 'checked' : partSel ? 'partial' : ''}">${allSel ? '✓' : partSel ? '—' : ''}</div>
-      <span class="tree-icon"></span>
-      <span class="tree-name">${esc(node.name)}</span>
-      <span class="dir-badge">${node.wav_count || dirPaths.length}</span>
-    `;
-
-    const chkEl = item.querySelector('.tree-check');
-    chkEl.addEventListener('click', e => {
+function buildNode(node){
+  const wrap=document.createElement('div');
+  if(node.type==='dir'){
+    wrap.className='tree-node tree-dir';
+    const dp=collectWavPaths(node.children||[]);
+    const sc=dp.filter(p=>selectedFiles.has(p)).length;
+    const allS=dp.length>0&&sc===dp.length,partS=sc>0&&!allS;
+    const isOpen=openDirs[node.path]!==false;
+    if(isOpen)wrap.classList.add('open');
+    const item=document.createElement('div');
+    item.className='tree-item';
+    item.innerHTML=`<div class="tree-check ${allS?'checked':partS?'partial':''}">${allS?'✓':partS?'—':''}</div><span class="tree-icon"></span><span class="tree-name">${esc(node.name)}</span><span class="dir-badge">${node.wav_count||dp.length}</span>`;
+    const ch=document.createElement('div');
+    ch.className='tree-children';ch.style.display=isOpen?'block':'none';
+    (node.children||[]).forEach(c=>ch.appendChild(buildNode(c)));
+    const chkEl=item.querySelector('.tree-check');
+    chkEl.addEventListener('click',e=>{
       e.stopPropagation();
-      if (allSel) dirPaths.forEach(p => selectedFiles.delete(p));
-      else        dirPaths.forEach(p => selectedFiles.add(p));
-      renderTree(); updateQueue();
+      if(allS)dp.forEach(p=>selectedFiles.delete(p));else dp.forEach(p=>selectedFiles.add(p));
+      renderTree();updateQueue();
     });
-
-    const children = document.createElement('div');
-    children.className = 'tree-children';
-    children.style.display = 'none';
-    (node.children || []).forEach(c => children.appendChild(buildNode(c)));
-
-    item.addEventListener('click', e => {
-      if (e.target === chkEl || chkEl.contains(e.target)) return;
-      wrap.classList.toggle('open');
-      children.style.display = wrap.classList.contains('open') ? 'block' : 'none';
-      uploadTargetDir = node.path;
-      document.getElementById('drop-target-label').textContent = `→ ${node.path}`;
-      document.getElementById('output-dir').value = node.path + '/captions';
+    item.addEventListener('click',e=>{
+      if(chkEl.contains(e.target))return;
+      const now=wrap.classList.toggle('open');
+      openDirs[node.path]=now;ch.style.display=now?'block':'none';
+      uploadTargetDir=node.path;
+      document.getElementById('drop-target-label').textContent='→ '+node.path;
+      document.getElementById('output-dir').value=node.path+'/captions';
     });
-    item.addEventListener('contextmenu', e => showCtx(e, node));
-
-    wrap.appendChild(item);
-    wrap.appendChild(children);
-  } else {
-    wrap.className = 'tree-node tree-file';
-    const isSel = selectedFiles.has(node.path);
-    const item  = document.createElement('div');
-    item.className = `tree-item${isSel ? ' selected' : ''}`;
-    item.dataset.path = node.path;
-    item.innerHTML = `
-      <div class="tree-check${isSel ? ' checked' : ''}">${isSel ? '✓' : ''}</div>
-      <span class="tree-icon">🎵</span>
-      <span class="tree-name">${esc(node.name)}</span>
-      <span class="tree-size">${node.size_mb}MB</span>
-    `;
-    item.addEventListener('click', () => {
-      if (selectedFiles.has(node.path)) selectedFiles.delete(node.path);
-      else selectedFiles.add(node.path);
-      renderTree(); updateQueue();
+    item.addEventListener('contextmenu',e=>showCtx(e,node));
+    wrap.appendChild(item);wrap.appendChild(ch);
+  }else{
+    wrap.className='tree-node tree-file';
+    const sel=selectedFiles.has(node.path);
+    const item=document.createElement('div');
+    item.className='tree-item'+(sel?' selected':'');item.dataset.path=node.path;
+    item.innerHTML=`<div class="tree-check${sel?' checked':''}">${sel?'✓':''}</div><span class="tree-icon">🎵</span><span class="tree-name">${esc(node.name)}</span><span class="tree-size">${node.size_mb}MB</span>`;
+    item.addEventListener('click',()=>{
+      if(selectedFiles.has(node.path))selectedFiles.delete(node.path);else selectedFiles.add(node.path);
+      renderTree();updateQueue();
     });
-    item.addEventListener('contextmenu', e => showCtx(e, node));
+    item.addEventListener('contextmenu',e=>showCtx(e,node));
     wrap.appendChild(item);
   }
   return wrap;
 }
 
-function updateQueue() {
-  const list  = document.getElementById('queue-list');
-  const count = document.getElementById('queue-count');
-  count.textContent = `${selectedFiles.size} fichier${selectedFiles.size > 1 ? 's' : ''}`;
-
-  if (selectedFiles.size === 0) {
-    list.innerHTML = '<div class="empty"><div class="empty-icon">☑️</div><p>Sélectionnez des fichiers WAV<br>dans le cadre à gauche</p></div>';
-    document.getElementById('btn-start').disabled = true;
-    updateDeleteBar();
-    return;
-  }
-
-  list.innerHTML = '';
-  selectedFiles.forEach(path => {
-    const name = path.split('/').pop();
-    const div = document.createElement('div');
-    div.className = 'queue-item';
-    div.dataset.name = name;
-    div.innerHTML = `
-      <span class="queue-status">○</span>
-      <span class="queue-name">${esc(name)}</span>
-      <span style="font-size:10px;color:var(--text3);cursor:pointer;flex-shrink:0" data-path="${esc(path)}" class="remove-btn">✕</span>
-    `;
-    div.querySelector('.remove-btn').addEventListener('click', e => {
-      e.stopPropagation();
-      selectedFiles.delete(path);
-      renderTree(); updateQueue();
-    });
+function updateQueue(){
+  const list=document.getElementById('queue-list'),count=document.getElementById('queue-count');
+  count.textContent=selectedFiles.size+' fichier'+(selectedFiles.size>1?'s':'');
+  if(!selectedFiles.size){list.innerHTML='<div class="empty"><div class="empty-icon">☑️</div><p>Sélectionnez des WAV à gauche</p></div>';document.getElementById('btn-start').disabled=true;updateDeleteBar();return;}
+  list.innerHTML='';
+  selectedFiles.forEach(path=>{
+    const name=path.split('/').pop(),div=document.createElement('div');
+    div.className='queue-item';div.dataset.name=name;
+    div.innerHTML=`<span style="font-size:12px;flex-shrink:0">○</span><span class="queue-name">${esc(name)}</span><span style="font-size:10px;color:var(--text3);cursor:pointer;flex-shrink:0" class="rm">✕</span>`;
+    div.querySelector('.rm').addEventListener('click',e=>{e.stopPropagation();selectedFiles.delete(path);renderTree();updateQueue();});
     list.appendChild(div);
   });
-
-  document.getElementById('btn-start').disabled = currentStatus === 'running';
+  document.getElementById('btn-start').disabled=currentStatus==='running';
   updateDeleteBar();
 }
 
-// ── DELETE SELECTION (WAV) ─────────────────────────────
-document.getElementById('btn-delete-selection').addEventListener('click', async () => {
-  if (!selectedFiles.size) return;
-  if (!confirm(`Supprimer définitivement les ${selectedFiles.size} fichiers WAV sélectionnés ?`)) return;
-  await fetch(`${API}/delete-many`, {
-    method: 'POST', headers: {'Content-Type':'application/json'},
-    body: JSON.stringify({ paths: Array.from(selectedFiles) })
-  });
-  selectedFiles.clear();
-  await loadTree();
-  updateQueue();
+document.getElementById('btn-delete-selection').addEventListener('click',async()=>{
+  if(!selectedFiles.size)return;
+  if(!confirm('Supprimer définitivement les '+selectedFiles.size+' fichiers WAV sélectionnés ?'))return;
+  await fetch(API+'/delete-many',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({paths:Array.from(selectedFiles)})});
+  selectedFiles.clear();await loadTree();updateQueue();
 });
+document.getElementById('btn-cancel-delete').addEventListener('click',()=>{selectedFiles.clear();renderTree();updateQueue();});
 
-document.getElementById('btn-cancel-delete').addEventListener('click', () => {
-  selectedFiles.clear();
-  renderTree(); updateQueue();
-});
+// ── CONTEXT MENU ──
+function showCtx(e,node){e.preventDefault();currentCtxNode=node;const m=document.getElementById('ctx-menu');m.style.left=e.clientX+'px';m.style.top=e.clientY+'px';m.classList.add('visible');document.getElementById('ctx-select').style.display=node.type==='file'?'flex':'none';}
+document.addEventListener('click',()=>document.getElementById('ctx-menu').classList.remove('visible'));
+document.getElementById('ctx-rename').addEventListener('click',async()=>{if(!currentCtxNode)return;const n=prompt('Nouveau nom :',currentCtxNode.name);if(!n||n===currentCtxNode.name)return;await fetch(API+'/rename',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({path:currentCtxNode.path,new_name:n})});await loadTree();});
+document.getElementById('ctx-select').addEventListener('click',()=>{if(!currentCtxNode||currentCtxNode.type!=='file')return;selectedFiles.add(currentCtxNode.path);renderTree();updateQueue();});
+document.getElementById('ctx-delete').addEventListener('click',async()=>{if(!currentCtxNode)return;const l=currentCtxNode.type==='dir'?'le dossier "'+currentCtxNode.name+'" et son contenu':'"'+currentCtxNode.name+'"';if(!confirm('Supprimer '+l+' ?'))return;await fetch(API+'/file?path='+encodeURIComponent(currentCtxNode.path),{method:'DELETE'});selectedFiles.delete(currentCtxNode.path);await loadTree();updateQueue();});
 
-// ── CONTEXT MENU ───────────────────────────────────────
-function showCtx(e, node) {
-  e.preventDefault();
-  currentCtxNode = node;
-  const menu = document.getElementById('ctx-menu');
-  menu.style.left = e.clientX + 'px';
-  menu.style.top  = e.clientY + 'px';
-  menu.classList.add('visible');
-  document.getElementById('ctx-select').style.display = node.type === 'file' ? 'flex' : 'none';
-}
+// ── NEW FOLDER / REFRESH ──
+document.getElementById('btn-new-folder').addEventListener('click',async()=>{const n=prompt('Nom du dossier :','mon_projet');if(!n)return;await fetch(API+'/mkdir',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({path:uploadTargetDir.replace(/\/$/,'')+'/'+n})});await loadTree();});
+document.getElementById('btn-refresh').addEventListener('click',loadTree);
 
-document.addEventListener('click', () => document.getElementById('ctx-menu').classList.remove('visible'));
+// ── UPLOAD ──
+const dropzone=document.getElementById('dropzone'),fileInput=document.getElementById('file-input');
+dropzone.addEventListener('click',()=>fileInput.click());
+fileInput.addEventListener('change',e=>uploadFiles(Array.from(e.target.files)));
+dropzone.addEventListener('dragover',e=>{e.preventDefault();dropzone.classList.add('drag-over');});
+dropzone.addEventListener('dragleave',()=>dropzone.classList.remove('drag-over'));
+dropzone.addEventListener('drop',e=>{e.preventDefault();dropzone.classList.remove('drag-over');uploadFiles(Array.from(e.dataTransfer.files));});
+async function uploadFiles(files){const wavs=files.filter(f=>f.name.toLowerCase().endsWith('.wav'));if(!wavs.length)return;const fd=new FormData();wavs.forEach(f=>fd.append('files',f));await fetch(API+'/upload-to?target_dir='+encodeURIComponent(uploadTargetDir),{method:'POST',body:fd});await loadTree();}
 
-document.getElementById('ctx-rename').addEventListener('click', async () => {
-  if (!currentCtxNode) return;
-  const newName = prompt('Nouveau nom :', currentCtxNode.name);
-  if (!newName || newName === currentCtxNode.name) return;
-  await fetch(`${API}/rename`, {
-    method: 'POST', headers: {'Content-Type':'application/json'},
-    body: JSON.stringify({ path: currentCtxNode.path, new_name: newName })
-  });
-  await loadTree();
-});
-
-document.getElementById('ctx-select').addEventListener('click', () => {
-  if (!currentCtxNode || currentCtxNode.type !== 'file') return;
-  selectedFiles.add(currentCtxNode.path);
-  renderTree(); updateQueue();
-});
-
-document.getElementById('ctx-delete').addEventListener('click', async () => {
-  if (!currentCtxNode) return;
-  const label = currentCtxNode.type === 'dir'
-    ? `le dossier "${currentCtxNode.name}" et son contenu` : `"${currentCtxNode.name}"`;
-  if (!confirm(`Supprimer ${label} ?`)) return;
-  await fetch(`${API}/file?path=${encodeURIComponent(currentCtxNode.path)}`, { method: 'DELETE' });
-  selectedFiles.delete(currentCtxNode.path);
-  await loadTree(); updateQueue();
-});
-
-// ── NEW FOLDER ─────────────────────────────────────────
-document.getElementById('btn-new-folder').addEventListener('click', async () => {
-  const name = prompt('Nom du dossier :', 'mon_projet');
-  if (!name) return;
-  const path = uploadTargetDir.replace(/\/$/, '') + '/' + name;
-  await fetch(`${API}/mkdir`, {
-    method: 'POST', headers: {'Content-Type':'application/json'},
-    body: JSON.stringify({ path })
-  });
-  await loadTree();
-});
-
-document.getElementById('btn-refresh').addEventListener('click', loadTree);
-
-// ── UPLOAD ─────────────────────────────────────────────
-const dropzone  = document.getElementById('dropzone');
-const fileInput = document.getElementById('file-input');
-
-dropzone.addEventListener('click', () => fileInput.click());
-fileInput.addEventListener('change', e => uploadFiles(Array.from(e.target.files)));
-dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('drag-over'); });
-dropzone.addEventListener('dragleave', () => dropzone.classList.remove('drag-over'));
-dropzone.addEventListener('drop', e => {
-  e.preventDefault(); dropzone.classList.remove('drag-over');
-  uploadFiles(Array.from(e.dataTransfer.files));
-});
-
-async function uploadFiles(files) {
-  const wavs = files.filter(f => f.name.toLowerCase().endsWith('.wav'));
-  if (!wavs.length) return;
-  const fd = new FormData();
-  wavs.forEach(f => fd.append('files', f));
-  await fetch(`${API}/upload-to?target_dir=${encodeURIComponent(uploadTargetDir)}`, { method: 'POST', body: fd });
-  await loadTree();
-}
-
-// ── CAPTIONS ───────────────────────────────────────────
-async function loadCaptions() {
-  try {
-    const r = await fetch(`${API}/captions`);
-    const caps = await r.json();
-    renderCaptions(caps);
-  } catch(e) {}
-}
-
-function renderCaptions(caps) {
-  const list  = document.getElementById('cap-list');
-  const count = document.getElementById('cap-count');
-  count.textContent = caps.length;
-  selectedCaps.clear();
-  updateCapsDeleteBar();
-
-  if (!caps.length) {
-    list.innerHTML = '<div class="empty"><div class="empty-icon">📄</div><p>Aucune caption<br>dans /workspace/datasets</p></div>';
-    return;
-  }
-
-  list.innerHTML = '';
-  caps.forEach(cap => {
-    const div = document.createElement('div');
-    div.className = 'cap-item';
-    div.dataset.path = cap.path;
-    div.innerHTML = `
-      <div class="cap-check" data-path="${esc(cap.path)}"></div>
-      <div class="cap-info">
-        <div class="cap-name">${esc(cap.name)}</div>
-        <div class="cap-meta">${esc(cap.rel_path)} · ${cap.size_kb} KB</div>
-        <div class="cap-preview">${esc(cap.preview)}</div>
-      </div>
-      <span class="cap-del-btn" title="Supprimer">🗑</span>
-    `;
-
-    div.querySelector('.cap-del-btn').addEventListener('click', async e => {
-      e.stopPropagation();
-      if (!confirm(`Supprimer "${cap.name}" ?`)) return;
-      await fetch(`${API}/file?path=${encodeURIComponent(cap.path)}`, { method: 'DELETE' });
-      await loadCaptions();
-    });
-
-    const chk = div.querySelector('.cap-check');
-    chk.addEventListener('click', e => {
-      e.stopPropagation();
-      if (selectedCaps.has(cap.path)) {
-        selectedCaps.delete(cap.path);
-        chk.className = 'cap-check'; chk.textContent = '';
-        div.classList.remove('cap-selected');
-      } else {
-        selectedCaps.add(cap.path);
-        chk.className = 'cap-check checked'; chk.textContent = '✓';
-        div.classList.add('cap-selected');
-      }
-      updateCapsDeleteBar();
-    });
-
+// ── CAPTIONS ──
+async function loadCaptions(){try{renderCaptions(await(await fetch(API+'/captions')).json());}catch(e){}}
+function renderCaptions(caps){
+  const list=document.getElementById('cap-list');
+  document.getElementById('cap-count').textContent=caps.length;
+  selectedCaps.clear();updateCapsDeleteBar();
+  if(!caps.length){list.innerHTML='<div class="empty"><div class="empty-icon">📄</div><p>Aucune caption trouvée</p></div>';return;}
+  list.innerHTML='';
+  caps.forEach(cap=>{
+    const div=document.createElement('div');div.className='cap-item';
+    div.innerHTML=`<div class="cap-check"></div><div class="cap-info"><div class="cap-name">${esc(cap.name)}</div><div class="cap-meta">${esc(cap.rel_path)} · ${cap.size_kb} KB</div><div class="cap-preview">${esc(cap.preview)}</div></div><span class="cap-del-btn" title="Supprimer">🗑</span>`;
+    div.querySelector('.cap-del-btn').addEventListener('click',async e=>{e.stopPropagation();if(!confirm('Supprimer "'+cap.name+'" ?'))return;await fetch(API+'/file?path='+encodeURIComponent(cap.path),{method:'DELETE'});await loadCaptions();});
+    const chk=div.querySelector('.cap-check');
+    chk.addEventListener('click',e=>{e.stopPropagation();if(selectedCaps.has(cap.path)){selectedCaps.delete(cap.path);chk.className='cap-check';chk.textContent='';div.classList.remove('cap-selected');}else{selectedCaps.add(cap.path);chk.className='cap-check checked';chk.textContent='✓';div.classList.add('cap-selected');}updateCapsDeleteBar();});
     list.appendChild(div);
   });
 }
+function updateCapsDeleteBar(){const b=document.getElementById('caps-del-bar');document.getElementById('caps-del-label').textContent=selectedCaps.size+' caption'+(selectedCaps.size>1?'s':'')+' sélectionnée'+(selectedCaps.size>1?'s':'');b.classList.toggle('visible',selectedCaps.size>0);}
+document.getElementById('btn-delete-caps').addEventListener('click',async()=>{if(!selectedCaps.size)return;if(!confirm('Supprimer les '+selectedCaps.size+' captions sélectionnées ?'))return;await fetch(API+'/delete-many',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({paths:Array.from(selectedCaps)})});selectedCaps.clear();await loadCaptions();});
+document.getElementById('btn-cancel-caps-del').addEventListener('click',()=>{selectedCaps.clear();document.querySelectorAll('.cap-check.checked').forEach(el=>{el.className='cap-check';el.textContent='';});document.querySelectorAll('.cap-item.cap-selected').forEach(el=>el.classList.remove('cap-selected'));updateCapsDeleteBar();});
+document.getElementById('btn-refresh-caps').addEventListener('click',loadCaptions);
 
-function updateCapsDeleteBar() {
-  const bar   = document.getElementById('caps-del-bar');
-  const label = document.getElementById('caps-del-label');
-  if (selectedCaps.size > 0) {
-    bar.classList.add('visible');
-    label.textContent = `${selectedCaps.size} caption${selectedCaps.size > 1 ? 's' : ''} sélectionnée${selectedCaps.size > 1 ? 's' : ''}`;
-  } else {
-    bar.classList.remove('visible');
-  }
-}
-
-document.getElementById('btn-delete-caps').addEventListener('click', async () => {
-  if (!selectedCaps.size) return;
-  if (!confirm(`Supprimer les ${selectedCaps.size} captions sélectionnées ?`)) return;
-  await fetch(`${API}/delete-many`, {
-    method: 'POST', headers: {'Content-Type':'application/json'},
-    body: JSON.stringify({ paths: Array.from(selectedCaps) })
-  });
-  selectedCaps.clear();
-  await loadCaptions();
+// ── START ──
+document.getElementById('btn-start').addEventListener('click',async()=>{
+  const od=document.getElementById('output-dir').value.trim();
+  if(!od){alert('Spécifiez un dossier de sortie');return;}
+  logRendered=0; // reset counter so new batch logs from index 0
+  const r=await fetch(API+'/start',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({files:Array.from(selectedFiles),output_dir:od})});
+  const d=await r.json();if(d.error)alert(d.error);
 });
+document.getElementById('btn-download').addEventListener('click',()=>{window.location.href=API+'/download-captions';});
+document.getElementById('btn-clear-queue').addEventListener('click',()=>{selectedFiles.clear();renderTree();updateQueue();});
 
-document.getElementById('btn-cancel-caps-del').addEventListener('click', () => {
-  selectedCaps.clear();
-  document.querySelectorAll('.cap-check.checked').forEach(el => { el.className='cap-check'; el.textContent=''; });
-  document.querySelectorAll('.cap-item.cap-selected').forEach(el => el.classList.remove('cap-selected'));
-  updateCapsDeleteBar();
-});
-
-document.getElementById('btn-refresh-caps').addEventListener('click', loadCaptions);
-
-document.getElementById('btn-expand-caps').addEventListener('click', () => {
-  capsExpanded = !capsExpanded;
-  document.getElementById('cap-frame').classList.toggle('expanded', capsExpanded);
-  document.getElementById('btn-expand-caps').textContent = capsExpanded ? '⤡' : '⤢';
-});
-
-// ── START / DOWNLOAD ───────────────────────────────────
-document.getElementById('btn-start').addEventListener('click', async () => {
-  const output_dir = document.getElementById('output-dir').value.trim();
-  if (!output_dir) { alert('Spécifiez un dossier de sortie'); return; }
-  logRendered = 0;
-  document.getElementById('log-body').innerHTML = '';
-  const r = await fetch(`${API}/start`, {
-    method: 'POST', headers: {'Content-Type':'application/json'},
-    body: JSON.stringify({ files: Array.from(selectedFiles), output_dir })
-  });
-  const d = await r.json();
-  if (d.error) { alert(d.error); }
-});
-
-document.getElementById('btn-download').addEventListener('click', () => {
-  window.location.href = `${API}/download-captions`;
-});
-
-document.getElementById('btn-clear-queue').addEventListener('click', () => {
-  selectedFiles.clear();
-  renderTree(); updateQueue();
-});
-
-// ── INIT ───────────────────────────────────────────────
-(async () => {
-  await loadTree();
-  await loadCaptions();
-  setInterval(pollStatus, 1000);
-  setInterval(loadCaptions, 15000);
-})();
+// ── INIT ──
+(async()=>{await loadTree();await loadCaptions();setInterval(pollStatus,1000);setInterval(loadCaptions,15000);})();
 </script>
 </body>
 </html>
