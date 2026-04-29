@@ -53,12 +53,16 @@ def get_tree(base_path: str):
         if item.name.startswith('.'):
             continue
         if item.is_dir():
-            result.append({
-                "type": "dir",
-                "name": item.name,
-                "path": str(item),
-                "children": get_tree(str(item)),
-            })
+            children = get_tree(str(item))
+            wav_count = sum(1 for _ in item.rglob('*.wav'))
+            if wav_count > 0:
+                result.append({
+                    "type": "dir",
+                    "name": item.name,
+                    "path": str(item),
+                    "wav_count": wav_count,
+                    "children": children,
+                })
         elif item.suffix.lower() == '.wav':
             size = item.stat().st_size
             result.append({
@@ -69,9 +73,36 @@ def get_tree(base_path: str):
             })
     return result
 
+def get_captions(base_path: str):
+    """Return all .txt caption files recursively under base_path."""
+    result = []
+    base = Path(base_path)
+    if not base.exists():
+        return result
+    for item in sorted(base.rglob('*.txt')):
+        if item.name.startswith('.'):
+            continue
+        size = item.stat().st_size
+        try:
+            preview = item.read_text(encoding='utf-8')[:400]
+        except Exception:
+            preview = ''
+        result.append({
+            "name": item.name,
+            "path": str(item),
+            "size_kb": round(size / 1024, 1),
+            "rel_path": str(item.relative_to(base)),
+            "preview": preview,
+        })
+    return result
+
 @app.get("/tree")
 async def file_tree():
     return JSONResponse(get_tree(DATASETS_DIR))
+
+@app.get("/captions")
+async def list_captions():
+    return JSONResponse(get_captions(DATASETS_DIR))
 
 @app.delete("/file")
 async def delete_file(path: str):
@@ -83,6 +114,27 @@ async def delete_file(path: str):
     elif p.exists():
         p.unlink()
     return {"status": "deleted"}
+
+@app.post("/delete-many")
+async def delete_many(request: Request):
+    data = await request.json()
+    paths = data.get("paths", [])
+    deleted = []
+    errors = []
+    for path in paths:
+        p = Path(path)
+        if not str(p).startswith(DATASETS_DIR):
+            errors.append(path)
+            continue
+        try:
+            if p.is_dir():
+                shutil.rmtree(p)
+            elif p.exists():
+                p.unlink()
+            deleted.append(path)
+        except Exception as e:
+            errors.append(path)
+    return {"deleted": len(deleted), "errors": errors}
 
 @app.post("/rename")
 async def rename_file(request: Request):
