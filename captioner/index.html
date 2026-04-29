@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Radio Giscard — ACE-Step Captioner</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:        #0e0d0b;
+    --surface:   #161410;
+    --border:    #2a2620;
+    --orange:    #e8622a;
+    --orange-dim:#7a3415;
+    --cream:     #e8e0d0;
+    --cream-dim: #6b6258;
+    --green:     #4a8c5c;
+    --red:       #8c3a3a;
+    --mono:      'DM Mono', monospace;
+    --serif:     'Playfair Display', serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--cream);
+    font-family: var(--mono);
+    font-size: 13px;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── GRAIN OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.4;
+  }
+
+  /* ── HEADER ── */
+  header {
+    border-bottom: 1px solid var(--border);
+    padding: 24px 40px;
+    display: flex;
+    align-items: baseline;
+    gap: 20px;
+  }
+
+  .logo {
+    font-family: var(--serif);
+    font-size: 28px;
+    color: var(--orange);
+    letter-spacing: -0.5px;
+    font-style: italic;
+  }
+
+  .logo span {
+    font-style: normal;
+    font-size: 13px;
+    font-family: var(--mono);
+    color: var(--cream-dim);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-left: 12px;
+    font-weight: 300;
+  }
+
+  /* ── STATUS BAR ── */
+  .status-bar {
+    padding: 10px 40px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--cream-dim);
+    transition: background 0.3s;
+    flex-shrink: 0;
+  }
+  .status-dot.idle     { background: var(--cream-dim); }
+  .status-dot.loading  { background: var(--orange); animation: pulse 1s infinite; }
+  .status-dot.running  { background: var(--orange); animation: pulse 0.5s infinite; }
+  .status-dot.done     { background: var(--green); }
+  .status-dot.error    { background: var(--red); }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.3; }
+  }
+
+  .status-text { color: var(--cream-dim); }
+  .status-text.active { color: var(--cream); }
+
+  /* ── LAYOUT ── */
+  .main {
+    display: grid;
+    grid-template-columns: 360px 1fr;
+    height: calc(100vh - 97px);
+  }
+
+  /* ── LEFT PANEL ── */
+  .left {
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .panel-title {
+    padding: 16px 24px 12px;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--cream-dim);
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* ── DROP ZONE ── */
+  .dropzone {
+    margin: 20px;
+    border: 1px dashed var(--border);
+    border-radius: 2px;
+    padding: 32px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .dropzone:hover, .dropzone.drag-over {
+    border-color: var(--orange);
+    background: rgba(232, 98, 42, 0.04);
+  }
+
+  .dropzone-icon {
+    font-size: 28px;
+    margin-bottom: 10px;
+    opacity: 0.5;
+  }
+
+  .dropzone p {
+    color: var(--cream-dim);
+    font-size: 11px;
+    line-height: 1.6;
+  }
+
+  .dropzone p strong {
+    color: var(--orange);
+    font-weight: 500;
+  }
+
+  #file-input { display: none; }
+
+  /* ── FILE LIST ── */
+  .file-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 20px 20px;
+  }
+
+  .file-list::-webkit-scrollbar { width: 4px; }
+  .file-list::-webkit-scrollbar-track { background: transparent; }
+  .file-list::-webkit-scrollbar-thumb { background: var(--border); }
+
+  .file-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    margin-bottom: 4px;
+    border-radius: 2px;
+    transition: border-color 0.2s;
+    font-size: 11px;
+  }
+
+  .file-item.done    { border-color: var(--green); }
+  .file-item.current { border-color: var(--orange); background: rgba(232,98,42,0.04); }
+  .file-item.error   { border-color: var(--red); }
+
+  .file-status {
+    flex-shrink: 0;
+    width: 14px;
+    text-align: center;
+    font-size: 10px;
+  }
+
+  .file-name {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--cream-dim);
+  }
+
+  .file-item.done .file-name    { color: var(--cream); }
+  .file-item.current .file-name { color: var(--orange); }
+
+  /* ── ACTIONS ── */
+  .actions {
+    padding: 16px 20px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .btn {
+    padding: 10px 16px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--cream);
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.15s;
+    border-radius: 2px;
+  }
+
+  .btn:hover:not(:disabled) {
+    border-color: var(--cream-dim);
+    background: rgba(232, 224, 208, 0.04);
+  }
+
+  .btn.primary {
+    border-color: var(--orange);
+    color: var(--orange);
+  }
+
+  .btn.primary:hover:not(:disabled) {
+    background: var(--orange);
+    color: var(--bg);
+  }
+
+  .btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+
+  .btn.danger { border-color: var(--orange-dim); color: var(--cream-dim); }
+  .btn.danger:hover { border-color: var(--red); color: var(--red); background: transparent; }
+
+  /* ── PROGRESS BAR ── */
+  .progress-wrap {
+    height: 2px;
+    background: var(--border);
+    border-radius: 1px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--orange);
+    width: 0%;
+    transition: width 0.5s ease;
+  }
+
+  /* ── RIGHT PANEL — LOG ── */
+  .right {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .log-header {
+    padding: 16px 24px 12px;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--cream-dim);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .log-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px 24px;
+    font-size: 12px;
+    line-height: 1.7;
+  }
+
+  .log-container::-webkit-scrollbar { width: 4px; }
+  .log-container::-webkit-scrollbar-thumb { background: var(--border); }
+
+  .log-entry {
+    display: flex;
+    gap: 12px;
+    padding: 2px 0;
+    border-bottom: 1px solid transparent;
+    animation: fadein 0.3s ease;
+  }
+
+  @keyframes fadein {
+    from { opacity: 0; transform: translateY(4px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .log-time { color: var(--cream-dim); flex-shrink: 0; font-size: 11px; }
+
+  .log-msg { color: var(--cream-dim); white-space: pre-wrap; word-break: break-word; }
+  .log-msg.success { color: var(--cream); }
+  .log-msg.error   { color: var(--red); }
+  .log-msg.info    { color: var(--cream-dim); }
+
+  /* ── CAPTION PREVIEW ── */
+  .caption-preview {
+    border-top: 1px solid var(--border);
+    max-height: 220px;
+    overflow-y: auto;
+    padding: 16px 24px;
+  }
+
+  .caption-preview::-webkit-scrollbar { width: 4px; }
+  .caption-preview::-webkit-scrollbar-thumb { background: var(--border); }
+
+  .caption-title {
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--orange);
+    margin-bottom: 10px;
+  }
+
+  .caption-card {
+    border: 1px solid var(--border);
+    padding: 12px 14px;
+    margin-bottom: 8px;
+    border-radius: 2px;
+    animation: fadein 0.4s ease;
+  }
+
+  .caption-card-name {
+    font-size: 10px;
+    color: var(--orange);
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+  }
+
+  .caption-card-meta {
+    font-size: 10px;
+    color: var(--cream-dim);
+    margin-bottom: 6px;
+    letter-spacing: 0.5px;
+  }
+
+  .caption-card-text {
+    font-size: 11px;
+    color: var(--cream);
+    line-height: 1.6;
+    font-family: var(--mono);
+    font-weight: 300;
+  }
+
+  /* ── LOADING OVERLAY ── */
+  .loading-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(14,13,11,0.85);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 500;
+    gap: 16px;
+    backdrop-filter: blur(4px);
+  }
+
+  .loading-overlay.hidden { display: none; }
+
+  .loading-title {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 22px;
+    color: var(--orange);
+  }
+
+  .loading-msg {
+    font-size: 12px;
+    color: var(--cream-dim);
+    letter-spacing: 1px;
+    max-width: 400px;
+    text-align: center;
+    line-height: 1.7;
+  }
+
+  .spinner {
+    width: 32px;
+    height: 32px;
+    border: 2px solid var(--border);
+    border-top-color: var(--orange);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .stats-row {
+    display: flex;
+    gap: 24px;
+    padding: 8px 24px;
+    border-top: 1px solid var(--border);
+    font-size: 11px;
+    color: var(--cream-dim);
+  }
+
+  .stat strong { color: var(--cream); }
+</style>
+</head>
+<body>
+
+<!-- LOADING OVERLAY -->
+<div class="loading-overlay" id="loading-overlay">
+  <div class="spinner"></div>
+  <div class="loading-title">Radio Giscard</div>
+  <div class="loading-msg" id="loading-msg">Initialisation — chargement des modèles ACE-Step...</div>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">Radio Giscard <span>ACE-Step Captioner</span></div>
+</header>
+
+<!-- STATUS BAR -->
+<div class="status-bar">
+  <div class="status-dot idle" id="status-dot"></div>
+  <span class="status-text" id="status-text">Initialisation...</span>
+  <div style="flex:1"></div>
+  <span id="status-files"></span>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- LEFT -->
+  <div class="left">
+    <div class="panel-title">Fichiers WAV</div>
+
+    <div class="dropzone" id="dropzone">
+      <input type="file" id="file-input" multiple accept=".wav">
+      <div class="dropzone-icon">🎵</div>
+      <p><strong>Glisser les WAV ici</strong><br>ou cliquer pour sélectionner</p>
+    </div>
+
+    <div class="file-list" id="file-list"></div>
+
+    <div class="actions">
+      <div class="progress-wrap">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+      <button class="btn primary" id="btn-start" disabled>▶ Lancer le captioning</button>
+      <button class="btn" id="btn-download" disabled>⬇ Télécharger les captions (.zip)</button>
+      <button class="btn danger" id="btn-clear">✕ Effacer tout</button>
+    </div>
+  </div>
+
+  <!-- RIGHT -->
+  <div class="right">
+    <div class="log-header">
+      <span>Journal</span>
+      <span id="log-count" style="color:var(--cream-dim); font-size:10px"></span>
+    </div>
+    <div class="log-container" id="log-container"></div>
+
+    <div class="stats-row" id="stats-row" style="display:none">
+      <span>Traités : <strong id="stat-processed">0</strong></span>
+      <span>Erreurs : <strong id="stat-errors">0</strong></span>
+      <span>En cours : <strong id="stat-current">—</strong></span>
+    </div>
+
+    <div class="caption-preview" id="caption-preview" style="display:none">
+      <div class="caption-title">📻 Captions générées</div>
+      <div id="caption-cards"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const API = '';
+let eventSource = null;
+let captionFiles = new Set();
+let wavFiles = [];
+let currentStatus = 'idle';
+
+// ── POLL STATUS ──
+async function pollStatus() {
+  try {
+    const r = await fetch(`${API}/status`);
+    const d = await r.json();
+    updateUI(d);
+  } catch(e) {}
+}
+
+function updateUI(d) {
+  currentStatus = d.status;
+  const dot  = document.getElementById('status-dot');
+  const text = document.getElementById('status-text');
+  const overlay = document.getElementById('loading-overlay');
+  const loadingMsg = document.getElementById('loading-msg');
+
+  // Status dot
+  dot.className = `status-dot ${d.status}`;
+
+  const statusLabels = {
+    idle:        'Prêt',
+    downloading: 'Téléchargement des modèles...',
+    loading:     'Chargement des modèles...',
+    running:     'Captioning en cours...',
+    done:        'Terminé',
+    error:       'Erreur',
+  };
+  text.textContent = statusLabels[d.status] || d.status;
+  text.className = `status-text ${['running','done'].includes(d.status) ? 'active' : ''}`;
+
+  // Loading overlay
+  if (!d.models_ready) {
+    overlay.classList.remove('hidden');
+    const lastLog = d.log.length > 0 ? d.log[d.log.length-1].msg : 'Initialisation...';
+    loadingMsg.textContent = lastLog;
+  } else {
+    overlay.classList.add('hidden');
+  }
+
+  // Progress
+  document.getElementById('progress-fill').style.width = d.progress + '%';
+
+  // Files status
+  const filesText = d.total_files > 0
+    ? `${d.processed} / ${d.total_files} fichiers`
+    : '';
+  document.getElementById('status-files').textContent = filesText;
+
+  // Buttons
+  const btnStart    = document.getElementById('btn-start');
+  const btnDownload = document.getElementById('btn-download');
+  btnStart.disabled = !d.models_ready || d.status === 'running' || wavFiles.length === 0;
+  btnDownload.disabled = d.status !== 'done';
+
+  // Stats
+  if (d.status === 'running' || d.status === 'done') {
+    document.getElementById('stats-row').style.display = 'flex';
+    document.getElementById('stat-processed').textContent = d.processed;
+    document.getElementById('stat-errors').textContent    = d.errors;
+    document.getElementById('stat-current').textContent   = d.current_file || '—';
+  }
+
+  // File list items — highlight current
+  document.querySelectorAll('.file-item').forEach(el => {
+    const name = el.dataset.name;
+    el.classList.remove('current');
+    if (name === d.current_file && d.status === 'running') {
+      el.classList.add('current');
+      el.querySelector('.file-status').textContent = '⟳';
+    }
+  });
+
+  // Log
+  renderLog(d.log);
+}
+
+function renderLog(logs) {
+  const container = document.getElementById('log-container');
+  const count = document.getElementById('log-count');
+  count.textContent = `${logs.length} entrées`;
+
+  // Only add new entries
+  const existing = container.children.length;
+  for (let i = existing; i < logs.length; i++) {
+    const entry = logs[i];
+    const div = document.createElement('div');
+    div.className = 'log-entry';
+    div.innerHTML = `
+      <span class="log-time">${entry.time}</span>
+      <span class="log-msg ${entry.level || 'info'}">${escapeHtml(entry.msg)}</span>
+    `;
+    container.appendChild(div);
+  }
+  // Auto-scroll
+  container.scrollTop = container.scrollHeight;
+}
+
+function escapeHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ── FILE UPLOAD ──
+async function uploadFiles(files) {
+  if (!files.length) return;
+  const formData = new FormData();
+  for (const f of files) {
+    if (f.name.toLowerCase().endsWith('.wav')) {
+      formData.append('files', f);
+    }
+  }
+  try {
+    const r = await fetch(`${API}/upload`, { method: 'POST', body: formData });
+    const d = await r.json();
+    if (d.count > 0) {
+      addLogEntry({ time: new Date().toTimeString().slice(0,8), msg: `📁 ${d.count} fichier(s) uploadé(s)`, level: 'success' });
+      await refreshFiles();
+    }
+  } catch(e) {
+    addLogEntry({ time: new Date().toTimeString().slice(0,8), msg: `❌ Erreur upload : ${e}`, level: 'error' });
+  }
+}
+
+function addLogEntry(entry) {
+  const container = document.getElementById('log-container');
+  const div = document.createElement('div');
+  div.className = 'log-entry';
+  div.innerHTML = `<span class="log-time">${entry.time}</span><span class="log-msg ${entry.level}">${escapeHtml(entry.msg)}</span>`;
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+}
+
+async function refreshFiles() {
+  try {
+    const r = await fetch(`${API}/files`);
+    const d = await r.json();
+    wavFiles = d.wav_files;
+    renderFileList(d.wav_files, d.caption_files);
+
+    // Show caption preview if captions exist
+    if (d.caption_files.length > 0) {
+      await loadCaptionPreviews(d.caption_files);
+    }
+
+    document.getElementById('btn-start').disabled =
+      !document.getElementById('btn-start').dataset.ready || wavFiles.length === 0;
+  } catch(e) {}
+}
+
+function renderFileList(wavs, captions) {
+  const list = document.getElementById('file-list');
+  list.innerHTML = '';
+  const captionSet = new Set(captions.map(f => f.replace('.txt','')));
+
+  for (const wav of wavs) {
+    const base = wav.replace(/\.wav$/i, '');
+    const isDone = captionSet.has(base);
+    const div = document.createElement('div');
+    div.className = `file-item ${isDone ? 'done' : ''}`;
+    div.dataset.name = wav;
+    div.innerHTML = `
+      <span class="file-status">${isDone ? '✓' : '○'}</span>
+      <span class="file-name">${wav}</span>
+    `;
+    list.appendChild(div);
+  }
+}
+
+async function loadCaptionPreviews(captions) {
+  // For now just show count — in future could fetch individual caption content
+  const preview = document.getElementById('caption-preview');
+  const cards   = document.getElementById('caption-cards');
+  preview.style.display = 'block';
+  cards.innerHTML = `<div class="caption-card"><div class="caption-card-meta">${captions.length} caption(s) générée(s) — cliquez sur "Télécharger" pour les récupérer</div></div>`;
+}
+
+// ── DROPZONE ──
+const dropzone = document.getElementById('dropzone');
+const fileInput = document.getElementById('file-input');
+
+dropzone.addEventListener('click', () => fileInput.click());
+fileInput.addEventListener('change', e => uploadFiles(Array.from(e.target.files)));
+
+dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('drag-over'); });
+dropzone.addEventListener('dragleave', () => dropzone.classList.remove('drag-over'));
+dropzone.addEventListener('drop', e => {
+  e.preventDefault();
+  dropzone.classList.remove('drag-over');
+  uploadFiles(Array.from(e.dataTransfer.files));
+});
+
+// ── BUTTONS ──
+document.getElementById('btn-start').addEventListener('click', async () => {
+  try {
+    const r = await fetch(`${API}/start`, { method: 'POST' });
+    const d = await r.json();
+    if (d.error) {
+      alert(d.error);
+      return;
+    }
+    document.getElementById('caption-preview').style.display = 'none';
+    document.getElementById('caption-cards').innerHTML = '';
+  } catch(e) { alert('Erreur : ' + e); }
+});
+
+document.getElementById('btn-download').addEventListener('click', () => {
+  window.location.href = `${API}/download-captions`;
+});
+
+document.getElementById('btn-clear').addEventListener('click', async () => {
+  if (!confirm('Effacer tous les fichiers WAV et captions ?')) return;
+  await fetch(`${API}/clear`, { method: 'DELETE' });
+  wavFiles = [];
+  document.getElementById('file-list').innerHTML = '';
+  document.getElementById('caption-preview').style.display = 'none';
+  document.getElementById('stats-row').style.display = 'none';
+  document.getElementById('btn-start').disabled = true;
+  document.getElementById('btn-download').disabled = true;
+});
+
+// ── INIT ──
+(async () => {
+  await refreshFiles();
+  setInterval(async () => {
+    await pollStatus();
+    if (currentStatus === 'done') {
+      await refreshFiles();
+    }
+  }, 1000);
+})();
+</script>
+</body>
+</html>
