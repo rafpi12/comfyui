@@ -312,13 +312,18 @@ def _worker_load_models():
     lg.disable(lg.WARNING)
     os.environ['PYTORCH_CUDA_ALLOC_CONF'] = 'expandable_segments:True'
     _w_transcriber = Qwen2_5OmniForConditionalGeneration.from_pretrained(
-        TRANSCRIBER_PATH, torch_dtype=torch.bfloat16, device_map='cuda')
+        TRANSCRIBER_PATH, torch_dtype=torch.bfloat16, device_map='cpu')
     _w_transcriber.disable_talker()
     _w_transcriber_proc = Qwen2_5OmniProcessor.from_pretrained(TRANSCRIBER_PATH)
     _w_captioner = Qwen2_5OmniForConditionalGeneration.from_pretrained(
-        CAPTIONER_PATH, torch_dtype=torch.bfloat16, device_map='cuda')
+        CAPTIONER_PATH, torch_dtype=torch.bfloat16, device_map='cpu')
     _w_captioner.disable_talker()
     _w_captioner_proc = Qwen2_5OmniProcessor.from_pretrained(CAPTIONER_PATH)
+    # Warmup: force CUDA context init once so cuDNN stays stable during swap inference
+    _w_transcriber.to('cuda')
+    torch.cuda.synchronize()
+    _w_transcriber.to('cpu')
+    torch.cuda.empty_cache()
 
 
 def _load_audio(audio_path: str) -> tuple:
@@ -370,10 +375,15 @@ def _worker_qwen(use_transcriber: bool, audio_data, sr: int, prompt: str) -> str
     import torch
     global _w_transcriber, _w_transcriber_proc, _w_captioner, _w_captioner_proc
     if use_transcriber:
-        model, proc = _w_transcriber, _w_transcriber_proc
+        model, other, proc = _w_transcriber, _w_captioner, _w_transcriber_proc
     else:
-        model, proc = _w_captioner, _w_captioner_proc
-    # Both models stay on GPU permanently — no CPU swapping to avoid cuDNN context corruption
+        model, other, proc = _w_captioner, _w_transcriber, _w_captioner_proc
+    # Swap models between CPU and GPU one at a time (VRAM budget)
+    # CUDA context was pre-initialized in _worker_load_models to keep cuDNN stable
+    other.to('cpu')
+    torch.cuda.empty_cache()
+    torch.cuda.synchronize()
+    model.to('cuda')
     conv = [{'role':'user','content':[
         {'type':'audio','audio':'<|audio_bos|><|AUDIO|><|audio_eos|>'},
         {'type':'text','text': prompt},
@@ -385,6 +395,7 @@ def _worker_qwen(use_transcriber: bool, audio_data, sr: int, prompt: str) -> str
     with torch.no_grad():
         ids = model.generate(**inputs, return_audio=False, max_new_tokens=512)
     out = proc.batch_decode(ids, skip_special_tokens=True, clean_up_tokenization_spaces=False)[0]
+    torch.cuda.synchronize()
     marker = 'assistant\n'
     if marker in out:
         out = out[out.rfind(marker)+len(marker):]
