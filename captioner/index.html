@@ -13,6 +13,7 @@
   --green:#4a9e6f;--green-l:#0e2018;
   --red:#c4484a;--red-l:#220e0e;
   --blue:#4a7ec4;--blue-l:#0e1a2a;
+  --purple:#8b6ec4;--purple-l:#1a0e2a;
   --shadow:0 1px 4px rgba(0,0,0,.4);--shadow-md:0 4px 16px rgba(0,0,0,.5);
   --r:5px;--mono:'Geist Mono',monospace;--serif:'Instrument Serif',serif;
 }
@@ -65,17 +66,36 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:0
 .btn.ghost{background:transparent;border-color:transparent;color:var(--text3);}
 .btn.ghost:hover:not(:disabled){background:var(--surface2);color:var(--text2);}
 
+/* ── PRESET SELECTOR ── */
+.preset-section{margin:0 10px 8px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;}
+.preset-label{font-size:9px;letter-spacing:.5px;text-transform:uppercase;color:var(--text3);padding:6px 9px 4px;font-weight:500;display:flex;align-items:center;gap:5px;}
+.preset-label span{color:var(--text3);}
+.preset-tabs{display:flex;border-top:1px solid var(--border);}
+.preset-tab{flex:1;padding:7px 6px;text-align:center;cursor:pointer;font-size:10px;color:var(--text3);transition:all .15s;border-right:1px solid var(--border);user-select:none;line-height:1.3;}
+.preset-tab:last-child{border-right:none;}
+.preset-tab:hover{background:var(--surface2);color:var(--text2);}
+.preset-tab.active{background:var(--accent-l);color:var(--accent);border-bottom:2px solid var(--accent);}
+.preset-tab .pt-icon{font-size:14px;display:block;margin-bottom:2px;}
+.preset-tab .pt-name{font-weight:500;display:block;}
+.preset-tab .pt-desc{font-size:9px;color:var(--text3);display:block;margin-top:1px;}
+.preset-tab.active .pt-desc{color:var(--accent);opacity:.7;}
+
+.preset-info{padding:6px 9px;background:var(--surface2);border-top:1px solid var(--border);font-size:10px;color:var(--text3);display:flex;gap:12px;flex-wrap:wrap;}
+.preset-info span{display:flex;align-items:center;gap:4px;}
+.preset-info b{color:var(--text2);}
+
+/* ── BARS ── */
 .select-all-bar{display:flex;align-items:center;gap:7px;padding:5px 7px;background:var(--accent-l);border:1px solid var(--accent);border-radius:var(--r);margin-bottom:6px;cursor:pointer;user-select:none;}
 .select-all-bar:hover{border-color:#e06520;}
 .sa-check{width:12px;height:12px;border:1.5px solid var(--accent);border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:8px;color:#fff;background:var(--surface2);flex-shrink:0;}
 .sa-check.checked{background:var(--accent);}
 .sa-label{font-size:10px;color:var(--accent);font-weight:500;flex:1;}
 .sa-count{font-size:10px;color:var(--accent);}
-
 .delete-bar{display:none;align-items:center;gap:6px;padding:4px 7px;background:var(--red-l);border:1px solid var(--red);border-radius:var(--r);margin-bottom:6px;}
 .delete-bar.visible{display:flex;}
 .delete-bar>span{flex:1;font-size:10px;color:var(--red);}
 
+/* ── TREE ── */
 .tree-node{user-select:none;}
 .tree-item{display:flex;align-items:center;gap:5px;padding:3px 6px;border-radius:var(--r);cursor:pointer;transition:background .1s;}
 .tree-item:hover{background:var(--surface2);}
@@ -92,15 +112,6 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:0
 .tree-check.partial{background:var(--accent-l);border-color:var(--accent);color:var(--accent);}
 .dir-badge{font-size:9px;color:var(--text3);background:var(--surface2);border:1px solid var(--border);border-radius:100px;padding:0 5px;flex-shrink:0;}
 
-/* Highlight current file in queue */
-.queue-item{display:flex;align-items:center;gap:7px;padding:5px 8px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);margin-bottom:3px;transition:all .2s;font-size:11px;}
-.queue-item.active{border-color:var(--accent);background:var(--accent-l);}
-.queue-item.active .qi-icon{animation:spin .8s linear infinite;}
-.queue-item.done{border-color:var(--green);background:var(--green-l);}
-.queue-item.error{border-color:var(--red);background:var(--red-l);}
-@keyframes spin{to{transform:rotate(360deg)}}
-.queue-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-
 .ctx-menu{position:fixed;background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);box-shadow:var(--shadow-md);z-index:999;min-width:155px;overflow:hidden;display:none;}
 .ctx-menu.visible{display:block;}
 .ctx-item{padding:6px 12px;cursor:pointer;font-size:11px;color:var(--text);transition:background .1s;display:flex;align-items:center;gap:7px;}
@@ -109,19 +120,26 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:0
 .ctx-item.danger:hover{background:var(--red-l);}
 .ctx-sep{height:1px;background:var(--border);margin:3px 0;}
 
-.dropzone{margin:10px;border:1.5px dashed var(--border2);border-radius:var(--r);padding:18px 14px;text-align:center;cursor:pointer;transition:all .2s;background:var(--surface);}
+.dropzone{margin:10px;border:1.5px dashed var(--border2);border-radius:var(--r);padding:16px 14px;text-align:center;cursor:pointer;transition:all .2s;background:var(--surface);}
 .dropzone:hover,.dropzone.drag-over{border-color:var(--accent);background:var(--accent-l);}
-.dropzone-icon{font-size:18px;margin-bottom:5px;}
-.dropzone p{color:var(--text2);font-size:11px;line-height:1.6;}
+.dropzone-icon{font-size:18px;margin-bottom:4px;}
+.dropzone p{color:var(--text2);font-size:11px;line-height:1.5;}
 .dropzone p strong{color:var(--accent);}
-.dropzone-target{font-size:10px;color:var(--text3);margin-top:3px;}
+.dropzone-target{font-size:10px;color:var(--text3);margin-top:2px;}
 
-.queue-section{padding:0 10px 8px;flex:1;overflow-y:auto;}
+.queue-section{padding:0 10px 6px;flex:1;overflow-y:auto;}
 .queue-section::-webkit-scrollbar{width:3px;}
 .queue-section::-webkit-scrollbar-thumb{background:var(--border2);}
+.queue-item{display:flex;align-items:center;gap:7px;padding:5px 8px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);margin-bottom:3px;transition:all .2s;font-size:11px;}
+.queue-item.active{border-color:var(--accent);background:var(--accent-l);}
+.queue-item.active .qi-icon{display:inline-block;animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.queue-item.done{border-color:var(--green);background:var(--green-l);}
+.queue-item.error{border-color:var(--red);background:var(--red-l);}
+.queue-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 
-.output-section{margin:0 10px 8px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:7px 9px;}
-.output-label{font-size:9px;letter-spacing:.5px;text-transform:uppercase;color:var(--text3);margin-bottom:4px;font-weight:500;}
+.output-section{margin:0 10px 6px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:6px 9px;}
+.output-label{font-size:9px;letter-spacing:.5px;text-transform:uppercase;color:var(--text3);margin-bottom:3px;font-weight:500;}
 .output-input{width:100%;padding:5px 7px;border:1px solid var(--border2);border-radius:4px;font-family:var(--mono);font-size:10px;color:var(--text);background:var(--bg);outline:none;transition:border-color .15s;}
 .output-input:focus{border-color:var(--accent);}
 
@@ -164,7 +182,7 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:0
 .caps-del-bar.visible{display:flex;}
 .caps-del-bar>span{flex:1;font-size:10px;color:var(--red);}
 
-.empty{text-align:center;padding:24px 12px;color:var(--text3);}
+.empty{text-align:center;padding:22px 12px;color:var(--text3);}
 .empty-icon{font-size:20px;margin-bottom:6px;}
 .empty p{font-size:10px;line-height:1.6;}
 
@@ -198,8 +216,8 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:0
 </header>
 
 <div class="app">
+  <!-- LEFT -->
   <div class="left-panel" id="left-panel">
-
     <div class="wav-frame" id="wav-frame" style="height:55%">
       <div class="frame-head">
         <div class="frame-title">🎵 WAV <span class="frame-count" id="wav-count">0</span></div>
@@ -224,9 +242,7 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:0
         </div>
       </div>
     </div>
-
     <div class="v-resizer" id="v-resizer"></div>
-
     <div class="cap-frame">
       <div class="frame-head">
         <div class="frame-title">📄 Captions <span class="frame-count" id="cap-count">0</span></div>
@@ -249,24 +265,52 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:0
 
   <div class="h-resizer" id="h-resizer-left"></div>
 
+  <!-- MIDDLE -->
   <div class="middle" id="middle-panel">
     <div class="panel-head" style="background:var(--surface)">
       <span class="panel-title">File d'attente</span>
       <span id="queue-count" style="font-size:10px;color:var(--text3)">0 fichier</span>
     </div>
+
     <div class="dropzone" id="dropzone">
       <input type="file" id="file-input" multiple accept=".wav" style="display:none">
       <div class="dropzone-icon">⬆️</div>
       <p><strong>Glisser des WAV ici</strong><br>ou cliquer pour uploader</p>
       <div class="dropzone-target" id="drop-target-label">→ /workspace/datasets/</div>
     </div>
+
     <div class="queue-section" id="queue-list">
       <div class="empty"><div class="empty-icon">☑️</div><p>Sélectionnez des WAV à gauche</p></div>
     </div>
+
+    <!-- PRESET SELECTOR -->
+    <div class="preset-section">
+      <div class="preset-label">🎛 Preset d'analyse</div>
+      <div class="preset-tabs" id="preset-tabs">
+        <div class="preset-tab active" data-preset="generic">
+          <span class="pt-icon">🎵</span>
+          <span class="pt-name">Générique</span>
+          <span class="pt-desc">Démarre dès le début</span>
+        </div>
+        <div class="preset-tab" data-preset="techno">
+          <span class="pt-icon">⚡</span>
+          <span class="pt-name">Techno / Tek</span>
+          <span class="pt-desc">Détecte le drop</span>
+        </div>
+        <div class="preset-tab" data-preset="ambient">
+          <span class="pt-icon">🌊</span>
+          <span class="pt-name">Ambient</span>
+          <span class="pt-desc">Extrait long</span>
+        </div>
+      </div>
+      <div class="preset-info" id="preset-info"></div>
+    </div>
+
     <div class="output-section">
       <div class="output-label">Dossier de sortie</div>
       <input class="output-input" type="text" id="output-dir" value="/workspace/datasets/captions">
     </div>
+
     <div class="actions">
       <div class="progress-wrap">
         <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
@@ -282,6 +326,7 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:0
 
   <div class="h-resizer" id="h-resizer-right"></div>
 
+  <!-- RIGHT -->
   <div class="right-panel" id="right-panel">
     <div class="panel-head">
       <span class="panel-title">Journal</span>
@@ -301,6 +346,14 @@ const API='';
 let treeData=[],allWavPaths=[],selectedFiles=new Set(),selectedCaps=new Set();
 let currentCtxNode=null,currentStatus='idle',uploadTargetDir='/workspace/datasets';
 const openDirs={};
+
+// Preset definitions (mirrors server — for UI display only)
+const PRESETS={
+  generic:{label:'Générique',threshold_db:-40,min_skip:0,max_seconds:120,skip_ratio:0},
+  techno: {label:'Techno / Tek House',threshold_db:-18,min_skip:20,max_seconds:120,skip_ratio:0.25},
+  ambient:{label:'Ambient / Cinématique',threshold_db:-30,min_skip:5,max_seconds:180,skip_ratio:0.1},
+};
+let currentPreset='generic';
 
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
@@ -328,6 +381,31 @@ makeHResizer('h-resizer-left',document.getElementById('left-panel'),null,true);
 makeHResizer('h-resizer-right',null,document.getElementById('right-panel'),false);
 makeVResizer('v-resizer',document.getElementById('wav-frame'));
 
+// ── PRESET UI ──
+function updatePresetInfo(){
+  const p=PRESETS[currentPreset];
+  const info=document.getElementById('preset-info');
+  const skipStr=p.min_skip>0?p.min_skip+'s min':'aucun';
+  const fallStr=p.skip_ratio>0?Math.round(p.skip_ratio*100)+'% du morceau':'désactivé';
+  info.innerHTML=`
+    <span>⏱ <b>${p.max_seconds}s</b> analysés</span>
+    <span>🔊 seuil <b>${p.threshold_db}dB</b></span>
+    <span>⏭ skip <b>${skipStr}</b></span>
+    <span>↩ fallback <b>${fallStr}</b></span>
+  `;
+}
+
+document.getElementById('preset-tabs').addEventListener('click',e=>{
+  const tab=e.target.closest('.preset-tab');
+  if(!tab)return;
+  document.querySelectorAll('.preset-tab').forEach(t=>t.classList.remove('active'));
+  tab.classList.add('active');
+  currentPreset=tab.dataset.preset;
+  updatePresetInfo();
+});
+
+updatePresetInfo();
+
 // ── ADAPTIVE POLL ──
 let pollTimer=null;
 function startPoll(fast){
@@ -342,10 +420,8 @@ async function pollStatus(){
 function updateStatus(d){
   const wasRunning=currentStatus==='running';
   currentStatus=d.status;
-
-  // Adaptive poll speed
-  if(d.status==='running'&&!wasRunning) startPoll(true);
-  else if(d.status!=='running'&&wasRunning) startPoll(false);
+  if(d.status==='running'&&!wasRunning)startPoll(true);
+  else if(d.status!=='running'&&wasRunning)startPoll(false);
 
   const pill=document.getElementById('status-pill');
   pill.className='status-pill '+d.status;
@@ -358,9 +434,7 @@ function updateStatus(d){
     const ol=document.getElementById('overlay-log');
     ol.innerHTML=d.log.slice(-8).map(e=>`<div style="color:${e.level==='error'?'#c4484a':e.level==='success'?'#4a9e6f':'#9a9890'}">${esc(e.msg)}</div>`).join('');
     ol.scrollTop=ol.scrollHeight;
-  }else{
-    document.getElementById('overlay').classList.add('hidden');
-  }
+  }else{document.getElementById('overlay').classList.add('hidden');}
 
   const pct=d.progress||0;
   document.getElementById('progress-fill').style.width=pct+'%';
@@ -369,40 +443,31 @@ function updateStatus(d){
   document.getElementById('stat-errors').textContent=d.errors;
   document.getElementById('stat-total').textContent=d.total_files;
 
-  // Start button state
   const btnStart=document.getElementById('btn-start');
   if(d.status==='running'){
-    btnStart.textContent='⏳ Captioning…';
-    btnStart.className='btn running-state';
-    btnStart.disabled=true;
+    btnStart.textContent='⏳ Captioning…';btnStart.className='btn running-state';btnStart.disabled=true;
   }else{
-    btnStart.textContent='▶ Lancer';
-    btnStart.className='btn primary';
+    btnStart.textContent='▶ Lancer';btnStart.className='btn primary';
     btnStart.disabled=!d.models_ready||selectedFiles.size===0;
   }
   document.getElementById('btn-download').disabled=d.status!=='done';
 
   appendLog(d.log);
 
-  // Update queue item icons
   if(d.status==='running'&&d.current_file){
     document.querySelectorAll('.queue-item').forEach(el=>{
       const active=el.dataset.name===d.current_file;
       el.classList.toggle('active',active);
-      const ic=el.querySelector('.qi-icon');
-      if(ic)ic.textContent=active?'⟳':'○';
+      const ic=el.querySelector('.qi-icon');if(ic)ic.textContent=active?'⟳':'○';
     });
   }
   if(d.status==='done'){
-    document.querySelectorAll('.queue-item:not(.error)').forEach(el=>{
-      el.classList.remove('active');el.classList.add('done');
-      const ic=el.querySelector('.qi-icon');if(ic)ic.textContent='✓';
-    });
+    document.querySelectorAll('.queue-item:not(.error)').forEach(el=>{el.classList.remove('active');el.classList.add('done');const ic=el.querySelector('.qi-icon');if(ic)ic.textContent='✓';});
     loadTree();loadCaptions();
   }
 }
 
-// ── LOG — append only, never wipe ──
+// ── LOG ──
 let logRendered=0;
 function appendLog(logs){
   const body=document.getElementById('log-body');
@@ -419,7 +484,6 @@ function appendLog(logs){
 
 // ── TREE ──
 function collectWavPaths(nodes){let r=[];for(const n of nodes){if(n.type==='file')r.push(n.path);else if(n.children)r=r.concat(collectWavPaths(n.children));}return r;}
-
 async function loadTree(){try{treeData=await(await fetch(API+'/tree')).json();allWavPaths=collectWavPaths(treeData);renderTree();}catch(e){}}
 
 function renderTree(){
@@ -483,7 +547,6 @@ function updateQueue(){
   if(currentStatus!=='running')document.getElementById('btn-start').disabled=false;
   updateDeleteBar();
 }
-
 document.getElementById('btn-delete-selection').addEventListener('click',async()=>{
   if(!selectedFiles.size)return;if(!confirm('Supprimer définitivement les '+selectedFiles.size+' fichiers WAV ?'))return;
   await fetch(API+'/delete-many',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({paths:Array.from(selectedFiles)})});
@@ -491,7 +554,7 @@ document.getElementById('btn-delete-selection').addEventListener('click',async()
 });
 document.getElementById('btn-cancel-delete').addEventListener('click',()=>{selectedFiles.clear();renderTree();updateQueue();});
 
-// ── CONTEXT MENU ──
+// ── CTX MENU ──
 function showCtx(e,node){e.preventDefault();currentCtxNode=node;const m=document.getElementById('ctx-menu');m.style.left=e.clientX+'px';m.style.top=e.clientY+'px';m.classList.add('visible');document.getElementById('ctx-select').style.display=node.type==='file'?'flex':'none';}
 document.addEventListener('click',()=>document.getElementById('ctx-menu').classList.remove('visible'));
 document.getElementById('ctx-rename').addEventListener('click',async()=>{if(!currentCtxNode)return;const n=prompt('Nouveau nom :',currentCtxNode.name);if(!n||n===currentCtxNode.name)return;await fetch(API+'/rename',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({path:currentCtxNode.path,new_name:n})});await loadTree();});
@@ -535,13 +598,10 @@ document.getElementById('btn-refresh-caps').addEventListener('click',loadCaption
 document.getElementById('btn-start').addEventListener('click',async()=>{
   const od=document.getElementById('output-dir').value.trim();
   if(!od){alert('Spécifiez un dossier de sortie');return;}
-
-  // Immediate visual feedback before fetch
   const btn=document.getElementById('btn-start');
   btn.textContent='⏳ Envoi…';btn.className='btn running-state';btn.disabled=true;
   logRendered=0;startPoll(true);
-
-  const r=await fetch(API+'/start',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({files:Array.from(selectedFiles),output_dir:od})});
+  const r=await fetch(API+'/start',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({files:Array.from(selectedFiles),output_dir:od,preset:currentPreset})});
   const d=await r.json();
   if(d.error){alert(d.error);btn.textContent='▶ Lancer';btn.className='btn primary';btn.disabled=false;startPoll(false);}
 });
