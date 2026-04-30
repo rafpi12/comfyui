@@ -1,7 +1,7 @@
 """
 ACE-Step Captioner — app.py
-Heavy inference runs in a separate Process via ProcessPoolExecutor
-so the FastAPI event loop (and JupyterLab) stay responsive.
+Supports WAV, MP3, FLAC, OGG, AIFF, M4A.
+Heavy inference runs in a separate Process via ProcessPoolExecutor.
 """
 import os, sys, json, asyncio, shutil, subprocess, time, zipfile, io
 from pathlib import Path
@@ -22,31 +22,29 @@ DATASETS_DIR     = '/workspace/datasets'
 TARGET_SR        = 16000
 HF_TOKEN         = os.environ.get('HF_TOKEN', '')
 
+AUDIO_EXTS = {'.wav', '.mp3', '.flac', '.ogg', '.aiff', '.aif', '.m4a'}
+
 # ── PRESETS ───────────────────────────────────────────────────────────────────
-# threshold_db : RMS level above which we consider the track has "started"
-# min_skip     : minimum seconds to skip regardless of RMS (avoids false starts)
-# max_seconds  : how many seconds to feed to the model after the detected start
-# skip_ratio   : fallback ratio if RMS detection finds nothing (0 = disabled)
 PRESETS = {
     "generic": {
         "label":        "Générique",
-        "threshold_db": -40,   # very permissive — starts almost immediately
+        "threshold_db": -40,
         "min_skip":     0,
         "max_seconds":  120,
         "skip_ratio":   0.0,
     },
     "techno": {
         "label":        "Techno / Tek House",
-        "threshold_db": -18,   # waits for kick/bassline energy
-        "min_skip":     20,    # always skip at least 20s
+        "threshold_db": -18,
+        "min_skip":     20,
         "max_seconds":  120,
-        "skip_ratio":   0.25,  # fallback: skip first 25% if RMS detection fails
+        "skip_ratio":   0.25,
     },
     "ambient": {
         "label":        "Ambient / Cinématique",
         "threshold_db": -30,
         "min_skip":     5,
-        "max_seconds":  180,   # longer extract for slow-evolving textures
+        "max_seconds":  180,
         "skip_ratio":   0.1,
     },
 }
@@ -79,6 +77,9 @@ def log(msg: str, level: str = "info"):
 
 # ── FILE MANAGER ──────────────────────────────────────────────────────────────
 
+def is_audio(path: Path) -> bool:
+    return path.suffix.lower() in AUDIO_EXTS
+
 def get_tree(base_path: str):
     result = []
     base = Path(base_path)
@@ -89,16 +90,17 @@ def get_tree(base_path: str):
             continue
         if item.is_dir():
             children = get_tree(str(item))
-            wav_count = sum(1 for _ in item.rglob('*.wav'))
-            if wav_count > 0:
+            audio_count = sum(1 for f in item.rglob('*') if f.is_file() and is_audio(f))
+            if audio_count > 0:
                 result.append({
                     "type": "dir", "name": item.name, "path": str(item),
-                    "wav_count": wav_count, "children": children,
+                    "wav_count": audio_count, "children": children,
                 })
-        elif item.suffix.lower() == '.wav':
+        elif is_audio(item):
             result.append({
                 "type": "file", "name": item.name, "path": str(item),
                 "size_mb": round(item.stat().st_size / 1024 / 1024, 2),
+                "ext": item.suffix.lower().lstrip('.'),
             })
     return result
 
@@ -232,7 +234,7 @@ def install_deps():
         ['torchvision==0.26.0', '--index-url', 'https://download.pytorch.org/whl/cu130'],
         ['transformers==5.5.3'], ['accelerate'], ['optimum-quanto==0.2.4'],
         ['qwen_omni_utils'], ['librosa==0.11.0'], ['soundfile'],
-        ['sentencepiece'], ['scipy==1.12.0'],
+        ['sentencepiece'], ['scipy==1.12.0'], ['pydub'],
     ]
     for pkg in pkgs:
         r = subprocess.run(
@@ -262,7 +264,7 @@ async def download_and_load_models():
     state["models_ready"]   = True
     state["models_loading"] = False
     state["status"]         = "idle"
-    log("🚀 Prêt — sélectionnez des fichiers WAV et lancez le captioning", "success")
+    log("🚀 Prêt — sélectionnez des fichiers audio et lancez le captioning", "success")
 
 # ── WORKER PROCESS ────────────────────────────────────────────────────────────
 
@@ -290,12 +292,20 @@ def _worker_load_models():
     _w_captioner_proc = Qwen2_5OmniProcessor.from_pretrained(CAPTIONER_PATH)
 
 
+def _load_audio(audio_path: str) -> tuple:
+    """
+    Load any supported audio format to a float32 mono numpy array at TARGET_SR.
+    Uses soundfile for lossless formats, falls back to librosa (which uses ffmpeg/pydub)
+    for compressed formats like MP3, M4A, OGG.
+    """
+    import numpy as np, librosa
+    ext = Path(audio_path).suffix.lower()
+    # librosa handles everything via audioread/ffmpeg — use it universally
+    audio_data, sr = librosa.load(audio_path, sr=TARGET_SR, mono=True, dtype=np.float32)
+    return audio_data, TARGET_SR
+
+
 def _find_drop(audio_data, sr: int, threshold_db: float, min_skip: int, skip_ratio: float) -> int:
-    """
-    Return sample index where the track energy crosses threshold_db.
-    Falls back to skip_ratio of total length if nothing is found.
-    Always respects min_skip (in seconds).
-    """
     import numpy as np, librosa
     min_skip_samples = min_skip * sr
     rms = librosa.feature.rms(y=audio_data, frame_length=2048, hop_length=512)[0]
@@ -305,7 +315,6 @@ def _find_drop(audio_data, sr: int, threshold_db: float, min_skip: int, skip_rat
         drop_sample = librosa.frames_to_samples(int(frames_above[0]), hop_length=512)
         start = max(drop_sample, min_skip_samples)
     else:
-        # Fallback: skip_ratio of total length
         start = max(int(len(audio_data) * skip_ratio), min_skip_samples)
     return int(start)
 
@@ -365,11 +374,11 @@ def _worker_qwen(use_transcriber: bool, audio_data, sr: int, prompt: str) -> str
 
 
 def _worker_process_file(audio_path: str, output_dir: str, preset_key: str) -> dict:
-    import soundfile as sf, librosa as lb, traceback as tb
+    import traceback as tb
     try:
         _worker_load_models()
 
-        preset = PRESETS.get(preset_key, PRESETS["generic"])
+        preset       = PRESETS.get(preset_key, PRESETS["generic"])
         threshold_db = preset["threshold_db"]
         min_skip     = preset["min_skip"]
         max_seconds  = preset["max_seconds"]
@@ -377,20 +386,13 @@ def _worker_process_file(audio_path: str, output_dir: str, preset_key: str) -> d
 
         analysis = _worker_analyze(audio_path)
 
-        audio_data, sr = sf.read(audio_path, dtype='float32')
-        if audio_data.ndim > 1:
-            audio_data = audio_data.mean(axis=1)
-        if sr != TARGET_SR:
-            audio_data = lb.resample(audio_data, orig_sr=sr, target_sr=TARGET_SR)
+        # Universal audio loading — works for WAV, MP3, FLAC, OGG, AIFF, M4A
+        audio_data, sr = _load_audio(audio_path)
 
-        # Find actual start of track using RMS energy detection
-        start_sample = _find_drop(
-            audio_data, TARGET_SR, threshold_db, min_skip, skip_ratio
-        )
-        end_sample = start_sample + max_seconds * TARGET_SR
-        audio_data = audio_data[start_sample:end_sample]
-
-        start_sec = round(start_sample / TARGET_SR, 1)
+        start_sample = _find_drop(audio_data, TARGET_SR, threshold_db, min_skip, skip_ratio)
+        end_sample   = start_sample + max_seconds * TARGET_SR
+        audio_data   = audio_data[start_sample:end_sample]
+        start_sec    = round(start_sample / TARGET_SR, 1)
 
         lyrics = _worker_qwen(True, audio_data, TARGET_SR,
                               '*Task* Transcribe this audio in detail')
@@ -457,7 +459,7 @@ async def run_captioning():
         )
 
         if result["ok"]:
-            log(f"   ▶ Analyse depuis {result['start_sec']}s | BPM:{result['bpm']} | {result['keyscale']} | {result['duration']}s total", "success")
+            log(f"   ▶ Depuis {result['start_sec']}s | BPM:{result['bpm']} | {result['keyscale']} | {result['duration']}s total", "success")
             log(f"   📝 {result['caption_preview']}…", "success")
             state["processed"] += 1
         else:
