@@ -32,7 +32,6 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:0
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
 
 .app{display:flex;flex:1;overflow:hidden;min-height:0;}
-
 .h-resizer{width:5px;background:var(--border);cursor:col-resize;flex-shrink:0;transition:background .15s;z-index:10;}
 .h-resizer:hover,.h-resizer.dragging{background:var(--accent);}
 .v-resizer{height:5px;background:var(--border2);cursor:row-resize;flex-shrink:0;transition:background .15s;}
@@ -41,7 +40,6 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:0
 .left-panel{width:300px;min-width:180px;max-width:520px;display:flex;flex-direction:column;overflow:hidden;background:var(--surface);flex-shrink:0;}
 .wav-frame{display:flex;flex-direction:column;overflow:hidden;flex:0 0 auto;}
 .cap-frame{display:flex;flex-direction:column;overflow:hidden;flex:1 1 0;min-height:60px;}
-
 .frame-head{padding:7px 10px 6px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:var(--surface2);}
 .frame-title{font-size:10px;font-weight:500;letter-spacing:.8px;text-transform:uppercase;color:var(--text2);display:flex;align-items:center;gap:6px;}
 .frame-count{font-size:10px;color:var(--text3);background:var(--surface);border:1px solid var(--border);border-radius:100px;padding:0 6px;letter-spacing:0;text-transform:none;font-weight:400;}
@@ -52,7 +50,6 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:0
 
 .middle{flex:1;min-width:220px;display:flex;flex-direction:column;overflow:hidden;background:var(--bg);}
 .right-panel{width:320px;min-width:180px;max-width:540px;display:flex;flex-direction:column;overflow:hidden;background:var(--surface);flex-shrink:0;border-left:1px solid var(--border);}
-
 .panel-head{padding:7px 12px 6px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:var(--surface2);}
 .panel-title{font-size:10px;font-weight:500;letter-spacing:.8px;text-transform:uppercase;color:var(--text2);}
 
@@ -61,6 +58,8 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:0
 .btn:disabled{opacity:.35;cursor:not-allowed;}
 .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff;}
 .btn.primary:hover:not(:disabled){background:#a84715;}
+.btn.running-state{background:var(--accent-l);border-color:var(--accent);color:var(--accent);animation:pulse-btn 1.5s infinite;}
+@keyframes pulse-btn{0%,100%{opacity:1}50%{opacity:.6}}
 .btn.danger{color:var(--red);border-color:var(--red);background:var(--red-l);}
 .btn.danger:hover:not(:disabled){background:var(--red);color:#fff;}
 .btn.ghost{background:transparent;border-color:transparent;color:var(--text3);}
@@ -93,6 +92,15 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:0
 .tree-check.partial{background:var(--accent-l);border-color:var(--accent);color:var(--accent);}
 .dir-badge{font-size:9px;color:var(--text3);background:var(--surface2);border:1px solid var(--border);border-radius:100px;padding:0 5px;flex-shrink:0;}
 
+/* Highlight current file in queue */
+.queue-item{display:flex;align-items:center;gap:7px;padding:5px 8px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);margin-bottom:3px;transition:all .2s;font-size:11px;}
+.queue-item.active{border-color:var(--accent);background:var(--accent-l);}
+.queue-item.active .qi-icon{animation:spin .8s linear infinite;}
+.queue-item.done{border-color:var(--green);background:var(--green-l);}
+.queue-item.error{border-color:var(--red);background:var(--red-l);}
+@keyframes spin{to{transform:rotate(360deg)}}
+.queue-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+
 .ctx-menu{position:fixed;background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);box-shadow:var(--shadow-md);z-index:999;min-width:155px;overflow:hidden;display:none;}
 .ctx-menu.visible{display:block;}
 .ctx-item{padding:6px 12px;cursor:pointer;font-size:11px;color:var(--text);transition:background .1s;display:flex;align-items:center;gap:7px;}
@@ -111,11 +119,6 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:0
 .queue-section{padding:0 10px 8px;flex:1;overflow-y:auto;}
 .queue-section::-webkit-scrollbar{width:3px;}
 .queue-section::-webkit-scrollbar-thumb{background:var(--border2);}
-.queue-item{display:flex;align-items:center;gap:7px;padding:5px 8px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);margin-bottom:3px;transition:all .2s;font-size:11px;}
-.queue-item.active{border-color:var(--accent);background:var(--accent-l);}
-.queue-item.done{border-color:var(--green);background:var(--green-l);}
-.queue-item.error{border-color:var(--red);background:var(--red-l);}
-.queue-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 
 .output-section{margin:0 10px 8px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:7px 9px;}
 .output-label{font-size:9px;letter-spacing:.5px;text-transform:uppercase;color:var(--text3);margin-bottom:4px;font-weight:500;}
@@ -123,8 +126,10 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:0
 .output-input:focus{border-color:var(--accent);}
 
 .actions{padding:8px 10px;border-top:1px solid var(--border);background:var(--surface);display:flex;flex-direction:column;gap:6px;flex-shrink:0;}
-.progress-bar{height:2px;background:var(--border);border-radius:2px;overflow:hidden;}
-.progress-fill{height:100%;background:var(--accent);width:0%;transition:width .5s ease;}
+.progress-wrap{display:flex;align-items:center;gap:8px;}
+.progress-bar{flex:1;height:3px;background:var(--border);border-radius:2px;overflow:hidden;}
+.progress-fill{height:100%;background:var(--accent);width:0%;transition:width .4s ease;}
+.progress-pct{font-size:10px;color:var(--text3);width:28px;text-align:right;flex-shrink:0;}
 .btn-row{display:flex;gap:6px;}
 
 .log-body{flex:1;overflow-y:auto;padding:8px 12px;font-size:11px;line-height:1.7;}
@@ -163,12 +168,11 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:0
 .empty-icon{font-size:20px;margin-bottom:6px;}
 .empty p{font-size:10px;line-height:1.6;}
 
-.overlay{position:fixed;inset:0;background:rgba(10,12,10,.88);backdrop-filter:blur(8px);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:500;gap:18px;}
+.overlay{position:fixed;inset:0;background:rgba(10,12,10,.9);backdrop-filter:blur(8px);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:500;gap:18px;}
 .overlay.hidden{display:none;}
 .overlay-title{font-family:var(--serif);font-size:24px;color:var(--text);}
 .overlay-msg{font-size:11px;color:var(--text2);max-width:360px;text-align:center;line-height:1.7;}
 .spinner{width:32px;height:32px;border:2px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;}
-@keyframes spin{to{transform:rotate(360deg)}}
 .overlay-log{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:10px 14px;max-width:420px;width:90%;max-height:150px;overflow-y:auto;font-size:10px;color:var(--text2);line-height:1.6;}
 </style>
 </head>
@@ -193,8 +197,7 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:0
   <div class="status-pill idle" id="status-pill"><div class="dot"></div><span id="status-text">Initialisation</span></div>
 </header>
 
-<div class="app" id="app">
-
+<div class="app">
   <div class="left-panel" id="left-panel">
 
     <div class="wav-frame" id="wav-frame" style="height:55%">
@@ -205,7 +208,7 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:0
           <button class="btn ghost" id="btn-refresh">↺</button>
         </div>
       </div>
-      <div class="frame-body" id="wav-frame-body">
+      <div class="frame-body">
         <div class="select-all-bar" id="select-all-bar" style="display:none">
           <div class="sa-check" id="sa-check"></div>
           <span class="sa-label">Tout sélectionner</span>
@@ -217,21 +220,21 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:0
           <button class="btn ghost" style="padding:3px 6px" id="btn-cancel-delete">✕</button>
         </div>
         <div id="tree-nodes">
-          <div class="empty"><div class="empty-icon">📂</div><p>Aucun fichier WAV<br>dans /workspace/datasets</p></div>
+          <div class="empty"><div class="empty-icon">📂</div><p>Aucun WAV dans<br>/workspace/datasets</p></div>
         </div>
       </div>
     </div>
 
     <div class="v-resizer" id="v-resizer"></div>
 
-    <div class="cap-frame" id="cap-frame">
+    <div class="cap-frame">
       <div class="frame-head">
         <div class="frame-title">📄 Captions <span class="frame-count" id="cap-count">0</span></div>
         <div class="frame-actions">
           <button class="btn ghost" id="btn-refresh-caps">↺</button>
         </div>
       </div>
-      <div class="frame-body" id="cap-frame-body">
+      <div class="frame-body">
         <div class="caps-del-bar" id="caps-del-bar">
           <span id="caps-del-label"></span>
           <button class="btn danger" style="font-size:10px;padding:3px 7px" id="btn-delete-caps">🗑 Supprimer</button>
@@ -242,7 +245,6 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:0
         </div>
       </div>
     </div>
-
   </div>
 
   <div class="h-resizer" id="h-resizer-left"></div>
@@ -266,7 +268,10 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:0
       <input class="output-input" type="text" id="output-dir" value="/workspace/datasets/captions">
     </div>
     <div class="actions">
-      <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+      <div class="progress-wrap">
+        <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+        <span class="progress-pct" id="progress-pct">0%</span>
+      </div>
       <div class="btn-row">
         <button class="btn primary" id="btn-start" disabled style="flex:1">▶ Lancer</button>
         <button class="btn" id="btn-download" disabled style="flex:1">⬇ ZIP</button>
@@ -289,7 +294,6 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:0
       <div class="stat"><div class="stat-val" id="stat-total">0</div><div class="stat-lbl">Total</div></div>
     </div>
   </div>
-
 </div>
 
 <script>
@@ -306,7 +310,7 @@ function makeHResizer(id,leftEl,rightEl,leftFixed){
   rz.addEventListener('mousedown',e=>{
     e.preventDefault();rz.classList.add('dragging');sx=e.clientX;
     sw=leftFixed?leftEl.offsetWidth:rightEl.offsetWidth;
-    const mv=ev=>{const d=ev.clientX-sx;if(leftFixed){leftEl.style.width=Math.max(180,Math.min(520,sw+d))+'px';}else{rightEl.style.width=Math.max(180,Math.min(540,sw-d))+'px';}};
+    const mv=ev=>{const d=ev.clientX-sx;if(leftFixed)leftEl.style.width=Math.max(180,Math.min(520,sw+d))+'px';else rightEl.style.width=Math.max(180,Math.min(540,sw-d))+'px';};
     const up=()=>{rz.classList.remove('dragging');document.removeEventListener('mousemove',mv);document.removeEventListener('mouseup',up);};
     document.addEventListener('mousemove',mv);document.addEventListener('mouseup',up);
   });
@@ -315,7 +319,7 @@ function makeVResizer(id,topEl){
   const rz=document.getElementById(id);let sy,sh;
   rz.addEventListener('mousedown',e=>{
     e.preventDefault();rz.classList.add('dragging');sy=e.clientY;sh=topEl.offsetHeight;
-    const mv=ev=>{const d=ev.clientY-sy;const ph=topEl.parentElement.offsetHeight;const nh=Math.max(60,Math.min(ph-60-rz.offsetHeight,sh+d));topEl.style.height=nh+'px';topEl.style.flex='none';};
+    const mv=ev=>{const ph=topEl.parentElement.offsetHeight;topEl.style.height=Math.max(60,Math.min(ph-60-rz.offsetHeight,sh+(ev.clientY-sy)))+'px';topEl.style.flex='none';};
     const up=()=>{rz.classList.remove('dragging');document.removeEventListener('mousemove',mv);document.removeEventListener('mouseup',up);};
     document.addEventListener('mousemove',mv);document.addEventListener('mouseup',up);
   });
@@ -324,33 +328,81 @@ makeHResizer('h-resizer-left',document.getElementById('left-panel'),null,true);
 makeHResizer('h-resizer-right',null,document.getElementById('right-panel'),false);
 makeVResizer('v-resizer',document.getElementById('wav-frame'));
 
-// ── STATUS ──
-async function pollStatus(){try{const r=await fetch(API+'/status');updateStatus(await r.json());}catch(e){}}
+// ── ADAPTIVE POLL ──
+let pollTimer=null;
+function startPoll(fast){
+  if(pollTimer)clearInterval(pollTimer);
+  pollTimer=setInterval(pollStatus,fast?500:2000);
+}
+
+async function pollStatus(){
+  try{const r=await fetch(API+'/status');updateStatus(await r.json());}catch(e){}
+}
+
 function updateStatus(d){
+  const wasRunning=currentStatus==='running';
   currentStatus=d.status;
+
+  // Adaptive poll speed
+  if(d.status==='running'&&!wasRunning) startPoll(true);
+  else if(d.status!=='running'&&wasRunning) startPoll(false);
+
   const pill=document.getElementById('status-pill');
   pill.className='status-pill '+d.status;
   const L={idle:'Prêt',downloading:'Téléchargement…',loading:'Chargement modèles…',running:'Captioning…',done:'Terminé',error:'Erreur'};
   document.getElementById('status-text').textContent=L[d.status]||d.status;
+
   if(!d.models_ready){
     document.getElementById('overlay').classList.remove('hidden');
     document.getElementById('overlay-msg').textContent=d.log.length?d.log[d.log.length-1].msg:'Initialisation…';
     const ol=document.getElementById('overlay-log');
     ol.innerHTML=d.log.slice(-8).map(e=>`<div style="color:${e.level==='error'?'#c4484a':e.level==='success'?'#4a9e6f':'#9a9890'}">${esc(e.msg)}</div>`).join('');
     ol.scrollTop=ol.scrollHeight;
-  }else{document.getElementById('overlay').classList.add('hidden');}
-  document.getElementById('progress-fill').style.width=d.progress+'%';
+  }else{
+    document.getElementById('overlay').classList.add('hidden');
+  }
+
+  const pct=d.progress||0;
+  document.getElementById('progress-fill').style.width=pct+'%';
+  document.getElementById('progress-pct').textContent=pct+'%';
   document.getElementById('stat-processed').textContent=d.processed;
   document.getElementById('stat-errors').textContent=d.errors;
   document.getElementById('stat-total').textContent=d.total_files;
-  document.getElementById('btn-start').disabled=!d.models_ready||d.status==='running'||selectedFiles.size===0;
+
+  // Start button state
+  const btnStart=document.getElementById('btn-start');
+  if(d.status==='running'){
+    btnStart.textContent='⏳ Captioning…';
+    btnStart.className='btn running-state';
+    btnStart.disabled=true;
+  }else{
+    btnStart.textContent='▶ Lancer';
+    btnStart.className='btn primary';
+    btnStart.disabled=!d.models_ready||selectedFiles.size===0;
+  }
   document.getElementById('btn-download').disabled=d.status!=='done';
+
   appendLog(d.log);
-  if(d.current_file&&d.status==='running')document.querySelectorAll('.queue-item').forEach(el=>el.classList.toggle('active',el.dataset.name===d.current_file));
-  if(d.status==='done'){document.querySelectorAll('.queue-item').forEach(el=>el.classList.add('done'));loadTree();loadCaptions();}
+
+  // Update queue item icons
+  if(d.status==='running'&&d.current_file){
+    document.querySelectorAll('.queue-item').forEach(el=>{
+      const active=el.dataset.name===d.current_file;
+      el.classList.toggle('active',active);
+      const ic=el.querySelector('.qi-icon');
+      if(ic)ic.textContent=active?'⟳':'○';
+    });
+  }
+  if(d.status==='done'){
+    document.querySelectorAll('.queue-item:not(.error)').forEach(el=>{
+      el.classList.remove('active');el.classList.add('done');
+      const ic=el.querySelector('.qi-icon');if(ic)ic.textContent='✓';
+    });
+    loadTree();loadCaptions();
+  }
 }
 
-// ── LOG — append only ──
+// ── LOG — append only, never wipe ──
 let logRendered=0;
 function appendLog(logs){
   const body=document.getElementById('log-body');
@@ -368,84 +420,54 @@ function appendLog(logs){
 // ── TREE ──
 function collectWavPaths(nodes){let r=[];for(const n of nodes){if(n.type==='file')r.push(n.path);else if(n.children)r=r.concat(collectWavPaths(n.children));}return r;}
 
-async function loadTree(){try{const r=await fetch(API+'/tree');treeData=await r.json();allWavPaths=collectWavPaths(treeData);renderTree();}catch(e){}}
+async function loadTree(){try{treeData=await(await fetch(API+'/tree')).json();allWavPaths=collectWavPaths(treeData);renderTree();}catch(e){}}
 
 function renderTree(){
   const c=document.getElementById('tree-nodes'),sa=document.getElementById('select-all-bar');
-  c.innerHTML='';
-  document.getElementById('wav-count').textContent=allWavPaths.length;
-  if(!allWavPaths.length){c.innerHTML='<div class="empty"><div class="empty-icon">📂</div><p>Aucun fichier WAV<br>dans /workspace/datasets</p></div>';sa.style.display='none';updateDeleteBar();return;}
+  c.innerHTML='';document.getElementById('wav-count').textContent=allWavPaths.length;
+  if(!allWavPaths.length){c.innerHTML='<div class="empty"><div class="empty-icon">📂</div><p>Aucun WAV dans<br>/workspace/datasets</p></div>';sa.style.display='none';updateDeleteBar();return;}
   sa.style.display='flex';updateSelectAllBar();updateDeleteBar();
   treeData.forEach(n=>c.appendChild(buildNode(n)));
 }
-
 function updateSelectAllBar(){
   const sc=document.getElementById('sa-check'),sn=document.getElementById('sa-count');
   const t=allWavPaths.length,s=selectedFiles.size;
   sn.textContent=s>0?s+'/'+t:t+' WAV';
-  if(s===0){sc.className='sa-check';sc.textContent='';}
-  else if(s===t){sc.className='sa-check checked';sc.textContent='✓';}
-  else{sc.className='sa-check checked';sc.textContent='—';}
+  sc.className='sa-check'+(s===0?'':' checked');sc.textContent=s===0?'':s===t?'✓':'—';
 }
-
 function updateDeleteBar(){
-  const bar=document.getElementById('delete-bar');
   document.getElementById('delete-bar-label').textContent=selectedFiles.size+' sélectionné'+(selectedFiles.size>1?'s':'');
-  bar.classList.toggle('visible',selectedFiles.size>0);
+  document.getElementById('delete-bar').classList.toggle('visible',selectedFiles.size>0);
 }
-
 document.getElementById('select-all-bar').addEventListener('click',()=>{
   if(selectedFiles.size===allWavPaths.length)selectedFiles.clear();else allWavPaths.forEach(p=>selectedFiles.add(p));
   renderTree();updateQueue();
 });
-
 function buildNode(node){
   const wrap=document.createElement('div');
   if(node.type==='dir'){
     wrap.className='tree-node tree-dir';
     const dp=collectWavPaths(node.children||[]);
-    const sc=dp.filter(p=>selectedFiles.has(p)).length;
-    const allS=dp.length>0&&sc===dp.length,partS=sc>0&&!allS;
-    const isOpen=openDirs[node.path]!==false;
-    if(isOpen)wrap.classList.add('open');
-    const item=document.createElement('div');
-    item.className='tree-item';
+    const sc=dp.filter(p=>selectedFiles.has(p)).length,allS=dp.length>0&&sc===dp.length,partS=sc>0&&!allS;
+    const isOpen=openDirs[node.path]!==false;if(isOpen)wrap.classList.add('open');
+    const item=document.createElement('div');item.className='tree-item';
     item.innerHTML=`<div class="tree-check ${allS?'checked':partS?'partial':''}">${allS?'✓':partS?'—':''}</div><span class="tree-icon"></span><span class="tree-name">${esc(node.name)}</span><span class="dir-badge">${node.wav_count||dp.length}</span>`;
-    const ch=document.createElement('div');
-    ch.className='tree-children';ch.style.display=isOpen?'block':'none';
+    const ch=document.createElement('div');ch.className='tree-children';ch.style.display=isOpen?'block':'none';
     (node.children||[]).forEach(c=>ch.appendChild(buildNode(c)));
     const chkEl=item.querySelector('.tree-check');
-    chkEl.addEventListener('click',e=>{
-      e.stopPropagation();
-      if(allS)dp.forEach(p=>selectedFiles.delete(p));else dp.forEach(p=>selectedFiles.add(p));
-      renderTree();updateQueue();
-    });
-    item.addEventListener('click',e=>{
-      if(chkEl.contains(e.target))return;
-      const now=wrap.classList.toggle('open');
-      openDirs[node.path]=now;ch.style.display=now?'block':'none';
-      uploadTargetDir=node.path;
-      document.getElementById('drop-target-label').textContent='→ '+node.path;
-      document.getElementById('output-dir').value=node.path+'/captions';
-    });
+    chkEl.addEventListener('click',e=>{e.stopPropagation();if(allS)dp.forEach(p=>selectedFiles.delete(p));else dp.forEach(p=>selectedFiles.add(p));renderTree();updateQueue();});
+    item.addEventListener('click',e=>{if(chkEl.contains(e.target))return;const now=wrap.classList.toggle('open');openDirs[node.path]=now;ch.style.display=now?'block':'none';uploadTargetDir=node.path;document.getElementById('drop-target-label').textContent='→ '+node.path;document.getElementById('output-dir').value=node.path+'/captions';});
     item.addEventListener('contextmenu',e=>showCtx(e,node));
     wrap.appendChild(item);wrap.appendChild(ch);
   }else{
-    wrap.className='tree-node tree-file';
-    const sel=selectedFiles.has(node.path);
-    const item=document.createElement('div');
-    item.className='tree-item'+(sel?' selected':'');item.dataset.path=node.path;
+    wrap.className='tree-node tree-file';const sel=selectedFiles.has(node.path);
+    const item=document.createElement('div');item.className='tree-item'+(sel?' selected':'');item.dataset.path=node.path;
     item.innerHTML=`<div class="tree-check${sel?' checked':''}">${sel?'✓':''}</div><span class="tree-icon">🎵</span><span class="tree-name">${esc(node.name)}</span><span class="tree-size">${node.size_mb}MB</span>`;
-    item.addEventListener('click',()=>{
-      if(selectedFiles.has(node.path))selectedFiles.delete(node.path);else selectedFiles.add(node.path);
-      renderTree();updateQueue();
-    });
-    item.addEventListener('contextmenu',e=>showCtx(e,node));
-    wrap.appendChild(item);
+    item.addEventListener('click',()=>{if(selectedFiles.has(node.path))selectedFiles.delete(node.path);else selectedFiles.add(node.path);renderTree();updateQueue();});
+    item.addEventListener('contextmenu',e=>showCtx(e,node));wrap.appendChild(item);
   }
   return wrap;
 }
-
 function updateQueue(){
   const list=document.getElementById('queue-list'),count=document.getElementById('queue-count');
   count.textContent=selectedFiles.size+' fichier'+(selectedFiles.size>1?'s':'');
@@ -454,17 +476,16 @@ function updateQueue(){
   selectedFiles.forEach(path=>{
     const name=path.split('/').pop(),div=document.createElement('div');
     div.className='queue-item';div.dataset.name=name;
-    div.innerHTML=`<span style="font-size:12px;flex-shrink:0">○</span><span class="queue-name">${esc(name)}</span><span style="font-size:10px;color:var(--text3);cursor:pointer;flex-shrink:0" class="rm">✕</span>`;
+    div.innerHTML=`<span class="qi-icon" style="font-size:12px;flex-shrink:0">○</span><span class="queue-name">${esc(name)}</span><span style="font-size:10px;color:var(--text3);cursor:pointer;flex-shrink:0" class="rm">✕</span>`;
     div.querySelector('.rm').addEventListener('click',e=>{e.stopPropagation();selectedFiles.delete(path);renderTree();updateQueue();});
     list.appendChild(div);
   });
-  document.getElementById('btn-start').disabled=currentStatus==='running';
+  if(currentStatus!=='running')document.getElementById('btn-start').disabled=false;
   updateDeleteBar();
 }
 
 document.getElementById('btn-delete-selection').addEventListener('click',async()=>{
-  if(!selectedFiles.size)return;
-  if(!confirm('Supprimer définitivement les '+selectedFiles.size+' fichiers WAV sélectionnés ?'))return;
+  if(!selectedFiles.size)return;if(!confirm('Supprimer définitivement les '+selectedFiles.size+' fichiers WAV ?'))return;
   await fetch(API+'/delete-many',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({paths:Array.from(selectedFiles)})});
   selectedFiles.clear();await loadTree();updateQueue();
 });
@@ -475,9 +496,8 @@ function showCtx(e,node){e.preventDefault();currentCtxNode=node;const m=document
 document.addEventListener('click',()=>document.getElementById('ctx-menu').classList.remove('visible'));
 document.getElementById('ctx-rename').addEventListener('click',async()=>{if(!currentCtxNode)return;const n=prompt('Nouveau nom :',currentCtxNode.name);if(!n||n===currentCtxNode.name)return;await fetch(API+'/rename',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({path:currentCtxNode.path,new_name:n})});await loadTree();});
 document.getElementById('ctx-select').addEventListener('click',()=>{if(!currentCtxNode||currentCtxNode.type!=='file')return;selectedFiles.add(currentCtxNode.path);renderTree();updateQueue();});
-document.getElementById('ctx-delete').addEventListener('click',async()=>{if(!currentCtxNode)return;const l=currentCtxNode.type==='dir'?'le dossier "'+currentCtxNode.name+'" et son contenu':'"'+currentCtxNode.name+'"';if(!confirm('Supprimer '+l+' ?'))return;await fetch(API+'/file?path='+encodeURIComponent(currentCtxNode.path),{method:'DELETE'});selectedFiles.delete(currentCtxNode.path);await loadTree();updateQueue();});
+document.getElementById('ctx-delete').addEventListener('click',async()=>{if(!currentCtxNode)return;if(!confirm('Supprimer ?'))return;await fetch(API+'/file?path='+encodeURIComponent(currentCtxNode.path),{method:'DELETE'});selectedFiles.delete(currentCtxNode.path);await loadTree();updateQueue();});
 
-// ── NEW FOLDER / REFRESH ──
 document.getElementById('btn-new-folder').addEventListener('click',async()=>{const n=prompt('Nom du dossier :','mon_projet');if(!n)return;await fetch(API+'/mkdir',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({path:uploadTargetDir.replace(/\/$/,'')+'/'+n})});await loadTree();});
 document.getElementById('btn-refresh').addEventListener('click',loadTree);
 
@@ -493,9 +513,8 @@ async function uploadFiles(files){const wavs=files.filter(f=>f.name.toLowerCase(
 // ── CAPTIONS ──
 async function loadCaptions(){try{renderCaptions(await(await fetch(API+'/captions')).json());}catch(e){}}
 function renderCaptions(caps){
+  document.getElementById('cap-count').textContent=caps.length;selectedCaps.clear();updateCapsDeleteBar();
   const list=document.getElementById('cap-list');
-  document.getElementById('cap-count').textContent=caps.length;
-  selectedCaps.clear();updateCapsDeleteBar();
   if(!caps.length){list.innerHTML='<div class="empty"><div class="empty-icon">📄</div><p>Aucune caption trouvée</p></div>';return;}
   list.innerHTML='';
   caps.forEach(cap=>{
@@ -508,7 +527,7 @@ function renderCaptions(caps){
   });
 }
 function updateCapsDeleteBar(){const b=document.getElementById('caps-del-bar');document.getElementById('caps-del-label').textContent=selectedCaps.size+' caption'+(selectedCaps.size>1?'s':'')+' sélectionnée'+(selectedCaps.size>1?'s':'');b.classList.toggle('visible',selectedCaps.size>0);}
-document.getElementById('btn-delete-caps').addEventListener('click',async()=>{if(!selectedCaps.size)return;if(!confirm('Supprimer les '+selectedCaps.size+' captions sélectionnées ?'))return;await fetch(API+'/delete-many',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({paths:Array.from(selectedCaps)})});selectedCaps.clear();await loadCaptions();});
+document.getElementById('btn-delete-caps').addEventListener('click',async()=>{if(!selectedCaps.size)return;if(!confirm('Supprimer les '+selectedCaps.size+' captions ?'))return;await fetch(API+'/delete-many',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({paths:Array.from(selectedCaps)})});selectedCaps.clear();await loadCaptions();});
 document.getElementById('btn-cancel-caps-del').addEventListener('click',()=>{selectedCaps.clear();document.querySelectorAll('.cap-check.checked').forEach(el=>{el.className='cap-check';el.textContent='';});document.querySelectorAll('.cap-item.cap-selected').forEach(el=>el.classList.remove('cap-selected'));updateCapsDeleteBar();});
 document.getElementById('btn-refresh-caps').addEventListener('click',loadCaptions);
 
@@ -516,15 +535,21 @@ document.getElementById('btn-refresh-caps').addEventListener('click',loadCaption
 document.getElementById('btn-start').addEventListener('click',async()=>{
   const od=document.getElementById('output-dir').value.trim();
   if(!od){alert('Spécifiez un dossier de sortie');return;}
-  logRendered=0; // reset counter so new batch logs from index 0
+
+  // Immediate visual feedback before fetch
+  const btn=document.getElementById('btn-start');
+  btn.textContent='⏳ Envoi…';btn.className='btn running-state';btn.disabled=true;
+  logRendered=0;startPoll(true);
+
   const r=await fetch(API+'/start',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({files:Array.from(selectedFiles),output_dir:od})});
-  const d=await r.json();if(d.error)alert(d.error);
+  const d=await r.json();
+  if(d.error){alert(d.error);btn.textContent='▶ Lancer';btn.className='btn primary';btn.disabled=false;startPoll(false);}
 });
 document.getElementById('btn-download').addEventListener('click',()=>{window.location.href=API+'/download-captions';});
 document.getElementById('btn-clear-queue').addEventListener('click',()=>{selectedFiles.clear();renderTree();updateQueue();});
 
 // ── INIT ──
-(async()=>{await loadTree();await loadCaptions();setInterval(pollStatus,1000);setInterval(loadCaptions,15000);})();
+(async()=>{await loadTree();await loadCaptions();startPoll(false);setInterval(loadCaptions,15000);})();
 </script>
 </body>
 </html>
