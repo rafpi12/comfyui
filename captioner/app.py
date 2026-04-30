@@ -6,13 +6,32 @@ Torch cu124 — compatible with NVIDIA driver >= 550 (RunPod RTX 4090, A100, H10
 """
 import os, sys, json, asyncio, shutil, subprocess, time, zipfile, io
 from pathlib import Path
-from concurrent.futures import ProcessPoolExecutor
+from concurrent.futures import ThreadPoolExecutor
 from fastapi import FastAPI, UploadFile, File, Request
 from fastapi.responses import HTMLResponse, StreamingResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 
 sys.stdout.reconfigure(line_buffering=True)
+
+import torch
+
+def _check_cudnn() -> bool:
+    """Test cuDNN with a minimal conv1d. Disable it if broken."""
+    try:
+        conv = torch.nn.Conv1d(8, 8, kernel_size=3, padding=1).cuda().to(torch.bfloat16)
+        x = torch.randn(1, 8, 64, dtype=torch.bfloat16, device='cuda')
+        _ = conv(x)
+        torch.cuda.synchronize()
+        return True
+    except Exception:
+        return False
+
+if not _check_cudnn():
+    torch.backends.cudnn.enabled = False
+    print("[startup] cuDNN non fonctionnel sur ce pod — désactivé, utilisation des kernels CUDA natifs.", flush=True)
+else:
+    print("[startup] cuDNN OK.", flush=True)
 
 app = FastAPI()
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
@@ -67,7 +86,7 @@ state = {
     "preset": "generic",
 }
 
-process_pool = ProcessPoolExecutor(max_workers=1)
+process_pool = ThreadPoolExecutor(max_workers=1)
 
 # ── LOGGING ───────────────────────────────────────────────────────────────────
 
@@ -247,7 +266,7 @@ def install_deps():
         # cu124 = CUDA 12.4 — compatible driver >= 550 (RTX 4090, A100, H100, L40S on RunPod)
         ['torch==2.6.0', 'torchvision==0.21.0',
          '--index-url', 'https://download.pytorch.org/whl/cu124'],
-        ['transformers==5.5.3'], ['accelerate'], ['optimum-quanto==0.2.4'],
+        ['transformers==5.3.0'],  # 5.5.x breaks cuDNN conv1d on some pods ['accelerate'], ['optimum-quanto==0.2.4'],
         ['qwen_omni_utils'], ['librosa==0.11.0'], ['soundfile'],
         ['sentencepiece'], ['scipy==1.12.0'], ['pydub'],
     ]
@@ -311,6 +330,11 @@ def _worker_load_models():
     warnings.filterwarnings('ignore')
     lg.disable(lg.WARNING)
     os.environ['PYTORCH_CUDA_ALLOC_CONF'] = 'expandable_segments:True'
+    # Explicitly initialize CUDA context in this thread before any model operations
+    # Required when running inside a ThreadPoolExecutor worker thread
+    torch.cuda.init()
+    _ = torch.zeros(1, device='cuda')
+    torch.cuda.synchronize()
     _w_transcriber = Qwen2_5OmniForConditionalGeneration.from_pretrained(
         TRANSCRIBER_PATH, torch_dtype=torch.bfloat16, device_map='cpu')
     _w_transcriber.disable_talker()
@@ -319,11 +343,6 @@ def _worker_load_models():
         CAPTIONER_PATH, torch_dtype=torch.bfloat16, device_map='cpu')
     _w_captioner.disable_talker()
     _w_captioner_proc = Qwen2_5OmniProcessor.from_pretrained(CAPTIONER_PATH)
-    # Warmup: force CUDA context init once so cuDNN stays stable during swap inference
-    _w_transcriber.to('cuda')
-    torch.cuda.synchronize()
-    _w_transcriber.to('cpu')
-    torch.cuda.empty_cache()
 
 
 def _load_audio(audio_path: str) -> tuple:
@@ -572,8 +591,7 @@ async def download_captions():
                              headers={"Content-Disposition": "attachment; filename=captions.zip"})
 
 if __name__ == "__main__":
-    import multiprocessing, signal
-    multiprocessing.set_start_method('spawn', force=True)
+    import signal
     # Free port 7860 if already in use (e.g. leftover process from previous run)
     try:
         import socket
