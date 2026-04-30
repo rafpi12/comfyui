@@ -245,7 +245,7 @@ def install_deps():
     log("📦 Installation des dépendances...")
     pkgs = [
         # cu124 = CUDA 12.4 — compatible driver >= 550 (RTX 4090, A100, H100, L40S on RunPod)
-        ['torch==2.5.1', 'torchvision==0.20.1',
+        ['torch==2.6.0', 'torchvision==0.21.0',
          '--index-url', 'https://download.pytorch.org/whl/cu124'],
         ['transformers==5.5.3'], ['accelerate'], ['optimum-quanto==0.2.4'],
         ['qwen_omni_utils'], ['librosa==0.11.0'], ['soundfile'],
