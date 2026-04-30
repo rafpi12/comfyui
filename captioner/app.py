@@ -565,6 +565,20 @@ async def download_captions():
                              headers={"Content-Disposition": "attachment; filename=captions.zip"})
 
 if __name__ == "__main__":
-    import multiprocessing
+    import multiprocessing, signal
     multiprocessing.set_start_method('spawn', force=True)
+    # Free port 7860 if already in use (e.g. leftover process from previous run)
+    try:
+        import socket
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            if s.connect_ex(('0.0.0.0', 7860)) == 0:
+                r = subprocess.run(['ss', '-tlnp'], capture_output=True, text=True)
+                for line in r.stdout.splitlines():
+                    if '7860' in line and 'pid=' in line:
+                        pid = int(line.split('pid=')[1].split(',')[0])
+                        os.kill(pid, signal.SIGKILL)
+                        time.sleep(1)
+                        break
+    except Exception:
+        pass
     uvicorn.run(app, host="0.0.0.0", port=7860)
