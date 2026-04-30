@@ -13,7 +13,6 @@
   --green:#4a9e6f;--green-l:#0e2018;
   --red:#c4484a;--red-l:#220e0e;
   --blue:#4a7ec4;--blue-l:#0e1a2a;
-  --purple:#8b6ec4;--purple-l:#1a0e2a;
   --shadow:0 1px 4px rgba(0,0,0,.4);--shadow-md:0 4px 16px rgba(0,0,0,.5);
   --r:5px;--mono:'Geist Mono',monospace;--serif:'Instrument Serif',serif;
 }
@@ -66,10 +65,47 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:0
 .btn.ghost{background:transparent;border-color:transparent;color:var(--text3);}
 .btn.ghost:hover:not(:disabled){background:var(--surface2);color:var(--text2);}
 
-/* ── PRESET SELECTOR ── */
+/* ── UPLOAD PROGRESS ── */
+.upload-progress{
+  display:none;
+  margin:0 10px 8px;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r);overflow:hidden;
+}
+.upload-progress.visible{display:block;}
+.upload-progress-head{
+  padding:6px 9px 4px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.upload-progress-label{font-size:10px;color:var(--text2);}
+.upload-progress-pct{font-size:10px;color:var(--accent);font-weight:500;}
+.upload-bar-wrap{height:3px;background:var(--border);}
+.upload-bar-fill{
+  height:100%;background:var(--accent);width:0%;
+  transition:width .2s ease;
+}
+.upload-files-list{
+  padding:4px 9px 6px;
+  max-height:80px;overflow-y:auto;
+}
+.upload-files-list::-webkit-scrollbar{width:2px;}
+.upload-files-list::-webkit-scrollbar-thumb{background:var(--border2);}
+.upload-file-row{
+  display:flex;align-items:center;gap:6px;
+  padding:2px 0;font-size:10px;color:var(--text3);
+}
+.upload-file-row .uf-icon{font-size:10px;flex-shrink:0;}
+.upload-file-row .uf-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.upload-file-row .uf-status{flex-shrink:0;font-size:10px;}
+.upload-file-row.done .uf-name{color:var(--green);}
+.upload-file-row.done .uf-status{color:var(--green);}
+.upload-file-row.active .uf-name{color:var(--accent);}
+.upload-file-row.active .uf-status{color:var(--accent);}
+.upload-file-row.error .uf-name{color:var(--red);}
+
+/* ── PRESET ── */
 .preset-section{margin:0 10px 8px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;}
-.preset-label{font-size:9px;letter-spacing:.5px;text-transform:uppercase;color:var(--text3);padding:6px 9px 4px;font-weight:500;display:flex;align-items:center;gap:5px;}
-.preset-label span{color:var(--text3);}
+.preset-label{font-size:9px;letter-spacing:.5px;text-transform:uppercase;color:var(--text3);padding:6px 9px 4px;font-weight:500;}
 .preset-tabs{display:flex;border-top:1px solid var(--border);}
 .preset-tab{flex:1;padding:7px 6px;text-align:center;cursor:pointer;font-size:10px;color:var(--text3);transition:all .15s;border-right:1px solid var(--border);user-select:none;line-height:1.3;}
 .preset-tab:last-child{border-right:none;}
@@ -79,9 +115,7 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:0
 .preset-tab .pt-name{font-weight:500;display:block;}
 .preset-tab .pt-desc{font-size:9px;color:var(--text3);display:block;margin-top:1px;}
 .preset-tab.active .pt-desc{color:var(--accent);opacity:.7;}
-
-.preset-info{padding:6px 9px;background:var(--surface2);border-top:1px solid var(--border);font-size:10px;color:var(--text3);display:flex;gap:12px;flex-wrap:wrap;}
-.preset-info span{display:flex;align-items:center;gap:4px;}
+.preset-info{padding:5px 9px;background:var(--surface2);border-top:1px solid var(--border);font-size:10px;color:var(--text3);display:flex;gap:10px;flex-wrap:wrap;}
 .preset-info b{color:var(--text2);}
 
 /* ── BARS ── */
@@ -91,9 +125,20 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:0
 .sa-check.checked{background:var(--accent);}
 .sa-label{font-size:10px;color:var(--accent);font-weight:500;flex:1;}
 .sa-count{font-size:10px;color:var(--accent);}
+
 .delete-bar{display:none;align-items:center;gap:6px;padding:4px 7px;background:var(--red-l);border:1px solid var(--red);border-radius:var(--r);margin-bottom:6px;}
 .delete-bar.visible{display:flex;}
 .delete-bar>span{flex:1;font-size:10px;color:var(--red);}
+
+/* Caption select-all + delete-all bars */
+.cap-all-bar{display:flex;align-items:center;gap:6px;padding:4px 7px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);margin-bottom:6px;cursor:pointer;user-select:none;}
+.cap-all-bar:hover{border-color:var(--border2);}
+.cap-all-check{width:12px;height:12px;border:1.5px solid var(--border2);border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:7px;color:#fff;background:var(--surface);flex-shrink:0;}
+.cap-all-check.checked{background:var(--red);border-color:var(--red);}
+.cap-all-label{font-size:10px;color:var(--text2);flex:1;}
+.caps-del-bar{display:none;align-items:center;gap:6px;padding:4px 7px;background:var(--red-l);border:1px solid var(--red);border-radius:var(--r);margin-bottom:6px;}
+.caps-del-bar.visible{display:flex;}
+.caps-del-bar>span{flex:1;font-size:10px;color:var(--red);}
 
 /* ── TREE ── */
 .tree-node{user-select:none;}
@@ -120,14 +165,15 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:0
 .ctx-item.danger:hover{background:var(--red-l);}
 .ctx-sep{height:1px;background:var(--border);margin:3px 0;}
 
-.dropzone{margin:10px;border:1.5px dashed var(--border2);border-radius:var(--r);padding:16px 14px;text-align:center;cursor:pointer;transition:all .2s;background:var(--surface);}
+/* ── DROPZONE ── */
+.dropzone{margin:10px 10px 0;border:1.5px dashed var(--border2);border-radius:var(--r);padding:16px 14px;text-align:center;cursor:pointer;transition:all .2s;background:var(--surface);}
 .dropzone:hover,.dropzone.drag-over{border-color:var(--accent);background:var(--accent-l);}
 .dropzone-icon{font-size:18px;margin-bottom:4px;}
 .dropzone p{color:var(--text2);font-size:11px;line-height:1.5;}
 .dropzone p strong{color:var(--accent);}
 .dropzone-target{font-size:10px;color:var(--text3);margin-top:2px;}
 
-.queue-section{padding:0 10px 6px;flex:1;overflow-y:auto;}
+.queue-section{padding:6px 10px 6px;flex:1;overflow-y:auto;}
 .queue-section::-webkit-scrollbar{width:3px;}
 .queue-section::-webkit-scrollbar-thumb{background:var(--border2);}
 .queue-item{display:flex;align-items:center;gap:7px;padding:5px 8px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);margin-bottom:3px;transition:all .2s;font-size:11px;}
@@ -178,9 +224,6 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:0
 .cap-item:hover .cap-preview{-webkit-line-clamp:6;}
 .cap-del-btn{opacity:0;font-size:11px;color:var(--red);cursor:pointer;padding:1px 4px;border-radius:3px;transition:opacity .12s;flex-shrink:0;}
 .cap-item:hover .cap-del-btn{opacity:1;}
-.caps-del-bar{display:none;align-items:center;gap:6px;padding:4px 7px;background:var(--red-l);border:1px solid var(--red);border-radius:var(--r);margin-bottom:6px;}
-.caps-del-bar.visible{display:flex;}
-.caps-del-bar>span{flex:1;font-size:10px;color:var(--red);}
 
 .empty{text-align:center;padding:22px 12px;color:var(--text3);}
 .empty-icon{font-size:20px;margin-bottom:6px;}
@@ -216,8 +259,11 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:0
 </header>
 
 <div class="app">
+
   <!-- LEFT -->
   <div class="left-panel" id="left-panel">
+
+    <!-- WAV FRAME -->
     <div class="wav-frame" id="wav-frame" style="height:55%">
       <div class="frame-head">
         <div class="frame-title">🎵 WAV <span class="frame-count" id="wav-count">0</span></div>
@@ -242,7 +288,10 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:0
         </div>
       </div>
     </div>
+
     <div class="v-resizer" id="v-resizer"></div>
+
+    <!-- CAPTIONS FRAME -->
     <div class="cap-frame">
       <div class="frame-head">
         <div class="frame-title">📄 Captions <span class="frame-count" id="cap-count">0</span></div>
@@ -251,6 +300,13 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:0
         </div>
       </div>
       <div class="frame-body">
+        <!-- Select all captions -->
+        <div class="cap-all-bar" id="cap-all-bar" style="display:none">
+          <div class="cap-all-check" id="cap-all-check"></div>
+          <span class="cap-all-label">Tout sélectionner</span>
+          <span style="font-size:10px;color:var(--text3)" id="cap-all-count"></span>
+        </div>
+        <!-- Delete selected captions -->
         <div class="caps-del-bar" id="caps-del-bar">
           <span id="caps-del-label"></span>
           <button class="btn danger" style="font-size:10px;padding:3px 7px" id="btn-delete-caps">🗑 Supprimer</button>
@@ -261,6 +317,7 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:0
         </div>
       </div>
     </div>
+
   </div>
 
   <div class="h-resizer" id="h-resizer-left"></div>
@@ -272,6 +329,7 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:0
       <span id="queue-count" style="font-size:10px;color:var(--text3)">0 fichier</span>
     </div>
 
+    <!-- DROPZONE -->
     <div class="dropzone" id="dropzone">
       <input type="file" id="file-input" multiple accept=".wav" style="display:none">
       <div class="dropzone-icon">⬆️</div>
@@ -279,18 +337,31 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:0
       <div class="dropzone-target" id="drop-target-label">→ /workspace/datasets/</div>
     </div>
 
+    <!-- UPLOAD PROGRESS -->
+    <div class="upload-progress" id="upload-progress">
+      <div class="upload-progress-head">
+        <span class="upload-progress-label" id="upload-label">Upload en cours…</span>
+        <span class="upload-progress-pct" id="upload-pct">0%</span>
+      </div>
+      <div class="upload-bar-wrap">
+        <div class="upload-bar-fill" id="upload-bar-fill"></div>
+      </div>
+      <div class="upload-files-list" id="upload-files-list"></div>
+    </div>
+
+    <!-- QUEUE -->
     <div class="queue-section" id="queue-list">
       <div class="empty"><div class="empty-icon">☑️</div><p>Sélectionnez des WAV à gauche</p></div>
     </div>
 
-    <!-- PRESET SELECTOR -->
+    <!-- PRESET -->
     <div class="preset-section">
       <div class="preset-label">🎛 Preset d'analyse</div>
       <div class="preset-tabs" id="preset-tabs">
         <div class="preset-tab active" data-preset="generic">
           <span class="pt-icon">🎵</span>
           <span class="pt-name">Générique</span>
-          <span class="pt-desc">Démarre dès le début</span>
+          <span class="pt-desc">Dès le début</span>
         </div>
         <div class="preset-tab" data-preset="techno">
           <span class="pt-icon">⚡</span>
@@ -306,11 +377,13 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:0
       <div class="preset-info" id="preset-info"></div>
     </div>
 
+    <!-- OUTPUT DIR -->
     <div class="output-section">
       <div class="output-label">Dossier de sortie</div>
       <input class="output-input" type="text" id="output-dir" value="/workspace/datasets/captions">
     </div>
 
+    <!-- ACTIONS -->
     <div class="actions">
       <div class="progress-wrap">
         <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
@@ -326,7 +399,7 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:0
 
   <div class="h-resizer" id="h-resizer-right"></div>
 
-  <!-- RIGHT -->
+  <!-- RIGHT LOG -->
   <div class="right-panel" id="right-panel">
     <div class="panel-head">
       <span class="panel-title">Journal</span>
@@ -339,6 +412,7 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:0
       <div class="stat"><div class="stat-val" id="stat-total">0</div><div class="stat-lbl">Total</div></div>
     </div>
   </div>
+
 </div>
 
 <script>
@@ -346,8 +420,8 @@ const API='';
 let treeData=[],allWavPaths=[],selectedFiles=new Set(),selectedCaps=new Set();
 let currentCtxNode=null,currentStatus='idle',uploadTargetDir='/workspace/datasets';
 const openDirs={};
+let allCapPaths=[];  // flat list of all caption paths for select-all
 
-// Preset definitions (mirrors server — for UI display only)
 const PRESETS={
   generic:{label:'Générique',threshold_db:-40,min_skip:0,max_seconds:120,skip_ratio:0},
   techno: {label:'Techno / Tek House',threshold_db:-18,min_skip:20,max_seconds:120,skip_ratio:0.25},
@@ -381,45 +455,31 @@ makeHResizer('h-resizer-left',document.getElementById('left-panel'),null,true);
 makeHResizer('h-resizer-right',null,document.getElementById('right-panel'),false);
 makeVResizer('v-resizer',document.getElementById('wav-frame'));
 
-// ── PRESET UI ──
+// ── PRESET ──
 function updatePresetInfo(){
   const p=PRESETS[currentPreset];
-  const info=document.getElementById('preset-info');
   const skipStr=p.min_skip>0?p.min_skip+'s min':'aucun';
-  const fallStr=p.skip_ratio>0?Math.round(p.skip_ratio*100)+'% du morceau':'désactivé';
-  info.innerHTML=`
-    <span>⏱ <b>${p.max_seconds}s</b> analysés</span>
-    <span>🔊 seuil <b>${p.threshold_db}dB</b></span>
+  const fallStr=p.skip_ratio>0?Math.round(p.skip_ratio*100)+'%':'désactivé';
+  document.getElementById('preset-info').innerHTML=`
+    <span>⏱ <b>${p.max_seconds}s</b></span>
+    <span>🔊 <b>${p.threshold_db}dB</b></span>
     <span>⏭ skip <b>${skipStr}</b></span>
-    <span>↩ fallback <b>${fallStr}</b></span>
-  `;
+    <span>↩ fallback <b>${fallStr}</b></span>`;
 }
-
 document.getElementById('preset-tabs').addEventListener('click',e=>{
-  const tab=e.target.closest('.preset-tab');
-  if(!tab)return;
+  const tab=e.target.closest('.preset-tab');if(!tab)return;
   document.querySelectorAll('.preset-tab').forEach(t=>t.classList.remove('active'));
-  tab.classList.add('active');
-  currentPreset=tab.dataset.preset;
-  updatePresetInfo();
+  tab.classList.add('active');currentPreset=tab.dataset.preset;updatePresetInfo();
 });
-
 updatePresetInfo();
 
 // ── ADAPTIVE POLL ──
 let pollTimer=null;
-function startPoll(fast){
-  if(pollTimer)clearInterval(pollTimer);
-  pollTimer=setInterval(pollStatus,fast?500:2000);
-}
-
-async function pollStatus(){
-  try{const r=await fetch(API+'/status');updateStatus(await r.json());}catch(e){}
-}
+function startPoll(fast){if(pollTimer)clearInterval(pollTimer);pollTimer=setInterval(pollStatus,fast?500:2000);}
+async function pollStatus(){try{updateStatus(await(await fetch(API+'/status')).json());}catch(e){}}
 
 function updateStatus(d){
-  const wasRunning=currentStatus==='running';
-  currentStatus=d.status;
+  const wasRunning=currentStatus==='running';currentStatus=d.status;
   if(d.status==='running'&&!wasRunning)startPoll(true);
   else if(d.status!=='running'&&wasRunning)startPoll(false);
 
@@ -451,13 +511,11 @@ function updateStatus(d){
     btnStart.disabled=!d.models_ready||selectedFiles.size===0;
   }
   document.getElementById('btn-download').disabled=d.status!=='done';
-
   appendLog(d.log);
 
   if(d.status==='running'&&d.current_file){
     document.querySelectorAll('.queue-item').forEach(el=>{
-      const active=el.dataset.name===d.current_file;
-      el.classList.toggle('active',active);
+      const active=el.dataset.name===d.current_file;el.classList.toggle('active',active);
       const ic=el.querySelector('.qi-icon');if(ic)ic.textContent=active?'⟳':'○';
     });
   }
@@ -507,6 +565,7 @@ document.getElementById('select-all-bar').addEventListener('click',()=>{
   if(selectedFiles.size===allWavPaths.length)selectedFiles.clear();else allWavPaths.forEach(p=>selectedFiles.add(p));
   renderTree();updateQueue();
 });
+
 function buildNode(node){
   const wrap=document.createElement('div');
   if(node.type==='dir'){
@@ -532,6 +591,7 @@ function buildNode(node){
   }
   return wrap;
 }
+
 function updateQueue(){
   const list=document.getElementById('queue-list'),count=document.getElementById('queue-count');
   count.textContent=selectedFiles.size+' fichier'+(selectedFiles.size>1?'s':'');
@@ -547,6 +607,7 @@ function updateQueue(){
   if(currentStatus!=='running')document.getElementById('btn-start').disabled=false;
   updateDeleteBar();
 }
+
 document.getElementById('btn-delete-selection').addEventListener('click',async()=>{
   if(!selectedFiles.size)return;if(!confirm('Supprimer définitivement les '+selectedFiles.size+' fichiers WAV ?'))return;
   await fetch(API+'/delete-many',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({paths:Array.from(selectedFiles)})});
@@ -560,23 +621,81 @@ document.addEventListener('click',()=>document.getElementById('ctx-menu').classL
 document.getElementById('ctx-rename').addEventListener('click',async()=>{if(!currentCtxNode)return;const n=prompt('Nouveau nom :',currentCtxNode.name);if(!n||n===currentCtxNode.name)return;await fetch(API+'/rename',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({path:currentCtxNode.path,new_name:n})});await loadTree();});
 document.getElementById('ctx-select').addEventListener('click',()=>{if(!currentCtxNode||currentCtxNode.type!=='file')return;selectedFiles.add(currentCtxNode.path);renderTree();updateQueue();});
 document.getElementById('ctx-delete').addEventListener('click',async()=>{if(!currentCtxNode)return;if(!confirm('Supprimer ?'))return;await fetch(API+'/file?path='+encodeURIComponent(currentCtxNode.path),{method:'DELETE'});selectedFiles.delete(currentCtxNode.path);await loadTree();updateQueue();});
-
 document.getElementById('btn-new-folder').addEventListener('click',async()=>{const n=prompt('Nom du dossier :','mon_projet');if(!n)return;await fetch(API+'/mkdir',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({path:uploadTargetDir.replace(/\/$/,'')+'/'+n})});await loadTree();});
 document.getElementById('btn-refresh').addEventListener('click',loadTree);
 
-// ── UPLOAD ──
+// ── UPLOAD WITH PROGRESS ──
 const dropzone=document.getElementById('dropzone'),fileInput=document.getElementById('file-input');
 dropzone.addEventListener('click',()=>fileInput.click());
 fileInput.addEventListener('change',e=>uploadFiles(Array.from(e.target.files)));
 dropzone.addEventListener('dragover',e=>{e.preventDefault();dropzone.classList.add('drag-over');});
 dropzone.addEventListener('dragleave',()=>dropzone.classList.remove('drag-over'));
 dropzone.addEventListener('drop',e=>{e.preventDefault();dropzone.classList.remove('drag-over');uploadFiles(Array.from(e.dataTransfer.files));});
-async function uploadFiles(files){const wavs=files.filter(f=>f.name.toLowerCase().endsWith('.wav'));if(!wavs.length)return;const fd=new FormData();wavs.forEach(f=>fd.append('files',f));await fetch(API+'/upload-to?target_dir='+encodeURIComponent(uploadTargetDir),{method:'POST',body:fd});await loadTree();}
+
+async function uploadFiles(files){
+  const wavs=files.filter(f=>f.name.toLowerCase().endsWith('.wav'));
+  if(!wavs.length)return;
+
+  // Show progress UI
+  const prog=document.getElementById('upload-progress');
+  const bar=document.getElementById('upload-bar-fill');
+  const pct=document.getElementById('upload-pct');
+  const label=document.getElementById('upload-label');
+  const filesList=document.getElementById('upload-files-list');
+
+  prog.classList.add('visible');
+  filesList.innerHTML=wavs.map((f,i)=>`
+    <div class="upload-file-row" id="ufr-${i}">
+      <span class="uf-icon">🎵</span>
+      <span class="uf-name">${esc(f.name)}</span>
+      <span class="uf-status">—</span>
+    </div>`).join('');
+
+  // Upload one by one to show per-file progress
+  for(let i=0;i<wavs.length;i++){
+    const f=wavs[i];
+    const row=document.getElementById('ufr-'+i);
+    if(row){row.className='upload-file-row active';row.querySelector('.uf-status').textContent='↑';}
+
+    const overall=Math.round((i/wavs.length)*100);
+    bar.style.width=overall+'%';
+    pct.textContent=overall+'%';
+    label.textContent=`Upload ${i+1}/${wavs.length} — ${f.name}`;
+
+    try{
+      const fd=new FormData();fd.append('files',f);
+      await fetch(API+'/upload-to?target_dir='+encodeURIComponent(uploadTargetDir),{method:'POST',body:fd});
+      if(row){row.className='upload-file-row done';row.querySelector('.uf-status').textContent='✓';}
+    }catch(err){
+      if(row){row.className='upload-file-row error';row.querySelector('.uf-status').textContent='✗';}
+    }
+  }
+
+  bar.style.width='100%';pct.textContent='100%';label.textContent='Upload terminé ✓';
+  await loadTree();
+
+  // Hide after 2.5s
+  setTimeout(()=>{
+    prog.classList.remove('visible');
+    bar.style.width='0%';pct.textContent='0%';
+    filesList.innerHTML='';
+  },2500);
+}
 
 // ── CAPTIONS ──
-async function loadCaptions(){try{renderCaptions(await(await fetch(API+'/captions')).json());}catch(e){}}
+async function loadCaptions(){
+  try{renderCaptions(await(await fetch(API+'/captions')).json());}catch(e){}
+}
+
 function renderCaptions(caps){
-  document.getElementById('cap-count').textContent=caps.length;selectedCaps.clear();updateCapsDeleteBar();
+  allCapPaths=caps.map(c=>c.path);
+  document.getElementById('cap-count').textContent=caps.length;
+  selectedCaps.clear();updateCapsDeleteBar();
+
+  const allBar=document.getElementById('cap-all-bar');
+  allBar.style.display=caps.length?'flex':'none';
+  updateCapAllBar();
+
   const list=document.getElementById('cap-list');
   if(!caps.length){list.innerHTML='<div class="empty"><div class="empty-icon">📄</div><p>Aucune caption trouvée</p></div>';return;}
   list.innerHTML='';
@@ -585,13 +704,54 @@ function renderCaptions(caps){
     div.innerHTML=`<div class="cap-check"></div><div class="cap-info"><div class="cap-name">${esc(cap.name)}</div><div class="cap-meta">${esc(cap.rel_path)} · ${cap.size_kb} KB</div><div class="cap-preview">${esc(cap.preview)}</div></div><span class="cap-del-btn" title="Supprimer">🗑</span>`;
     div.querySelector('.cap-del-btn').addEventListener('click',async e=>{e.stopPropagation();if(!confirm('Supprimer "'+cap.name+'" ?'))return;await fetch(API+'/file?path='+encodeURIComponent(cap.path),{method:'DELETE'});await loadCaptions();});
     const chk=div.querySelector('.cap-check');
-    chk.addEventListener('click',e=>{e.stopPropagation();if(selectedCaps.has(cap.path)){selectedCaps.delete(cap.path);chk.className='cap-check';chk.textContent='';div.classList.remove('cap-selected');}else{selectedCaps.add(cap.path);chk.className='cap-check checked';chk.textContent='✓';div.classList.add('cap-selected');}updateCapsDeleteBar();});
+    chk.addEventListener('click',e=>{e.stopPropagation();if(selectedCaps.has(cap.path)){selectedCaps.delete(cap.path);chk.className='cap-check';chk.textContent='';div.classList.remove('cap-selected');}else{selectedCaps.add(cap.path);chk.className='cap-check checked';chk.textContent='✓';div.classList.add('cap-selected');}updateCapsDeleteBar();updateCapAllBar();});
     list.appendChild(div);
   });
 }
-function updateCapsDeleteBar(){const b=document.getElementById('caps-del-bar');document.getElementById('caps-del-label').textContent=selectedCaps.size+' caption'+(selectedCaps.size>1?'s':'')+' sélectionnée'+(selectedCaps.size>1?'s':'');b.classList.toggle('visible',selectedCaps.size>0);}
-document.getElementById('btn-delete-caps').addEventListener('click',async()=>{if(!selectedCaps.size)return;if(!confirm('Supprimer les '+selectedCaps.size+' captions ?'))return;await fetch(API+'/delete-many',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({paths:Array.from(selectedCaps)})});selectedCaps.clear();await loadCaptions();});
-document.getElementById('btn-cancel-caps-del').addEventListener('click',()=>{selectedCaps.clear();document.querySelectorAll('.cap-check.checked').forEach(el=>{el.className='cap-check';el.textContent='';});document.querySelectorAll('.cap-item.cap-selected').forEach(el=>el.classList.remove('cap-selected'));updateCapsDeleteBar();});
+
+function updateCapAllBar(){
+  const chk=document.getElementById('cap-all-check');
+  const cnt=document.getElementById('cap-all-count');
+  const t=allCapPaths.length,s=selectedCaps.size;
+  cnt.textContent=s>0?s+'/'+t:t+' captions';
+  chk.className='cap-all-check'+(s===0?'':' checked');
+  chk.textContent=s===0?'':s===t?'✓':'—';
+}
+
+// Select-all captions click
+document.getElementById('cap-all-bar').addEventListener('click',()=>{
+  if(selectedCaps.size===allCapPaths.length){
+    // deselect all
+    selectedCaps.clear();
+    document.querySelectorAll('.cap-check.checked').forEach(el=>{el.className='cap-check';el.textContent='';});
+    document.querySelectorAll('.cap-item.cap-selected').forEach(el=>el.classList.remove('cap-selected'));
+  }else{
+    // select all
+    allCapPaths.forEach(p=>selectedCaps.add(p));
+    document.querySelectorAll('.cap-check').forEach((el,i)=>{el.className='cap-check checked';el.textContent='✓';});
+    document.querySelectorAll('.cap-item').forEach(el=>el.classList.add('cap-selected'));
+  }
+  updateCapsDeleteBar();updateCapAllBar();
+});
+
+function updateCapsDeleteBar(){
+  const b=document.getElementById('caps-del-bar');
+  document.getElementById('caps-del-label').textContent=selectedCaps.size+' caption'+(selectedCaps.size>1?'s':'')+' sélectionnée'+(selectedCaps.size>1?'s':'');
+  b.classList.toggle('visible',selectedCaps.size>0);
+}
+
+document.getElementById('btn-delete-caps').addEventListener('click',async()=>{
+  if(!selectedCaps.size)return;
+  if(!confirm('Supprimer les '+selectedCaps.size+' captions sélectionnées ?'))return;
+  await fetch(API+'/delete-many',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({paths:Array.from(selectedCaps)})});
+  selectedCaps.clear();await loadCaptions();
+});
+document.getElementById('btn-cancel-caps-del').addEventListener('click',()=>{
+  selectedCaps.clear();
+  document.querySelectorAll('.cap-check.checked').forEach(el=>{el.className='cap-check';el.textContent='';});
+  document.querySelectorAll('.cap-item.cap-selected').forEach(el=>el.classList.remove('cap-selected'));
+  updateCapsDeleteBar();updateCapAllBar();
+});
 document.getElementById('btn-refresh-caps').addEventListener('click',loadCaptions);
 
 // ── START ──
