@@ -2,6 +2,7 @@
 ACE-Step Captioner — app.py
 Supports WAV, MP3, FLAC, OGG, AIFF, M4A.
 Heavy inference runs in a separate Process via ProcessPoolExecutor.
+Torch cu124 — compatible with NVIDIA driver >= 550 (RunPod RTX 4090, A100, H100, L40S).
 """
 import os, sys, json, asyncio, shutil, subprocess, time, zipfile, io
 from pathlib import Path
@@ -195,6 +196,18 @@ async def upload_to(target_dir: str, files: list[UploadFile] = File(...)):
 
 # ── MODEL SETUP ───────────────────────────────────────────────────────────────
 
+def check_driver():
+    """Returns (ok, driver_version, cuda_version) — fails fast if driver too old."""
+    r = subprocess.run(['nvidia-smi', '--query-gpu=driver_version',
+                        '--format=csv,noheader'], capture_output=True, text=True)
+    version = r.stdout.strip().split('\n')[0].strip()
+    try:
+        major = int(version.split('.')[0])
+        ok = major >= 550  # minimum for CUDA 12.4 / cu124
+    except Exception:
+        ok, major = False, 0
+    return ok, version
+
 def models_present():
     for path in [TRANSCRIBER_PATH, CAPTIONER_PATH]:
         if not os.path.exists(path):
@@ -231,7 +244,9 @@ def download_model_aria2(repo_id: str, local_dir: str):
 def install_deps():
     log("📦 Installation des dépendances...")
     pkgs = [
-        ['torchvision==0.26.0', '--index-url', 'https://download.pytorch.org/whl/cu130'],
+        # cu124 = CUDA 12.4 — compatible driver >= 550 (RTX 4090, A100, H100, L40S on RunPod)
+        ['torch==2.5.1', 'torchvision==0.20.1',
+         '--index-url', 'https://download.pytorch.org/whl/cu124'],
         ['transformers==5.5.3'], ['accelerate'], ['optimum-quanto==0.2.4'],
         ['qwen_omni_utils'], ['librosa==0.11.0'], ['soundfile'],
         ['sentencepiece'], ['scipy==1.12.0'], ['pydub'],
@@ -245,18 +260,32 @@ def install_deps():
 async def download_and_load_models():
     state["status"] = "downloading"
     state["models_loading"] = True
+
+    # Driver check first — fail fast before wasting time downloading
+    ok, driver_ver = check_driver()
+    if not ok:
+        msg = f"❌ Driver NVIDIA trop ancien ({driver_ver}) — minimum requis : 550.x (CUDA 12.4). Changez de pod."
+        log(msg, "error")
+        state["status"] = "error"
+        state["models_loading"] = False
+        return
+
+    log(f"✅ Driver OK : {driver_ver}")
     install_deps()
+
     subprocess.run(['pkill', '-9', 'aria2c'], capture_output=True)
     await asyncio.sleep(1)
     subprocess.Popen(['aria2c', '--enable-rpc', '--rpc-listen-all=true',
                       '--rpc-allow-origin-all=true', '--max-concurrent-downloads=6', '-D'])
     await asyncio.sleep(2)
+
     if not models_present():
         log("📦 Téléchargement des modèles ACE-Step...")
         download_model_aria2('ACE-Step/acestep-transcriber', TRANSCRIBER_PATH)
         download_model_aria2('ACE-Step/acestep-captioner',   CAPTIONER_PATH)
     else:
         log("✅ Modèles déjà présents")
+
     state["status"] = "loading"
     log("🔄 Chargement des modèles en mémoire…")
     loop = asyncio.get_event_loop()
@@ -293,14 +322,7 @@ def _worker_load_models():
 
 
 def _load_audio(audio_path: str) -> tuple:
-    """
-    Load any supported audio format to a float32 mono numpy array at TARGET_SR.
-    Uses soundfile for lossless formats, falls back to librosa (which uses ffmpeg/pydub)
-    for compressed formats like MP3, M4A, OGG.
-    """
     import numpy as np, librosa
-    ext = Path(audio_path).suffix.lower()
-    # librosa handles everything via audioread/ffmpeg — use it universally
     audio_data, sr = librosa.load(audio_path, sr=TARGET_SR, mono=True, dtype=np.float32)
     return audio_data, TARGET_SR
 
@@ -386,7 +408,6 @@ def _worker_process_file(audio_path: str, output_dir: str, preset_key: str) -> d
 
         analysis = _worker_analyze(audio_path)
 
-        # Universal audio loading — works for WAV, MP3, FLAC, OGG, AIFF, M4A
         audio_data, sr = _load_audio(audio_path)
 
         start_sample = _find_drop(audio_data, TARGET_SR, threshold_db, min_skip, skip_ratio)
