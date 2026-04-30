@@ -65,38 +65,33 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:0
 .btn.ghost{background:transparent;border-color:transparent;color:var(--text3);}
 .btn.ghost:hover:not(:disabled){background:var(--surface2);color:var(--text2);}
 
+/* ── EXT BADGE ── */
+.ext-badge{
+  font-size:8px;font-weight:600;letter-spacing:.3px;text-transform:uppercase;
+  padding:1px 4px;border-radius:3px;flex-shrink:0;
+  background:var(--surface2);border:1px solid var(--border2);color:var(--text3);
+}
+.ext-badge.mp3{background:#1a1a2a;border-color:#4a4a8a;color:#8a8acf;}
+.ext-badge.flac{background:#0e1e18;border-color:#2a6a4a;color:#4a9e6f;}
+.ext-badge.ogg{background:#1a1a10;border-color:#6a6a2a;color:#9e9e4a;}
+.ext-badge.aiff,.ext-badge.aif{background:#1e1a10;border-color:#6a4a2a;color:#c48a4a;}
+.ext-badge.m4a{background:#1a100e;border-color:#6a2a2a;color:#c44a4a;}
+.ext-badge.wav{background:var(--surface2);border-color:var(--border2);color:var(--text3);}
+
 /* ── UPLOAD PROGRESS ── */
-.upload-progress{
-  display:none;
-  margin:0 10px 8px;
-  background:var(--surface);border:1px solid var(--border);
-  border-radius:var(--r);overflow:hidden;
-}
+.upload-progress{display:none;margin:0 10px 6px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;}
 .upload-progress.visible{display:block;}
-.upload-progress-head{
-  padding:6px 9px 4px;
-  display:flex;align-items:center;justify-content:space-between;
-}
+.upload-progress-head{padding:6px 9px 4px;display:flex;align-items:center;justify-content:space-between;}
 .upload-progress-label{font-size:10px;color:var(--text2);}
 .upload-progress-pct{font-size:10px;color:var(--accent);font-weight:500;}
 .upload-bar-wrap{height:3px;background:var(--border);}
-.upload-bar-fill{
-  height:100%;background:var(--accent);width:0%;
-  transition:width .2s ease;
-}
-.upload-files-list{
-  padding:4px 9px 6px;
-  max-height:80px;overflow-y:auto;
-}
+.upload-bar-fill{height:100%;background:var(--accent);width:0%;transition:width .2s ease;}
+.upload-files-list{padding:4px 9px 6px;max-height:80px;overflow-y:auto;}
 .upload-files-list::-webkit-scrollbar{width:2px;}
 .upload-files-list::-webkit-scrollbar-thumb{background:var(--border2);}
-.upload-file-row{
-  display:flex;align-items:center;gap:6px;
-  padding:2px 0;font-size:10px;color:var(--text3);
-}
-.upload-file-row .uf-icon{font-size:10px;flex-shrink:0;}
+.upload-file-row{display:flex;align-items:center;gap:6px;padding:2px 0;font-size:10px;color:var(--text3);}
 .upload-file-row .uf-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.upload-file-row .uf-status{flex-shrink:0;font-size:10px;}
+.upload-file-row .uf-status{flex-shrink:0;}
 .upload-file-row.done .uf-name{color:var(--green);}
 .upload-file-row.done .uf-status{color:var(--green);}
 .upload-file-row.active .uf-name{color:var(--accent);}
@@ -104,18 +99,18 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:0
 .upload-file-row.error .uf-name{color:var(--red);}
 
 /* ── PRESET ── */
-.preset-section{margin:0 10px 8px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;}
-.preset-label{font-size:9px;letter-spacing:.5px;text-transform:uppercase;color:var(--text3);padding:6px 9px 4px;font-weight:500;}
+.preset-section{margin:0 10px 6px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;}
+.preset-label{font-size:9px;letter-spacing:.5px;text-transform:uppercase;color:var(--text3);padding:5px 9px 3px;font-weight:500;}
 .preset-tabs{display:flex;border-top:1px solid var(--border);}
-.preset-tab{flex:1;padding:7px 6px;text-align:center;cursor:pointer;font-size:10px;color:var(--text3);transition:all .15s;border-right:1px solid var(--border);user-select:none;line-height:1.3;}
+.preset-tab{flex:1;padding:6px 5px;text-align:center;cursor:pointer;font-size:10px;color:var(--text3);transition:all .15s;border-right:1px solid var(--border);user-select:none;line-height:1.3;}
 .preset-tab:last-child{border-right:none;}
 .preset-tab:hover{background:var(--surface2);color:var(--text2);}
 .preset-tab.active{background:var(--accent-l);color:var(--accent);border-bottom:2px solid var(--accent);}
-.preset-tab .pt-icon{font-size:14px;display:block;margin-bottom:2px;}
-.preset-tab .pt-name{font-weight:500;display:block;}
+.preset-tab .pt-icon{font-size:13px;display:block;margin-bottom:1px;}
+.preset-tab .pt-name{font-weight:500;display:block;font-size:10px;}
 .preset-tab .pt-desc{font-size:9px;color:var(--text3);display:block;margin-top:1px;}
 .preset-tab.active .pt-desc{color:var(--accent);opacity:.7;}
-.preset-info{padding:5px 9px;background:var(--surface2);border-top:1px solid var(--border);font-size:10px;color:var(--text3);display:flex;gap:10px;flex-wrap:wrap;}
+.preset-info{padding:4px 9px;background:var(--surface2);border-top:1px solid var(--border);font-size:10px;color:var(--text3);display:flex;gap:9px;flex-wrap:wrap;}
 .preset-info b{color:var(--text2);}
 
 /* ── BARS ── */
@@ -125,12 +120,9 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:0
 .sa-check.checked{background:var(--accent);}
 .sa-label{font-size:10px;color:var(--accent);font-weight:500;flex:1;}
 .sa-count{font-size:10px;color:var(--accent);}
-
 .delete-bar{display:none;align-items:center;gap:6px;padding:4px 7px;background:var(--red-l);border:1px solid var(--red);border-radius:var(--r);margin-bottom:6px;}
 .delete-bar.visible{display:flex;}
 .delete-bar>span{flex:1;font-size:10px;color:var(--red);}
-
-/* Caption select-all + delete-all bars */
 .cap-all-bar{display:flex;align-items:center;gap:6px;padding:4px 7px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);margin-bottom:6px;cursor:pointer;user-select:none;}
 .cap-all-bar:hover{border-color:var(--border2);}
 .cap-all-check{width:12px;height:12px;border:1.5px solid var(--border2);border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:7px;color:#fff;background:var(--surface);flex-shrink:0;}
@@ -165,13 +157,13 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:0
 .ctx-item.danger:hover{background:var(--red-l);}
 .ctx-sep{height:1px;background:var(--border);margin:3px 0;}
 
-/* ── DROPZONE ── */
-.dropzone{margin:10px 10px 0;border:1.5px dashed var(--border2);border-radius:var(--r);padding:16px 14px;text-align:center;cursor:pointer;transition:all .2s;background:var(--surface);}
+.dropzone{margin:10px 10px 0;border:1.5px dashed var(--border2);border-radius:var(--r);padding:14px;text-align:center;cursor:pointer;transition:all .2s;background:var(--surface);}
 .dropzone:hover,.dropzone.drag-over{border-color:var(--accent);background:var(--accent-l);}
-.dropzone-icon{font-size:18px;margin-bottom:4px;}
+.dropzone-icon{font-size:18px;margin-bottom:3px;}
 .dropzone p{color:var(--text2);font-size:11px;line-height:1.5;}
 .dropzone p strong{color:var(--accent);}
 .dropzone-target{font-size:10px;color:var(--text3);margin-top:2px;}
+.dropzone-formats{font-size:9px;color:var(--text3);margin-top:3px;letter-spacing:.3px;}
 
 .queue-section{padding:6px 10px 6px;flex:1;overflow-y:auto;}
 .queue-section::-webkit-scrollbar{width:3px;}
@@ -259,14 +251,11 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:0
 </header>
 
 <div class="app">
-
-  <!-- LEFT -->
   <div class="left-panel" id="left-panel">
 
-    <!-- WAV FRAME -->
     <div class="wav-frame" id="wav-frame" style="height:55%">
       <div class="frame-head">
-        <div class="frame-title">🎵 WAV <span class="frame-count" id="wav-count">0</span></div>
+        <div class="frame-title">🎵 Audio <span class="frame-count" id="wav-count">0</span></div>
         <div class="frame-actions">
           <button class="btn ghost" id="btn-new-folder">+ Dossier</button>
           <button class="btn ghost" id="btn-refresh">↺</button>
@@ -284,14 +273,13 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:0
           <button class="btn ghost" style="padding:3px 6px" id="btn-cancel-delete">✕</button>
         </div>
         <div id="tree-nodes">
-          <div class="empty"><div class="empty-icon">📂</div><p>Aucun WAV dans<br>/workspace/datasets</p></div>
+          <div class="empty"><div class="empty-icon">📂</div><p>Aucun fichier audio<br>dans /workspace/datasets</p></div>
         </div>
       </div>
     </div>
 
     <div class="v-resizer" id="v-resizer"></div>
 
-    <!-- CAPTIONS FRAME -->
     <div class="cap-frame">
       <div class="frame-head">
         <div class="frame-title">📄 Captions <span class="frame-count" id="cap-count">0</span></div>
@@ -300,13 +288,11 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:0
         </div>
       </div>
       <div class="frame-body">
-        <!-- Select all captions -->
         <div class="cap-all-bar" id="cap-all-bar" style="display:none">
           <div class="cap-all-check" id="cap-all-check"></div>
           <span class="cap-all-label">Tout sélectionner</span>
           <span style="font-size:10px;color:var(--text3)" id="cap-all-count"></span>
         </div>
-        <!-- Delete selected captions -->
         <div class="caps-del-bar" id="caps-del-bar">
           <span id="caps-del-label"></span>
           <button class="btn danger" style="font-size:10px;padding:3px 7px" id="btn-delete-caps">🗑 Supprimer</button>
@@ -317,44 +303,38 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:0
         </div>
       </div>
     </div>
-
   </div>
 
   <div class="h-resizer" id="h-resizer-left"></div>
 
-  <!-- MIDDLE -->
   <div class="middle" id="middle-panel">
     <div class="panel-head" style="background:var(--surface)">
       <span class="panel-title">File d'attente</span>
       <span id="queue-count" style="font-size:10px;color:var(--text3)">0 fichier</span>
     </div>
 
-    <!-- DROPZONE -->
     <div class="dropzone" id="dropzone">
-      <input type="file" id="file-input" multiple accept=".wav" style="display:none">
+      <input type="file" id="file-input" multiple
+        accept=".wav,.mp3,.flac,.ogg,.aiff,.aif,.m4a" style="display:none">
       <div class="dropzone-icon">⬆️</div>
-      <p><strong>Glisser des WAV ici</strong><br>ou cliquer pour uploader</p>
+      <p><strong>Glisser des fichiers audio ici</strong><br>ou cliquer pour uploader</p>
       <div class="dropzone-target" id="drop-target-label">→ /workspace/datasets/</div>
+      <div class="dropzone-formats">WAV · MP3 · FLAC · OGG · AIFF · M4A</div>
     </div>
 
-    <!-- UPLOAD PROGRESS -->
     <div class="upload-progress" id="upload-progress">
       <div class="upload-progress-head">
         <span class="upload-progress-label" id="upload-label">Upload en cours…</span>
         <span class="upload-progress-pct" id="upload-pct">0%</span>
       </div>
-      <div class="upload-bar-wrap">
-        <div class="upload-bar-fill" id="upload-bar-fill"></div>
-      </div>
+      <div class="upload-bar-wrap"><div class="upload-bar-fill" id="upload-bar-fill"></div></div>
       <div class="upload-files-list" id="upload-files-list"></div>
     </div>
 
-    <!-- QUEUE -->
     <div class="queue-section" id="queue-list">
-      <div class="empty"><div class="empty-icon">☑️</div><p>Sélectionnez des WAV à gauche</p></div>
+      <div class="empty"><div class="empty-icon">☑️</div><p>Sélectionnez des fichiers audio à gauche</p></div>
     </div>
 
-    <!-- PRESET -->
     <div class="preset-section">
       <div class="preset-label">🎛 Preset d'analyse</div>
       <div class="preset-tabs" id="preset-tabs">
@@ -377,13 +357,11 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:0
       <div class="preset-info" id="preset-info"></div>
     </div>
 
-    <!-- OUTPUT DIR -->
     <div class="output-section">
       <div class="output-label">Dossier de sortie</div>
       <input class="output-input" type="text" id="output-dir" value="/workspace/datasets/captions">
     </div>
 
-    <!-- ACTIONS -->
     <div class="actions">
       <div class="progress-wrap">
         <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
@@ -399,7 +377,6 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:0
 
   <div class="h-resizer" id="h-resizer-right"></div>
 
-  <!-- RIGHT LOG -->
   <div class="right-panel" id="right-panel">
     <div class="panel-head">
       <span class="panel-title">Journal</span>
@@ -412,15 +389,18 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:0
       <div class="stat"><div class="stat-val" id="stat-total">0</div><div class="stat-lbl">Total</div></div>
     </div>
   </div>
-
 </div>
 
 <script>
 const API='';
-let treeData=[],allWavPaths=[],selectedFiles=new Set(),selectedCaps=new Set();
+const AUDIO_EXTS=['.wav','.mp3','.flac','.ogg','.aiff','.aif','.m4a'];
+// Icon per format
+const EXT_ICON={wav:'🎵',mp3:'🎵',flac:'💎',ogg:'🔊',aiff:'🎵',aif:'🎵',m4a:'🎵'};
+
+let treeData=[],allAudioPaths=[],selectedFiles=new Set(),selectedCaps=new Set();
 let currentCtxNode=null,currentStatus='idle',uploadTargetDir='/workspace/datasets';
 const openDirs={};
-let allCapPaths=[];  // flat list of all caption paths for select-all
+let allCapPaths=[];
 
 const PRESETS={
   generic:{label:'Générique',threshold_db:-40,min_skip:0,max_seconds:120,skip_ratio:0},
@@ -430,6 +410,7 @@ const PRESETS={
 let currentPreset='generic';
 
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function getExt(name){return name.split('.').pop().toLowerCase();}
 
 // ── RESIZERS ──
 function makeHResizer(id,leftEl,rightEl,leftFixed){
@@ -460,11 +441,7 @@ function updatePresetInfo(){
   const p=PRESETS[currentPreset];
   const skipStr=p.min_skip>0?p.min_skip+'s min':'aucun';
   const fallStr=p.skip_ratio>0?Math.round(p.skip_ratio*100)+'%':'désactivé';
-  document.getElementById('preset-info').innerHTML=`
-    <span>⏱ <b>${p.max_seconds}s</b></span>
-    <span>🔊 <b>${p.threshold_db}dB</b></span>
-    <span>⏭ skip <b>${skipStr}</b></span>
-    <span>↩ fallback <b>${fallStr}</b></span>`;
+  document.getElementById('preset-info').innerHTML=`<span>⏱ <b>${p.max_seconds}s</b></span><span>🔊 <b>${p.threshold_db}dB</b></span><span>⏭ <b>${skipStr}</b></span><span>↩ <b>${fallStr}</b></span>`;
 }
 document.getElementById('preset-tabs').addEventListener('click',e=>{
   const tab=e.target.closest('.preset-tab');if(!tab)return;
@@ -473,7 +450,7 @@ document.getElementById('preset-tabs').addEventListener('click',e=>{
 });
 updatePresetInfo();
 
-// ── ADAPTIVE POLL ──
+// ── POLL ──
 let pollTimer=null;
 function startPoll(fast){if(pollTimer)clearInterval(pollTimer);pollTimer=setInterval(pollStatus,fast?500:2000);}
 async function pollStatus(){try{updateStatus(await(await fetch(API+'/status')).json());}catch(e){}}
@@ -504,15 +481,11 @@ function updateStatus(d){
   document.getElementById('stat-total').textContent=d.total_files;
 
   const btnStart=document.getElementById('btn-start');
-  if(d.status==='running'){
-    btnStart.textContent='⏳ Captioning…';btnStart.className='btn running-state';btnStart.disabled=true;
-  }else{
-    btnStart.textContent='▶ Lancer';btnStart.className='btn primary';
-    btnStart.disabled=!d.models_ready||selectedFiles.size===0;
-  }
+  if(d.status==='running'){btnStart.textContent='⏳ Captioning…';btnStart.className='btn running-state';btnStart.disabled=true;}
+  else{btnStart.textContent='▶ Lancer';btnStart.className='btn primary';btnStart.disabled=!d.models_ready||selectedFiles.size===0;}
   document.getElementById('btn-download').disabled=d.status!=='done';
-  appendLog(d.log);
 
+  appendLog(d.log);
   if(d.status==='running'&&d.current_file){
     document.querySelectorAll('.queue-item').forEach(el=>{
       const active=el.dataset.name===d.current_file;el.classList.toggle('active',active);
@@ -541,20 +514,20 @@ function appendLog(logs){
 }
 
 // ── TREE ──
-function collectWavPaths(nodes){let r=[];for(const n of nodes){if(n.type==='file')r.push(n.path);else if(n.children)r=r.concat(collectWavPaths(n.children));}return r;}
-async function loadTree(){try{treeData=await(await fetch(API+'/tree')).json();allWavPaths=collectWavPaths(treeData);renderTree();}catch(e){}}
+function collectAudioPaths(nodes){let r=[];for(const n of nodes){if(n.type==='file')r.push(n.path);else if(n.children)r=r.concat(collectAudioPaths(n.children));}return r;}
+async function loadTree(){try{treeData=await(await fetch(API+'/tree')).json();allAudioPaths=collectAudioPaths(treeData);renderTree();}catch(e){}}
 
 function renderTree(){
   const c=document.getElementById('tree-nodes'),sa=document.getElementById('select-all-bar');
-  c.innerHTML='';document.getElementById('wav-count').textContent=allWavPaths.length;
-  if(!allWavPaths.length){c.innerHTML='<div class="empty"><div class="empty-icon">📂</div><p>Aucun WAV dans<br>/workspace/datasets</p></div>';sa.style.display='none';updateDeleteBar();return;}
+  c.innerHTML='';document.getElementById('wav-count').textContent=allAudioPaths.length;
+  if(!allAudioPaths.length){c.innerHTML='<div class="empty"><div class="empty-icon">📂</div><p>Aucun fichier audio<br>dans /workspace/datasets</p></div>';sa.style.display='none';updateDeleteBar();return;}
   sa.style.display='flex';updateSelectAllBar();updateDeleteBar();
   treeData.forEach(n=>c.appendChild(buildNode(n)));
 }
 function updateSelectAllBar(){
   const sc=document.getElementById('sa-check'),sn=document.getElementById('sa-count');
-  const t=allWavPaths.length,s=selectedFiles.size;
-  sn.textContent=s>0?s+'/'+t:t+' WAV';
+  const t=allAudioPaths.length,s=selectedFiles.size;
+  sn.textContent=s>0?s+'/'+t:t+' fichiers';
   sc.className='sa-check'+(s===0?'':' checked');sc.textContent=s===0?'':s===t?'✓':'—';
 }
 function updateDeleteBar(){
@@ -562,7 +535,7 @@ function updateDeleteBar(){
   document.getElementById('delete-bar').classList.toggle('visible',selectedFiles.size>0);
 }
 document.getElementById('select-all-bar').addEventListener('click',()=>{
-  if(selectedFiles.size===allWavPaths.length)selectedFiles.clear();else allWavPaths.forEach(p=>selectedFiles.add(p));
+  if(selectedFiles.size===allAudioPaths.length)selectedFiles.clear();else allAudioPaths.forEach(p=>selectedFiles.add(p));
   renderTree();updateQueue();
 });
 
@@ -570,7 +543,7 @@ function buildNode(node){
   const wrap=document.createElement('div');
   if(node.type==='dir'){
     wrap.className='tree-node tree-dir';
-    const dp=collectWavPaths(node.children||[]);
+    const dp=collectAudioPaths(node.children||[]);
     const sc=dp.filter(p=>selectedFiles.has(p)).length,allS=dp.length>0&&sc===dp.length,partS=sc>0&&!allS;
     const isOpen=openDirs[node.path]!==false;if(isOpen)wrap.classList.add('open');
     const item=document.createElement('div');item.className='tree-item';
@@ -584,8 +557,14 @@ function buildNode(node){
     wrap.appendChild(item);wrap.appendChild(ch);
   }else{
     wrap.className='tree-node tree-file';const sel=selectedFiles.has(node.path);
+    const ext=node.ext||getExt(node.name);
     const item=document.createElement('div');item.className='tree-item'+(sel?' selected':'');item.dataset.path=node.path;
-    item.innerHTML=`<div class="tree-check${sel?' checked':''}">${sel?'✓':''}</div><span class="tree-icon">🎵</span><span class="tree-name">${esc(node.name)}</span><span class="tree-size">${node.size_mb}MB</span>`;
+    item.innerHTML=`
+      <div class="tree-check${sel?' checked':''}">${sel?'✓':''}</div>
+      <span class="tree-icon">${EXT_ICON[ext]||'🎵'}</span>
+      <span class="tree-name">${esc(node.name)}</span>
+      <span class="ext-badge ${ext}">${ext}</span>
+      <span class="tree-size" style="margin-left:3px">${node.size_mb}MB</span>`;
     item.addEventListener('click',()=>{if(selectedFiles.has(node.path))selectedFiles.delete(node.path);else selectedFiles.add(node.path);renderTree();updateQueue();});
     item.addEventListener('contextmenu',e=>showCtx(e,node));wrap.appendChild(item);
   }
@@ -595,12 +574,12 @@ function buildNode(node){
 function updateQueue(){
   const list=document.getElementById('queue-list'),count=document.getElementById('queue-count');
   count.textContent=selectedFiles.size+' fichier'+(selectedFiles.size>1?'s':'');
-  if(!selectedFiles.size){list.innerHTML='<div class="empty"><div class="empty-icon">☑️</div><p>Sélectionnez des WAV à gauche</p></div>';document.getElementById('btn-start').disabled=true;updateDeleteBar();return;}
+  if(!selectedFiles.size){list.innerHTML='<div class="empty"><div class="empty-icon">☑️</div><p>Sélectionnez des fichiers audio à gauche</p></div>';document.getElementById('btn-start').disabled=true;updateDeleteBar();return;}
   list.innerHTML='';
   selectedFiles.forEach(path=>{
-    const name=path.split('/').pop(),div=document.createElement('div');
+    const name=path.split('/').pop(),ext=getExt(name),div=document.createElement('div');
     div.className='queue-item';div.dataset.name=name;
-    div.innerHTML=`<span class="qi-icon" style="font-size:12px;flex-shrink:0">○</span><span class="queue-name">${esc(name)}</span><span style="font-size:10px;color:var(--text3);cursor:pointer;flex-shrink:0" class="rm">✕</span>`;
+    div.innerHTML=`<span class="qi-icon" style="font-size:12px;flex-shrink:0">○</span><span class="queue-name">${esc(name)}</span><span class="ext-badge ${ext}" style="margin-right:2px">${ext}</span><span style="font-size:10px;color:var(--text3);cursor:pointer;flex-shrink:0" class="rm">✕</span>`;
     div.querySelector('.rm').addEventListener('click',e=>{e.stopPropagation();selectedFiles.delete(path);renderTree();updateQueue();});
     list.appendChild(div);
   });
@@ -609,13 +588,13 @@ function updateQueue(){
 }
 
 document.getElementById('btn-delete-selection').addEventListener('click',async()=>{
-  if(!selectedFiles.size)return;if(!confirm('Supprimer définitivement les '+selectedFiles.size+' fichiers WAV ?'))return;
+  if(!selectedFiles.size)return;if(!confirm('Supprimer définitivement les '+selectedFiles.size+' fichiers sélectionnés ?'))return;
   await fetch(API+'/delete-many',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({paths:Array.from(selectedFiles)})});
   selectedFiles.clear();await loadTree();updateQueue();
 });
 document.getElementById('btn-cancel-delete').addEventListener('click',()=>{selectedFiles.clear();renderTree();updateQueue();});
 
-// ── CTX MENU ──
+// ── CTX ──
 function showCtx(e,node){e.preventDefault();currentCtxNode=node;const m=document.getElementById('ctx-menu');m.style.left=e.clientX+'px';m.style.top=e.clientY+'px';m.classList.add('visible');document.getElementById('ctx-select').style.display=node.type==='file'?'flex':'none';}
 document.addEventListener('click',()=>document.getElementById('ctx-menu').classList.remove('visible'));
 document.getElementById('ctx-rename').addEventListener('click',async()=>{if(!currentCtxNode)return;const n=prompt('Nouveau nom :',currentCtxNode.name);if(!n||n===currentCtxNode.name)return;await fetch(API+'/rename',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({path:currentCtxNode.path,new_name:n})});await loadTree();});
@@ -633,10 +612,9 @@ dropzone.addEventListener('dragleave',()=>dropzone.classList.remove('drag-over')
 dropzone.addEventListener('drop',e=>{e.preventDefault();dropzone.classList.remove('drag-over');uploadFiles(Array.from(e.dataTransfer.files));});
 
 async function uploadFiles(files){
-  const wavs=files.filter(f=>f.name.toLowerCase().endsWith('.wav'));
-  if(!wavs.length)return;
+  const audio=files.filter(f=>AUDIO_EXTS.some(e=>f.name.toLowerCase().endsWith(e)));
+  if(!audio.length)return;
 
-  // Show progress UI
   const prog=document.getElementById('upload-progress');
   const bar=document.getElementById('upload-bar-fill');
   const pct=document.getElementById('upload-pct');
@@ -644,24 +622,19 @@ async function uploadFiles(files){
   const filesList=document.getElementById('upload-files-list');
 
   prog.classList.add('visible');
-  filesList.innerHTML=wavs.map((f,i)=>`
+  filesList.innerHTML=audio.map((f,i)=>`
     <div class="upload-file-row" id="ufr-${i}">
-      <span class="uf-icon">🎵</span>
       <span class="uf-name">${esc(f.name)}</span>
       <span class="uf-status">—</span>
     </div>`).join('');
 
-  // Upload one by one to show per-file progress
-  for(let i=0;i<wavs.length;i++){
-    const f=wavs[i];
+  for(let i=0;i<audio.length;i++){
+    const f=audio[i];
     const row=document.getElementById('ufr-'+i);
     if(row){row.className='upload-file-row active';row.querySelector('.uf-status').textContent='↑';}
-
-    const overall=Math.round((i/wavs.length)*100);
-    bar.style.width=overall+'%';
-    pct.textContent=overall+'%';
-    label.textContent=`Upload ${i+1}/${wavs.length} — ${f.name}`;
-
+    bar.style.width=Math.round((i/audio.length)*100)+'%';
+    pct.textContent=Math.round((i/audio.length)*100)+'%';
+    label.textContent=`Upload ${i+1}/${audio.length} — ${f.name}`;
     try{
       const fd=new FormData();fd.append('files',f);
       await fetch(API+'/upload-to?target_dir='+encodeURIComponent(uploadTargetDir),{method:'POST',body:fd});
@@ -673,29 +646,18 @@ async function uploadFiles(files){
 
   bar.style.width='100%';pct.textContent='100%';label.textContent='Upload terminé ✓';
   await loadTree();
-
-  // Hide after 2.5s
-  setTimeout(()=>{
-    prog.classList.remove('visible');
-    bar.style.width='0%';pct.textContent='0%';
-    filesList.innerHTML='';
-  },2500);
+  setTimeout(()=>{prog.classList.remove('visible');bar.style.width='0%';pct.textContent='0%';filesList.innerHTML='';},2500);
 }
 
 // ── CAPTIONS ──
-async function loadCaptions(){
-  try{renderCaptions(await(await fetch(API+'/captions')).json());}catch(e){}
-}
-
+async function loadCaptions(){try{renderCaptions(await(await fetch(API+'/captions')).json());}catch(e){}}
 function renderCaptions(caps){
   allCapPaths=caps.map(c=>c.path);
   document.getElementById('cap-count').textContent=caps.length;
   selectedCaps.clear();updateCapsDeleteBar();
-
   const allBar=document.getElementById('cap-all-bar');
   allBar.style.display=caps.length?'flex':'none';
   updateCapAllBar();
-
   const list=document.getElementById('cap-list');
   if(!caps.length){list.innerHTML='<div class="empty"><div class="empty-icon">📄</div><p>Aucune caption trouvée</p></div>';return;}
   list.innerHTML='';
@@ -708,41 +670,32 @@ function renderCaptions(caps){
     list.appendChild(div);
   });
 }
-
 function updateCapAllBar(){
-  const chk=document.getElementById('cap-all-check');
-  const cnt=document.getElementById('cap-all-count');
+  const chk=document.getElementById('cap-all-check'),cnt=document.getElementById('cap-all-count');
   const t=allCapPaths.length,s=selectedCaps.size;
   cnt.textContent=s>0?s+'/'+t:t+' captions';
   chk.className='cap-all-check'+(s===0?'':' checked');
   chk.textContent=s===0?'':s===t?'✓':'—';
 }
-
-// Select-all captions click
 document.getElementById('cap-all-bar').addEventListener('click',()=>{
   if(selectedCaps.size===allCapPaths.length){
-    // deselect all
     selectedCaps.clear();
     document.querySelectorAll('.cap-check.checked').forEach(el=>{el.className='cap-check';el.textContent='';});
     document.querySelectorAll('.cap-item.cap-selected').forEach(el=>el.classList.remove('cap-selected'));
   }else{
-    // select all
     allCapPaths.forEach(p=>selectedCaps.add(p));
-    document.querySelectorAll('.cap-check').forEach((el,i)=>{el.className='cap-check checked';el.textContent='✓';});
+    document.querySelectorAll('.cap-check').forEach(el=>{el.className='cap-check checked';el.textContent='✓';});
     document.querySelectorAll('.cap-item').forEach(el=>el.classList.add('cap-selected'));
   }
   updateCapsDeleteBar();updateCapAllBar();
 });
-
 function updateCapsDeleteBar(){
   const b=document.getElementById('caps-del-bar');
   document.getElementById('caps-del-label').textContent=selectedCaps.size+' caption'+(selectedCaps.size>1?'s':'')+' sélectionnée'+(selectedCaps.size>1?'s':'');
   b.classList.toggle('visible',selectedCaps.size>0);
 }
-
 document.getElementById('btn-delete-caps').addEventListener('click',async()=>{
-  if(!selectedCaps.size)return;
-  if(!confirm('Supprimer les '+selectedCaps.size+' captions sélectionnées ?'))return;
+  if(!selectedCaps.size)return;if(!confirm('Supprimer les '+selectedCaps.size+' captions sélectionnées ?'))return;
   await fetch(API+'/delete-many',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({paths:Array.from(selectedCaps)})});
   selectedCaps.clear();await loadCaptions();
 });
@@ -768,7 +721,6 @@ document.getElementById('btn-start').addEventListener('click',async()=>{
 document.getElementById('btn-download').addEventListener('click',()=>{window.location.href=API+'/download-captions';});
 document.getElementById('btn-clear-queue').addEventListener('click',()=>{selectedFiles.clear();renderTree();updateQueue();});
 
-// ── INIT ──
 (async()=>{await loadTree();await loadCaptions();startPoll(false);setInterval(loadCaptions,15000);})();
 </script>
 </body>
