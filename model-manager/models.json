@@ -1708,6 +1708,13 @@
                 "filename": "ace_step_v1_3.5b.safetensors",
                 "category": "diffusion_models",
                 "_size": 0
+            },
+            {
+                "name": "acestep_v1.5_xl_turbo_bf16.safetensors",
+                "url": "https://huggingface.co/Comfy-Org/ace_step_1.5_ComfyUI_files/resolve/main/split_files/diffusion_models/acestep_v1.5_xl_turbo_bf16.safetensors",
+                "path": "diffusion_models",
+                "category": "diffusion_models",
+                "filename": "acestep_v1.5_xl_turbo_bf16.safetensors"
             }
         ],
         "checkpoints": [],
