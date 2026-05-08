@@ -1718,7 +1718,7 @@
             },
             {
                 "name": "ace_step_1.5_base_aio.safetensors",
-                "url": "https://huggingface.co/ACE-Step/acestep-v15-base/resolve/main/model.safetensors?download=true",
+                "url": "https://huggingface.co/ostris/ace_step_1.5_ComfyUI_files/resolve/main/ace_step_1.5_base_aio.safetensors?download=true",
                 "path": "diffusion_models",
                 "category": "diffusion_models",
                 "filename": "ace_step_1.5_base_aio.safetensors"
