@@ -1735,6 +1735,13 @@
                 "filename": "qwen_1.7b_ace15.safetensors",
                 "_size": 0,
                 "category": "text_encoders"
+            },
+            {
+                "name": "qwen_4b_ace15.safetensors",
+                "url": "https://huggingface.co/Comfy-Org/ace_step_1.5_ComfyUI_files/resolve/main/split_files/text_encoders/qwen_4b_ace15.safetensors",
+                "path": "text_encoders",
+                "category": "text_encoders",
+                "filename": "qwen_4b_ace15.safetensors"
             }
         ],
         "vae": [
