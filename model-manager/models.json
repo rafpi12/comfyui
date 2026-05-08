@@ -1715,6 +1715,13 @@
                 "path": "diffusion_models",
                 "category": "diffusion_models",
                 "filename": "acestep_v1.5_xl_turbo_bf16.safetensors"
+            },
+            {
+                "name": "ace_step_1.5_base_aio.safetensors",
+                "url": "https://huggingface.co/ACE-Step/acestep-v15-base/resolve/main/model.safetensors?download=true",
+                "path": "diffusion_models",
+                "category": "diffusion_models",
+                "filename": "ace_step_1.5_base_aio.safetensors"
             }
         ],
         "checkpoints": [],
