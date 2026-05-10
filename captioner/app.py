@@ -42,6 +42,24 @@ def log(msg: str, level: str = "info"):
     state["log"].append(entry)
     print(f"[{entry['time']}] {msg}")
 
+# ── MOOSEFS CACHE FIX ─────────────────────────────────────
+
+def refresh_dir(path: str):
+    """
+    Force la relecture du répertoire sur MooseFS/network volumes RunPod.
+    MooseFS met en cache les entrées de répertoire côté kernel ; sans ce flush,
+    os.scandir/listdir retourne l'ancien état même si des fichiers ont été créés
+    par un autre processus (aria2, upload FastAPI, JupyterLab...).
+    Stratégie : open(O_RDONLY|O_DIRECTORY) + fsync → invalide le dentry cache
+    pour ce répertoire sans nécessiter de droits root.
+    """
+    try:
+        fd = os.open(path, os.O_RDONLY | os.O_DIRECTORY)
+        os.fsync(fd)
+        os.close(fd)
+    except Exception:
+        pass
+
 # ── FILE MANAGER ──────────────────────────────────────────
 
 def get_tree(base_path: str):
@@ -49,6 +67,7 @@ def get_tree(base_path: str):
     base = Path(base_path)
     if not base.exists():
         return result
+    refresh_dir(str(base))  # flush MooseFS dentry cache avant de lire
     for item in sorted(base.iterdir()):
         if item.name.startswith('.'):
             continue
@@ -124,6 +143,7 @@ def models_present():
     for path in [TRANSCRIBER_PATH, CAPTIONER_PATH]:
         if not os.path.exists(path):
             return False
+        refresh_dir(path)  # flush avant de compter les fichiers
         if len([f for f in os.listdir(path) if f.endswith('.safetensors')]) < 5:
             return False
     return True
@@ -131,6 +151,7 @@ def models_present():
 def download_model_aria2(repo_id: str, local_dir: str):
     import requests
     os.makedirs(local_dir, exist_ok=True)
+    refresh_dir(local_dir)
     if len([f for f in os.listdir(local_dir) if f.endswith('.safetensors')]) >= 5:
         log(f"✅ {repo_id} déjà présent")
         return
@@ -163,8 +184,8 @@ def install_deps():
     # IMPORTANT : torch doit être installé EN PREMIER, avant accelerate et transformers,
     # pour éviter que pip drop accelerate lors d'un changement de version de torch.
     pkgs = [
-        ['torch==2.6.0',       '--index-url', 'https://download.pytorch.org/whl/cu124'],
-        ['torchvision==0.21.0','--index-url', 'https://download.pytorch.org/whl/cu124'],
+        ['torch==2.6.0',        '--index-url', 'https://download.pytorch.org/whl/cu124'],
+        ['torchvision==0.21.0', '--index-url', 'https://download.pytorch.org/whl/cu124'],
         ['transformers==5.5.3'],
         ['accelerate'],
         ['optimum-quanto==0.2.4'],
@@ -370,6 +391,7 @@ async def download_captions():
     output_dir = state["output_dir"]
     if not output_dir or not os.path.exists(output_dir):
         return JSONResponse({"error": "Aucun dossier de sortie"}, status_code=404)
+    refresh_dir(output_dir)  # flush avant de lister les .txt générés
     txts = [f for f in os.listdir(output_dir) if f.endswith('.txt')]
     if not txts:
         return JSONResponse({"error": "Aucune caption générée"}, status_code=404)
