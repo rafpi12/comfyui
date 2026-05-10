@@ -16,6 +16,8 @@ TARGET_SR        = 16000
 MAX_SECONDS      = 60
 HF_TOKEN         = os.environ.get('HF_TOKEN', '')
 
+AUDIO_EXTENSIONS = {'.wav', '.mp3', '.flac', '.aiff', '.aif', '.ogg', '.m4a'}
+
 os.makedirs(DATASETS_DIR, exist_ok=True)
 
 state = {
@@ -78,7 +80,7 @@ def get_tree(base_path: str):
                 "path": str(item),
                 "children": get_tree(str(item)),
             })
-        elif item.suffix.lower() == '.wav':
+        elif item.suffix.lower() in AUDIO_EXTENSIONS:
             size = item.stat().st_size
             result.append({
                 "type": "file",
@@ -143,7 +145,7 @@ def models_present():
     for path in [TRANSCRIBER_PATH, CAPTIONER_PATH]:
         if not os.path.exists(path):
             return False
-        refresh_dir(path)  # flush avant de compter les fichiers
+        refresh_dir(path)
         if len([f for f in os.listdir(path) if f.endswith('.safetensors')]) < 5:
             return False
     return True
@@ -237,7 +239,7 @@ async def download_and_load_models():
     state["models_ready"] = True
     state["models_loading"] = False
     state["status"] = "idle"
-    log("🚀 Prêt — sélectionnez des fichiers WAV et lancez le captioning", "success")
+    log("🚀 Prêt — sélectionnez des fichiers audio et lancez le captioning", "success")
 
 # ── CAPTIONING ────────────────────────────────────────────
 
@@ -290,7 +292,7 @@ def run_qwen_audio(model, other, processor, audio_data, sr, prompt):
     return out.strip()
 
 async def run_captioning():
-    import soundfile as sf, librosa as lb
+    import librosa as lb
     os.environ['PYTORCH_CUDA_ALLOC_CONF'] = 'expandable_segments:True'
     wav_paths  = state["selected_files"]
     output_dir = state["output_dir"]
@@ -310,9 +312,8 @@ async def run_captioning():
         try:
             analysis = analyze_audio(audio_path)
             log(f"   BPM: {analysis['bpm']} | Key: {analysis['keyscale']} | {analysis['timesignature']}/4 | {analysis['duration']}s")
-            audio_data, sr = sf.read(audio_path, dtype='float32')
-            if audio_data.ndim > 1: audio_data = audio_data.mean(axis=1)
-            if sr != TARGET_SR: audio_data = lb.resample(audio_data, orig_sr=sr, target_sr=TARGET_SR)
+            # librosa gère nativement WAV, MP3, FLAC, AIFF, OGG, M4A
+            audio_data, sr = lb.load(audio_path, sr=TARGET_SR, mono=True)
             if len(audio_data) > MAX_SECONDS * TARGET_SR:
                 audio_data = audio_data[:MAX_SECONDS * TARGET_SR]
             log("   📝 Transcription...")
@@ -374,24 +375,24 @@ async def start_captioning(request: Request):
     if state["status"] == "running":
         return JSONResponse({"error": "Captioning déjà en cours"}, status_code=400)
     data = await request.json()
-    wav_paths  = data.get("files", [])
-    output_dir = data.get("output_dir", "")
-    if not wav_paths:
+    audio_paths = data.get("files", [])
+    output_dir  = data.get("output_dir", "")
+    if not audio_paths:
         return JSONResponse({"error": "Aucun fichier sélectionné"}, status_code=400)
     if not output_dir:
         return JSONResponse({"error": "Dossier de sortie non spécifié"}, status_code=400)
-    state["selected_files"] = wav_paths
+    state["selected_files"] = audio_paths
     state["output_dir"]     = output_dir
     state["log"]            = []
     asyncio.create_task(run_captioning())
-    return {"status": "started", "files": len(wav_paths)}
+    return {"status": "started", "files": len(audio_paths)}
 
 @app.get("/download-captions")
 async def download_captions():
     output_dir = state["output_dir"]
     if not output_dir or not os.path.exists(output_dir):
         return JSONResponse({"error": "Aucun dossier de sortie"}, status_code=404)
-    refresh_dir(output_dir)  # flush avant de lister les .txt générés
+    refresh_dir(output_dir)
     txts = [f for f in os.listdir(output_dir) if f.endswith('.txt')]
     if not txts:
         return JSONResponse({"error": "Aucune caption générée"}, status_code=404)
