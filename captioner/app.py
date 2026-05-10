@@ -387,6 +387,53 @@ async def start_captioning(request: Request):
     asyncio.create_task(run_captioning())
     return {"status": "started", "files": len(audio_paths)}
 
+@app.get("/captions")
+async def list_captions():
+    """Liste tous les fichiers .txt dans /workspace/datasets et ses sous-dossiers."""
+    result = []
+    for root, dirs, files in os.walk(DATASETS_DIR):
+        dirs[:] = [d for d in dirs if not d.startswith('.')]
+        refresh_dir(root)
+        for fname in sorted(files):
+            if not fname.endswith('.txt'):
+                continue
+            full = os.path.join(root, fname)
+            rel  = os.path.relpath(full, DATASETS_DIR)
+            size_kb = round(os.path.getsize(full) / 1024, 1)
+            try:
+                preview = Path(full).read_text(encoding='utf-8')[:300]
+            except Exception:
+                preview = ''
+            result.append({
+                "name":     fname,
+                "path":     full,
+                "rel_path": rel,
+                "size_kb":  size_kb,
+                "preview":  preview,
+            })
+    return JSONResponse(result)
+
+@app.post("/delete-many")
+async def delete_many(request: Request):
+    """Supprime une liste de fichiers ou dossiers."""
+    data  = await request.json()
+    paths = data.get("paths", [])
+    deleted, errors = 0, []
+    for p in paths:
+        path = Path(p)
+        if not str(path).startswith(DATASETS_DIR):
+            errors.append(str(path) + " : chemin non autorisé")
+            continue
+        try:
+            if path.is_dir():
+                shutil.rmtree(path)
+            elif path.exists():
+                path.unlink()
+            deleted += 1
+        except Exception as e:
+            errors.append(str(path) + " : " + str(e))
+    return {"deleted": deleted, "errors": errors}
+
 @app.get("/download-captions")
 async def download_captions():
     output_dir = state["output_dir"]
