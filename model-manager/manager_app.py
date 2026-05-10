@@ -23,6 +23,26 @@ FOLDER_MODEL_CATEGORIES = {"prompt_generator", "LLM"}
 # Cache du quota RunPod (récupéré via API au premier appel)
 _workspace_quota_gb = None
 
+# ── MOOSEFS CACHE FIX ─────────────────────────────────────
+
+def refresh_dir(path: str):
+    """
+    Force la relecture du répertoire sur MooseFS/network volumes RunPod.
+    MooseFS met en cache les entrées de répertoire côté kernel ; sans ce flush,
+    os.scandir/listdir retourne l'ancien état même si des fichiers ont été créés
+    par un autre processus (aria2, upload, JupyterLab...).
+    Stratégie : open(O_RDONLY|O_DIRECTORY) + fsync → invalide le dentry cache
+    pour ce répertoire sans nécessiter de droits root.
+    """
+    try:
+        fd = os.open(path, os.O_RDONLY | os.O_DIRECTORY)
+        os.fsync(fd)
+        os.close(fd)
+    except Exception:
+        pass
+
+# ── RUNPOD QUOTA ──────────────────────────────────────────
+
 def fetch_runpod_quota():
     global _workspace_quota_gb
     if _workspace_quota_gb is not None:
@@ -39,7 +59,6 @@ def fetch_runpod_quota():
             timeout=5
         )
         pod = r.json()["data"]["pod"]
-        # Network storage a priorité sur le volume local
         net_vol = pod.get("networkVolume") or {}
         net_size = net_vol.get("size", 0) or 0
         vol_size = pod.get("volumeInGb", 0) or 0
@@ -75,6 +94,7 @@ async def list_subfolders(category: str):
     base = os.path.join(BASE_MODELS_PATH, category)
     subdirs = [""]
     if os.path.exists(base):
+        refresh_dir(base)  # flush MooseFS avant de walker
         for root, dirs, _ in os.walk(base):
             dirs[:] = [d for d in dirs if not d.startswith('.')]
             for d in dirs:
@@ -110,7 +130,6 @@ async def fetch_civitai_name(url: str):
             try:
                 r = requests.head(url, headers=hdr, allow_redirects=True, timeout=8)
                 cd = r.headers.get("Content-Disposition", "")
-                # Extraire le nom de fichier depuis Content-Disposition
                 cd_parts = [p.strip() for p in cd.split(";")]
                 fn = ""
                 for part in cd_parts:
@@ -188,15 +207,19 @@ async def sync_github_endpoint():
 async def scan_disk():
     res = {}
     if os.path.exists(BASE_MODELS_PATH):
+        refresh_dir(BASE_MODELS_PATH)  # flush racine models avant de scanner
         for entry in os.scandir(BASE_MODELS_PATH):
             if entry.is_dir():
                 cat_name = entry.name
+                refresh_dir(entry.path)  # flush chaque catégorie
                 if cat_name in FOLDER_MODEL_CATEGORIES:
                     folders = []
                     for sub in os.scandir(entry.path):
                         if sub.is_dir():
+                            refresh_dir(sub.path)
                             total_size = 0
                             for root, _, filenames in os.walk(sub.path):
+                                refresh_dir(root)
                                 for f in filenames:
                                     try:
                                         total_size += os.path.getsize(os.path.join(root, f))
@@ -206,7 +229,8 @@ async def scan_disk():
                     res[cat_name] = folders
                 else:
                     files = []
-                    for root, _, filenames in os.walk(entry.path):
+                    for root, dirs, filenames in os.walk(entry.path):
+                        refresh_dir(root)  # flush chaque sous-dossier parcouru
                         for f in filenames:
                             if any(f.endswith(ext) for ext in ALLOWED_EXTENSIONS):
                                 rel_path = os.path.relpath(os.path.join(root, f), entry.path)
@@ -242,11 +266,6 @@ async def download(request: Request):
     final_url = url
 
     if is_civitai:
-        # Résoudre la redirection 307 côté Python AVANT de passer à Aria2.
-        # Civitai renvoie une URL Backblaze B2 signée (token temporaire dans la query).
-        # Si Aria2 suit lui-même la redirection, il transmet le header Authorization
-        # sur b2.civitai.com, ce qui invalide le token signé → Error 22.
-        # En résolvant ici, Aria2 appelle directement l'URL signée sans header d'auth.
         try:
             resolve_headers = {
                 "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
@@ -257,14 +276,11 @@ async def download(request: Request):
             if r.status_code in (301, 302, 307, 308) and "location" in r.headers:
                 final_url = r.headers["location"]
             elif r.status_code != 200:
-                # Fallback : token en query param
                 sep = "&" if "?" in url else "?"
                 final_url = f"{url}{sep}token={CIVITAI_TOKEN}"
         except Exception as e:
             return {"status": "error", "message": f"Impossible de résoudre l'URL Civitai : {e}"}
 
-        # L'URL B2 signée est publique — pas de header Authorization à envoyer
-        # On peut utiliser toutes les connexions pour la vitesse maximale
         connections = "16"
         split = "16"
 
@@ -285,13 +301,13 @@ async def download(request: Request):
         "auto-file-renaming": "false",
         "max-connection-per-server": connections,
         "split": split,
-        "min-split-size": "5M",       # morceaux plus petits = démarrage plus rapide
-        "piece-length": "1M",          # granularité fine pour meilleur parallélisme
+        "min-split-size": "5M",
+        "piece-length": "1M",
         "header": headers,
         "check-certificate": "false",
         "max-tries": "5",
         "retry-wait": "3",
-        "stream-piece-selector": "geom", # sélection géométrique = meilleure perf réseau
+        "stream-piece-selector": "geom",
     }
 
     try:
@@ -308,14 +324,12 @@ async def progress():
         downloads = client.get_downloads()
         res = []
         for d in downloads:
-            # Pendant l'init, d.name peut contenir l'URL — on extrait le vrai nom
             raw_name = d.name or ""
             if raw_name.startswith("http"):
                 name = filename_fallback(d)
             else:
                 name = raw_name
 
-            # Fallback : extraire depuis l'URI Aria2 si toujours vide
             if not name or name == "Initialisation...":
                 try:
                     parsed = urlparse(d.files[0].uris[0]["uri"] if d.files else "")
@@ -327,7 +341,6 @@ async def progress():
             if status == "error":
                 status = f"Erreur (Code {d.error_code})"
 
-            # download_speed_string et eta_string sont des méthodes — appel avec ()
             try:
                 speed_bps = d.download_speed or 0
                 if speed_bps >= 1_000_000:
@@ -372,11 +385,10 @@ def filename_fallback(download):
 @app.get("/disk-usage")
 async def disk_usage():
     try:
-        # Calculer l'espace utilisé en sommant les fichiers déjà scannés par scan-disk
-        # (évite du -sb qui est bloquant sur network storage MooseFS)
         used_bytes = 0
         if os.path.exists(BASE_MODELS_PATH):
             for root, _, files in os.walk(BASE_MODELS_PATH):
+                refresh_dir(root)  # flush chaque dossier pendant le calcul
                 for f in files:
                     try:
                         used_bytes += os.path.getsize(os.path.join(root, f))
