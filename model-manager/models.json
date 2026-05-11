@@ -137,6 +137,13 @@
                 "path": "diffusion_models",
                 "category": "diffusion_models",
                 "filename": "zImageTurbo-Deedeemegadoodo_v10.safetensors"
+            },
+            {
+                "name": "Juggernaut_Z_V1_by_RunDiffusion_fp16.safetensors",
+                "url": "https://huggingface.co/RunDiffusion/Juggernaut-Z-Image/resolve/main/Juggernaut_Z_V1_by_RunDiffusion_fp16.safetensors?download=true",
+                "path": "diffusion_models",
+                "category": "diffusion_models",
+                "filename": "Juggernaut_Z_V1_by_RunDiffusion_fp16.safetensors"
             }
         ],
         "unet": [
