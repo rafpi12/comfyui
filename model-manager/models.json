@@ -1170,6 +1170,13 @@
                 "path": "checkpoints",
                 "category": "diffusion_models",
                 "filename": "gonzalomoXLFluxPony_v30FluxDAIO.safetensors"
+            },
+            {
+                "name": "adonis_base.safetensors",
+                "url": "https://huggingface.co/n8te0/adonis_flux2klein/resolve/main/adonis_base.safetensors?download=true",
+                "path": "unet",
+                "category": "diffusion_models",
+                "filename": "adonis_base.safetensors"
             }
         ],
         "vae": [
