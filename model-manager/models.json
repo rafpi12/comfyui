@@ -1259,6 +1259,13 @@
                 "path": "loras/Adonis",
                 "category": "loras",
                 "filename": "adonis_post.safetensors"
+            },
+            {
+                "name": "adonis_refine.safetensors",
+                "url": "https://huggingface.co/n8te0/adonis_flux2klein/resolve/main/adonis_refine.safetensors?download=true",
+                "path": "loras/Adonis",
+                "category": "loras",
+                "filename": "adonis_refine.safetensors"
             }
         ],
         "unet": [
