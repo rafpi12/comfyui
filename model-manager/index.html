@@ -143,7 +143,7 @@
                 const environments = Object.keys(cfg).sort((a, b) => a.localeCompare(b));
                 envSelector.add(new Option("Tous les environnements", "__ALL__"));
                 environments.forEach(env => envSelector.add(new Option(env, env)));
-                envSelector.value = "__ALL__"; // défaut : tout afficher
+                envSelector.value = "__ALL__";
                 await updateDiskState(); loadModels(); renderCatalogue(); setInterval(loop, 2000); updateDiskWidget(); setInterval(updateDiskWidget, 30000);
                 setTimeout(async () => { await updateDiskState(); loadModels(); }, 3000);
             } catch(e) { }
@@ -166,7 +166,6 @@
                         document.getElementById('ws-bar').style.width = ws.used_pct + '%';
                         document.getElementById('ws-bar').className = 'h-1.5 rounded-full transition-all duration-500 ' + color;
                     } else {
-                        // Pas de quota défini : on cache total/libre/barre
                         document.getElementById('ws-total').textContent = '? Go';
                         document.getElementById('ws-free').textContent = '—';
                         document.getElementById('ws-bar').style.width = '0%';
@@ -184,28 +183,27 @@
 
             let allModels = [];
 
-            // Environnements à parcourir : un seul ou tous
             const envsToScan = env === "__ALL__" ? Object.keys(cfg) : [env];
 
             envsToScan.forEach(e => {
-    Object.keys(cfg[e]).forEach(cat => {
-        let matchType = (type === 'all');
-        if (!matchType) {
-            if (type === 'clip') matchType = (cat.includes('clip') || cat.includes('text_encoders'));
-            else if (type === 'unet') matchType = (cat.includes('unet') || cat.includes('diffusion_models'));
-            else matchType = cat.toLowerCase().includes(type.toLowerCase());
-        }
-        if (matchType) {
-            cfg[e][cat].forEach(model => {
-                if(model.filename.toLowerCase().includes(search)) {
-                    allModels.push({ ...model, _env: e });  // ← on copie le modèle avec son env
-                }
+                Object.keys(cfg[e]).forEach(cat => {
+                    let matchType = (type === 'all');
+                    if (!matchType) {
+                        if (type === 'clip') matchType = (cat.includes('clip') || cat.includes('text_encoders'));
+                        else if (type === 'unet') matchType = (cat.includes('unet') || cat.includes('diffusion_models'));
+                        else matchType = cat.toLowerCase().includes(type.toLowerCase());
+                    }
+                    if (matchType) {
+                        cfg[e][cat].forEach(model => {
+                            if(model.filename.toLowerCase().includes(search)) {
+                                allModels.push({ ...model, _env: e });
+                            }
+                        });
+                    }
+                });
             });
-        }
-    });
-});
 
-            // Injecter les dossiers disk-only (prompt_generator, LLM) dans allModels
+            // Injecter les dossiers disk-only (prompt_generator, LLM)
             const folderCategoryMap = { "prompt_generator": "Qwen", "LLM": "Qwen" };
             const folderCategories = ["prompt_generator", "LLM"];
             folderCategories.forEach(cat => {
@@ -226,15 +224,21 @@
                 });
             });
 
-            // PASSE 1 : calculer _diskSize sur tous les modèles avant le tri
+            // PASSE 1 : calculer _diskSize et _diskEntry sur tous les modèles
             allModels.forEach(model => {
                 if (model._isFolder) {
                     model._diskSize = model._folderSize || 0;
+                    model._diskPath = model.filename;
                 } else {
                     const diskKey = model.path.split('/')[0];
                     const diskCategoryFiles = diskFiles[diskKey] || [];
-                    const diskEntry = diskCategoryFiles.find(f => (f.path || f).toLowerCase() === model.filename.toLowerCase());
+                    const modelFilename = model.filename.toLowerCase();
+                    const diskEntry = diskCategoryFiles.find(f => {
+                        const p = (f.path || f).toLowerCase();
+                        return p === modelFilename || p.endsWith('/' + modelFilename);
+                    });
                     model._diskSize = diskEntry ? (diskEntry.size || 0) : 0;
+                    model._diskPath = diskEntry ? diskEntry.path : model.filename;
                 }
             });
 
@@ -258,14 +262,12 @@
                     o.dataset.env = "";
                     o.dataset.size = model._folderSize || 0;
                     o.dataset.isFolder = "true";
+                    o.dataset.diskPath = model._diskPath;
                     o.style.color = "#4ade80";
                 } else {
                     const displayCat = model.category || model.path.split('/')[0];
-                    const diskKey = model.path.split('/')[0];
-                    const diskCategoryFiles = diskFiles[diskKey] || [];
-                    const diskEntry = diskCategoryFiles.find(f => (f.path || f).toLowerCase() === model.filename.toLowerCase());
-                    const isPresent = !!diskEntry;
-                    const fileSize = diskEntry ? diskEntry.size : null;
+                    const isPresent = model._diskSize > 0;
+                    const fileSize = isPresent ? model._diskSize : null;
                     label = (isPresent ? "● " : "○ ") + model.filename + (isPresent && fileSize ? "  [" + formatSize(fileSize) + "]" : "");
                     o = new Option(label, model.filename);
                     o.dataset.url = model.url;
@@ -273,17 +275,18 @@
                     o.dataset.category = displayCat;
                     o.dataset.env = model._env || "";
                     o.dataset.size = fileSize || 0;
+                    o.dataset.diskPath = model._diskPath;
                     if(isPresent) o.style.color = "#4ade80";
                 }
                 if (selectedValues.includes(model.filename)) o.selected = true;
                 m.add(o);
             });
-            
+
             m.scrollTop = targetFilename ? (Array.from(m.options).findIndex(o => o.selected) * 24) : savedScroll;
         }
 
         async function checkStatus() {
-            const s = Array.from(document.getElementById('models-ui').selectedOptions); 
+            const s = Array.from(document.getElementById('models-ui').selectedOptions);
             const delBtn = document.getElementById('delete-btn');
             delBtn.disabled = s.length === 0;
             delBtn.className = s.length > 0 ? "btn-action bg-red-600 text-white" : "btn-action bg-red-900/50 text-red-500 opacity-20";
@@ -298,7 +301,7 @@
             document.getElementById('edit-path').value = BASE_PATH + o.dataset.cat;
             document.getElementById('edit-url').value = o.dataset.url;
             document.getElementById('edit-file').value = cleanName;
-			renderCatalogue(cleanName); // ← cette ligne manquait
+            renderCatalogue(cleanName);
         }
 
         async function startSmartDownload() {
@@ -314,10 +317,10 @@
                 if(!confirm(`Lancer le téléchargement de ${s.length} fichier(s) ?`)) return;
                 for(let o of s) {
                     const name = o.value.replace(/^[●○]\s/, "");
-                    await fetch('/download', { 
-                        method:'POST', 
-                        headers: {'Content-Type': 'application/json'}, 
-                        body: JSON.stringify({url: o.dataset.url, path: o.dataset.cat, filename: name}) 
+                    await fetch('/download', {
+                        method:'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({url: o.dataset.url, path: o.dataset.cat, filename: name})
                     });
                     addLog(`Ajout file d'attente : ${name}`);
                 }
@@ -329,9 +332,9 @@
             if(s.length === 0) return;
             if(!confirm(`Supprimer définitivement ${s.length} fichier(s) du disque ?`)) return;
             for(let o of s) {
-                const name = o.value.replace(/^[●○]\s/, "");
-                await fetch(`/delete?cat=${encodeURIComponent(o.dataset.cat)}&file=${encodeURIComponent(name)}`, {method:'DELETE'});
-                addLog(`Supprimé : ${name}`);
+                const diskPath = o.dataset.diskPath || o.value.replace(/^[●○]\s/, "");
+                await fetch(`/delete?cat=${encodeURIComponent(o.dataset.cat)}&file=${encodeURIComponent(diskPath)}`, {method:'DELETE'});
+                addLog(`Supprimé : ${diskPath}`);
             }
             await updateDiskState(); loadModels();
         }
@@ -401,47 +404,45 @@
             } catch(e) {}
         }
         async function saveToCatalogue() {
-    const env = document.getElementById('edit-env').value;
-    const cat = document.getElementById('edit-cat').value;
-    const fullPath = document.getElementById('edit-path').value;
-    const url = document.getElementById('edit-url').value;
-    const file = document.getElementById('edit-file').value;
+            const env = document.getElementById('edit-env').value;
+            const cat = document.getElementById('edit-cat').value;
+            const fullPath = document.getElementById('edit-path').value;
+            const url = document.getElementById('edit-url').value;
+            const file = document.getElementById('edit-file').value;
 
-    // Validation : bloquer toute sauvegarde incomplète
-    if (!env || !cat || !file || !url) {
-        addLog('⚠️ Environnement, catégorie, fichier et URL sont obligatoires.', true);
-        return;
-    }
+            if (!env || !cat || !file || !url) {
+                addLog('⚠️ Environnement, catégorie, fichier et URL sont obligatoires.', true);
+                return;
+            }
 
-    const relPath = fullPath.replace(BASE_PATH, "").replace(/^\/+/, "");
-    const obj = { name: file, url: url, path: relPath, category: cat, filename: file };
-    if (!cfg[env]) cfg[env] = {};
-    if (!cfg[env][cat]) cfg[env][cat] = [];
-    const idx = cfg[env][cat].findIndex(m => m.filename === file);
-    if (idx > -1) cfg[env][cat][idx] = obj; else cfg[env][cat].push(obj);
-    const r = await fetch('/save-config', { method: 'POST', body: JSON.stringify(cfg) });
-    if ((await r.json()).github_sync) showGitHubToast();
-    loadModels(file);
-    renderCatalogue(file);
-}
+            const relPath = fullPath.replace(BASE_PATH, "").replace(/^\/+/, "");
+            const obj = { name: file, url: url, path: relPath, category: cat, filename: file };
+            if (!cfg[env]) cfg[env] = {};
+            if (!cfg[env][cat]) cfg[env][cat] = [];
+            const idx = cfg[env][cat].findIndex(m => m.filename === file);
+            if (idx > -1) cfg[env][cat][idx] = obj; else cfg[env][cat].push(obj);
+            const r = await fetch('/save-config', { method: 'POST', body: JSON.stringify(cfg) });
+            if ((await r.json()).github_sync) showGitHubToast();
+            loadModels(file);
+            renderCatalogue(file);
+        }
         function renderCatalogue(filterFile = null) {
             const list = document.getElementById('catalogue-list'); list.innerHTML = "";
             Object.keys(cfg).forEach(env => Object.keys(cfg[env]).forEach(cat => cfg[env][cat].forEach((m, idx) => {
-        if (filterFile && m.filename !== filterFile) return;
-        list.innerHTML += `<div class="flex justify-between items-center bg-black/40 p-2 mb-1 border border-white/5 rounded ${filterFile ? 'file-highlight' : ''}" id="cat-entry-${m.filename.replace(/\W/g,'_')}"><div class="flex flex-col"><span class="text-blue-400 font-bold uppercase" style="font-size:8px">${env} / ${cat}</span><span class="truncate italic text-slate-300">${m.filename}</span></div><button onclick="removeFromCatalogue('${env}','${cat}',${idx})" class="text-red-500 ml-2"><i class="fas fa-times"></i></button></div>`;
-    })));
-    // Scroll interne à la liste catalogue uniquement (sans focus page)
-    if (filterFile) {
-        const id = "cat-entry-" + filterFile.replace(/\W/g, '_');
-        const el = document.getElementById(id);
-        if (el) setTimeout(() => {
-            const list = document.getElementById('catalogue-list');
-            list.scrollTop = el.offsetTop - list.offsetTop - 10;
-        }, 50);
-    }
-}
+                if (filterFile && m.filename !== filterFile) return;
+                list.innerHTML += `<div class="flex justify-between items-center bg-black/40 p-2 mb-1 border border-white/5 rounded ${filterFile ? 'file-highlight' : ''}" id="cat-entry-${m.filename.replace(/\W/g,'_')}"><div class="flex flex-col"><span class="text-blue-400 font-bold uppercase" style="font-size:8px">${env} / ${cat}</span><span class="truncate italic text-slate-300">${m.filename}</span></div><button onclick="removeFromCatalogue('${env}','${cat}',${idx})" class="text-red-500 ml-2"><i class="fas fa-times"></i></button></div>`;
+            })));
+            if (filterFile) {
+                const id = "cat-entry-" + filterFile.replace(/\W/g, '_');
+                const el = document.getElementById(id);
+                if (el) setTimeout(() => {
+                    const list = document.getElementById('catalogue-list');
+                    list.scrollTop = el.offsetTop - list.offsetTop - 10;
+                }, 50);
+            }
+        }
         async function removeFromCatalogue(e,c,i) { if(confirm('Supprimer du JSON ?')) { cfg[e][c].splice(i, 1); await fetch('/save-config', { method: 'POST', body: JSON.stringify(cfg) }); renderCatalogue(); loadModels(); } }
-        
+
         function setSortAndReload(key) {
             if (sortState.key === key) sortState.dir *= -1;
             else { sortState.key = key; sortState.dir = 1; }
