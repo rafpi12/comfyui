@@ -1188,6 +1188,13 @@
                 "filename": "flux2-vae.safetensors",
                 "_size": 0,
                 "category": "vae"
+            },
+            {
+                "name": "full_encoder_small_decoder.safetensors",
+                "url": "https://huggingface.co/black-forest-labs/FLUX.2-small-decoder/resolve/main/full_encoder_small_decoder.safetensors",
+                "path": "vae",
+                "category": "vae",
+                "filename": "full_encoder_small_decoder.safetensors"
             }
         ],
         "loras": [
