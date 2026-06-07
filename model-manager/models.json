@@ -2107,7 +2107,7 @@
                 "category": "text_encoders",
                 "filename": "gemma_3_12B_it_fp8_e4m3fn.safetensors"
             },
-                       {
+            {
                 "name": "ltx-2.3_text_projection_bf16.safetensors",
                 "url": "https://huggingface.co/Kijai/LTX2.3_comfy/resolve/main/text_encoders/ltx-2.3_text_projection_bf16.safetensors?download=true",
                 "path": "text_encoders",
@@ -2125,6 +2125,15 @@
                 "filename": "ideogram4_fp8_scaled.safetensors",
                 "_size": 0,
                 "category": "diffusion_models"
+            }
+        ],
+        "text_encoders": [
+            {
+                "name": "qwen3vl_8b_fp8_scaled.safetensors",
+                "url": "https://huggingface.co/Comfy-Org/Qwen3-VL/resolve/main/text_encoders/qwen3vl_8b_fp8_scaled.safetensors",
+                "path": "text_encoders",
+                "category": "text_encoders",
+                "filename": "qwen3vl_8b_fp8_scaled.safetensors"
             }
         ]
     }
