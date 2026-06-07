@@ -2125,6 +2125,13 @@
                 "filename": "ideogram4_fp8_scaled.safetensors",
                 "_size": 0,
                 "category": "diffusion_models"
+            },
+            {
+                "name": "ideogram4_unconditional_fp8_scaled.safetensors",
+                "url": "https://huggingface.co/Comfy-Org/Ideogram-4/resolve/main/diffusion_models/ideogram4_unconditional_fp8_scaled.safetensors",
+                "path": "diffusion_models",
+                "category": "diffusion_models",
+                "filename": "ideogram4_unconditional_fp8_scaled.safetensors"
             }
         ],
         "text_encoders": [
