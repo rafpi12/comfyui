@@ -2107,12 +2107,24 @@
                 "category": "text_encoders",
                 "filename": "gemma_3_12B_it_fp8_e4m3fn.safetensors"
             },
-            {
+                       {
                 "name": "ltx-2.3_text_projection_bf16.safetensors",
                 "url": "https://huggingface.co/Kijai/LTX2.3_comfy/resolve/main/text_encoders/ltx-2.3_text_projection_bf16.safetensors?download=true",
                 "path": "text_encoders",
                 "category": "text_encoders",
                 "filename": "ltx-2.3_text_projection_bf16.safetensors"
+            }
+        ]
+    },
+    "Ideogram": {
+        "diffusion_models": [
+            {
+                "name": "Ideogram 4 FP8 Scaled",
+                "url": "https://huggingface.co/Comfy-Org/Ideogram-4/resolve/main/diffusion_models/ideogram4_fp8_scaled.safetensors?download=true",
+                "path": "diffusion_models",
+                "filename": "ideogram4_fp8_scaled.safetensors",
+                "_size": 0,
+                "category": "diffusion_models"
             }
         ]
     }
