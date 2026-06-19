@@ -1273,6 +1273,13 @@
                 "path": "loras/Adonis",
                 "category": "loras",
                 "filename": "adonis_refine.safetensors"
+            },
+            {
+                "name": "Klein2-9B-SmartCharacterSwap.safetensors",
+                "url": "https://huggingface.co/nhathoangfoto/Flux.2-Klein-9B-SmartCharacterSwap/resolve/main/Klein2-9B-SmartCharacterSwap.safetensors?download=true",
+                "path": "loras",
+                "category": "loras",
+                "filename": "Klein2-9B-SmartCharacterSwap.safetensors"
             }
         ],
         "unet": [
