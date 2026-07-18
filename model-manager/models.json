@@ -2169,6 +2169,15 @@
                 "category": "loras",
                 "filename": "krea2_darkbrush.safetensors"
             }
+        ],
+        "text_encoders": [
+            {
+                "name": "qwen3vl_4b_fp8_scaled.safetensors",
+                "url": "https://huggingface.co/Comfy-Org/Krea-2/blob/main/text_encoders/qwen3vl_4b_fp8_scaled.safetensors",
+                "path": "text_encoders",
+                "category": "text_encoders",
+                "filename": "qwen3vl_4b_fp8_scaled.safetensors"
+            }
         ]
     }
 }
