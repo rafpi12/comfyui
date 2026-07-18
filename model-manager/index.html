@@ -94,8 +94,10 @@
             <div class="grid grid-cols-2 gap-8">
                 <div class="space-y-3 bg-black/20 p-5 rounded-xl">
                     <div class="grid grid-cols-2 gap-3">
-                        <select id="edit-env" class="w-full">
-                        </select>
+                        <div>
+                            <input id="edit-env" list="edit-env-list" class="w-full" placeholder="Environnement (existant ou nouveau)" autocomplete="off">
+                            <datalist id="edit-env-list"></datalist>
+                        </div>
                         <select id="edit-cat" class="w-full" onchange="updatePathByCategory()">
                             <option value="diffusion_models">diffusion_models</option><option value="loras">loras</option><option value="vae">vae</option><option value="clip">clip</option><option value="unet">unet</option><option value="text_encoders">text_encoders</option><option value="upscale_models">upscale_models</option><option value="controlnet">controlnet</option><option value="model_patches">model_patches</option>
                         </select>
@@ -143,10 +145,10 @@
                 envSelector.add(new Option("Tous les environnements", "__ALL__"));
                 environments.forEach(env => envSelector.add(new Option(env, env)));
                 envSelector.value = "__ALL__";
-                // Peupler edit-env dynamiquement (évite les environnements manquants)
-                const editEnvSel = document.getElementById('edit-env');
-                editEnvSel.innerHTML = "";
-                environments.forEach(env => editEnvSel.add(new Option(env, env)));
+                // Peupler la datalist edit-env-list dynamiquement (suggestions + saisie libre pour nouvel environnement)
+                const editEnvList = document.getElementById('edit-env-list');
+                editEnvList.innerHTML = "";
+                environments.forEach(env => editEnvList.innerHTML += `<option value="${env}"></option>`);
                 await updateDiskState(); loadModels(); renderCatalogue(); setInterval(loop, 2000); updateDiskWidget(); setInterval(updateDiskWidget, 30000);
                 setTimeout(async () => { await updateDiskState(); loadModels(); }, 3000);
             } catch(e) { }
@@ -407,7 +409,7 @@
             } catch(e) {}
         }
         async function saveToCatalogue() {
-            const env = document.getElementById('edit-env').value;
+            const env = document.getElementById('edit-env').value.trim();
             const cat = document.getElementById('edit-cat').value;
             const fullPath = document.getElementById('edit-path').value;
             const url = document.getElementById('edit-url').value;
@@ -418,6 +420,7 @@
                 return;
             }
 
+            const isNewEnv = !cfg[env];
             const relPath = fullPath.replace(BASE_PATH, "").replace(/^\/+/, "");
             const obj = { name: file, url: url, path: relPath, category: cat, filename: file };
             if (!cfg[env]) cfg[env] = {};
@@ -426,6 +429,12 @@
             if (idx > -1) cfg[env][cat][idx] = obj; else cfg[env][cat].push(obj);
             const r = await fetch('/save-config', { method: 'POST', body: JSON.stringify(cfg) });
             if ((await r.json()).github_sync) showGitHubToast();
+            if (isNewEnv) {
+                addLog(`🆕 Nouvel environnement créé : ${env}`);
+                const envSelector = document.getElementById('env-ui');
+                envSelector.add(new Option(env, env));
+                document.getElementById('edit-env-list').innerHTML += `<option value="${env}"></option>`;
+            }
             loadModels(file);
             renderCatalogue(file);
         }
