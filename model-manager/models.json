@@ -2182,7 +2182,7 @@
         "vae": [
             {
                 "name": "qwen_image_vae.safetensors",
-                "url": "https://huggingface.co/Comfy-Org/Krea-2/blob/main/vae/qwen_image_vae.safetensors",
+                "url": "https://huggingface.co/Comfy-Org/Krea-2/resolve/main/vae/qwen_image_vae.safetensors?download=true",
                 "path": "vae",
                 "category": "vae",
                 "filename": "qwen_image_vae.safetensors"
