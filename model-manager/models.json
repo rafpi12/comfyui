@@ -2160,6 +2160,15 @@
                 "category": "diffusion_models",
                 "filename": "krea2_turbo_fp8_scaled.safetensors"
             }
+        ],
+        "loras": [
+            {
+                "name": "krea2_darkbrush.safetensors",
+                "url": "https://huggingface.co/Comfy-Org/Krea-2/blob/main/loras/krea2_darkbrush.safetensors",
+                "path": "loras",
+                "category": "loras",
+                "filename": "krea2_darkbrush.safetensors"
+            }
         ]
     }
 }
