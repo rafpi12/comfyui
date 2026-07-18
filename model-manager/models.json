@@ -2173,7 +2173,7 @@
         "text_encoders": [
             {
                 "name": "qwen3vl_4b_fp8_scaled.safetensors",
-                "url": "https://huggingface.co/Comfy-Org/Krea-2/blob/main/text_encoders/qwen3vl_4b_fp8_scaled.safetensors",
+                "url": "https://huggingface.co/Comfy-Org/Krea-2/resolve/main/text_encoders/qwen3vl_4b_fp8_scaled.safetensors?download=true",
                 "path": "text_encoders",
                 "category": "text_encoders",
                 "filename": "qwen3vl_4b_fp8_scaled.safetensors"
