@@ -2150,5 +2150,16 @@
                 "filename": "qwen3vl_8b_fp8_scaled.safetensors"
             }
         ]
+    },
+    "Krea 2": {
+        "diffusion_models": [
+            {
+                "name": "krea2_turbo_fp8_scaled.safetensors",
+                "url": "https://huggingface.co/Comfy-Org/Krea-2/blob/main/diffusion_models/krea2_turbo_fp8_scaled.safetensors",
+                "path": "diffusion_models",
+                "category": "diffusion_models",
+                "filename": "krea2_turbo_fp8_scaled.safetensors"
+            }
+        ]
     }
 }
