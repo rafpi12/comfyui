@@ -2178,6 +2178,15 @@
                 "category": "text_encoders",
                 "filename": "qwen3vl_4b_fp8_scaled.safetensors"
             }
+        ],
+        "vae": [
+            {
+                "name": "qwen_image_vae.safetensors",
+                "url": "https://huggingface.co/Comfy-Org/Krea-2/blob/main/vae/qwen_image_vae.safetensors",
+                "path": "vae",
+                "category": "vae",
+                "filename": "qwen_image_vae.safetensors"
+            }
         ]
     }
 }
