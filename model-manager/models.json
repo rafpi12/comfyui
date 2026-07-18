@@ -2164,7 +2164,7 @@
         "loras": [
             {
                 "name": "krea2_darkbrush.safetensors",
-                "url": "https://huggingface.co/Comfy-Org/Krea-2/blob/main/loras/krea2_darkbrush.safetensors",
+                "url": "https://huggingface.co/Comfy-Org/Krea-2/resolve/main/loras/krea2_darkbrush.safetensors?download=true",
                 "path": "loras",
                 "category": "loras",
                 "filename": "krea2_darkbrush.safetensors"
