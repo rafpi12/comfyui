@@ -2205,6 +2205,13 @@
                 "path": "text_encoders",
                 "category": "text_encoders",
                 "filename": "qwen3vl_4b_fp8_scaled.safetensors"
+            },
+            {
+                "name": "qwen3vl_4b_bf16.safetensors",
+                "url": "https://huggingface.co/Comfy-Org/Qwen3-VL/resolve/b58e627c376915e49cb6bba978416085aa31767f/text_encoders/qwen3vl_4b_bf16.safetensors?download=true",
+                "path": "text_encoders",
+                "category": "text_encoders",
+                "filename": "qwen3vl_4b_bf16.safetensors"
             }
         ],
         "vae": [
