@@ -2175,6 +2175,13 @@
                 "path": "loras",
                 "category": "loras",
                 "filename": "krea2_darkbrush.safetensors"
+            },
+            {
+                "name": "dmd2_sdxl_4step_lora.safetensors",
+                "url": "https://huggingface.co/tianweiy/DMD2/resolve/main/dmd2_sdxl_4step_lora.safetensors?download=true",
+                "path": "loras",
+                "category": "loras",
+                "filename": "dmd2_sdxl_4step_lora.safetensors"
             }
         ],
         "text_encoders": [
