@@ -2228,6 +2228,13 @@
                 "path": "vae",
                 "category": "vae",
                 "filename": "Qwen_Image-VAE.safetensors"
+            },
+            {
+                "name": "Wan2_1_VAE_fp32.safetensors",
+                "url": "https://huggingface.co/Kijai/WanVideo_comfy/resolve/main/Wan2_1_VAE_fp32.safetensors?download=true",
+                "path": "vae",
+                "category": "vae",
+                "filename": "Wan2_1_VAE_fp32.safetensors"
             }
         ]
     }
