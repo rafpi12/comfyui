@@ -2166,6 +2166,13 @@
                 "path": "diffusion_models",
                 "category": "diffusion_models",
                 "filename": "gonzalomoKrea2_v20RC1.safetensors"
+            },
+            {
+                "name": "krea2_turbo_fp8.safetensors",
+                "url": "https://huggingface.co/AlperKTS/Krea2_FP8/resolve/main/krea2_turbo_fp8.safetensors?download=true",
+                "path": "diffusion_models",
+                "category": "diffusion_models",
+                "filename": "krea2_turbo_fp8.safetensors"
             }
         ],
         "loras": [
