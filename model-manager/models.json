@@ -2189,6 +2189,13 @@
                 "path": "loras",
                 "category": "loras",
                 "filename": "dmd2_sdxl_4step_lora.safetensors"
+            },
+            {
+                "name": "Krea2_TextFusion_Refusal_Reduction.safetensors",
+                "url": "https://civitai.com/api/download/models/3125118?fileId=3005583",
+                "path": "loras",
+                "category": "loras",
+                "filename": "Krea2_TextFusion_Refusal_Reduction.safetensors"
             }
         ],
         "text_encoders": [
