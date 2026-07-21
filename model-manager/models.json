@@ -2159,6 +2159,13 @@
                 "path": "diffusion_models",
                 "category": "diffusion_models",
                 "filename": "krea2_turbo_fp8_scaled.safetensors"
+            },
+            {
+                "name": "gonzalomoKrea2_v20RC1.safetensors",
+                "url": "https://civitai.red/api/download/models/3143063?fileId=3023453",
+                "path": "diffusion_models",
+                "category": "diffusion_models",
+                "filename": "gonzalomoKrea2_v20RC1.safetensors"
             }
         ],
         "loras": [
