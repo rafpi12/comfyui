@@ -2196,6 +2196,13 @@
                 "path": "loras",
                 "category": "loras",
                 "filename": "Krea2_TextFusion_Refusal_Reduction.safetensors"
+            },
+            {
+                "name": "Purple_Dreams_Kr2.safetensors",
+                "url": "https://civitai.red/api/download/models/3141844?fileId=3022096",
+                "path": "loras/Krea 2",
+                "category": "loras",
+                "filename": "Purple_Dreams_Kr2.safetensors"
             }
         ],
         "text_encoders": [
