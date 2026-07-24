@@ -2173,6 +2173,13 @@
                 "path": "diffusion_models",
                 "category": "diffusion_models",
                 "filename": "krea2_turbo_fp8.safetensors"
+            },
+            {
+                "name": "krea2GPTGrandPUSSYTruth_krea2GPT.safetensors",
+                "url": "https://huggingface.co/Kutches/Kr3a/resolve/main/krea2GPTGrandPUSSYTruth_krea2GPT.safetensors?download=true",
+                "path": "diffusion_models",
+                "category": "diffusion_models",
+                "filename": "krea2GPTGrandPUSSYTruth_krea2GPT.safetensors"
             }
         ],
         "loras": [
