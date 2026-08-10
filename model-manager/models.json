@@ -2285,6 +2285,13 @@
                 "path": "embeddings",
                 "category": "embeddings",
                 "filename": "BadDream.pt"
+            },
+            {
+                "name": "CyberRealistic_Negative-neg.pt",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Embeddings/CyberRealistic_Negative-neg.pt?download=true",
+                "path": "embeddings",
+                "category": "embeddings",
+                "filename": "CyberRealistic_Negative-neg.pt"
             }
         ]
     }
