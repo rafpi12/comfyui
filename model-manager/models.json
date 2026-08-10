@@ -2299,6 +2299,13 @@
                 "path": "embeddings",
                 "category": "embeddings",
                 "filename": "FastNegativeV2.pt"
+            },
+            {
+                "name": "UnrealisticDream.pt",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Embeddings/UnrealisticDream.pt?download=true",
+                "path": "embeddings",
+                "category": "embeddings",
+                "filename": "UnrealisticDream.pt"
             }
         ]
     }
