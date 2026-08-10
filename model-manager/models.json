@@ -2269,6 +2269,13 @@
                 "path": "loras",
                 "category": "loras",
                 "filename": "tumblr0ne-june-1.5-000001.safetensors"
+            },
+            {
+                "name": "add_detail.safetensors",
+                "url": "https://huggingface.co/naonovn/Lora/resolve/main/add_detail.safetensors?download=true",
+                "path": "loras",
+                "category": "loras",
+                "filename": "add_detail.safetensors"
             }
         ]
     }
