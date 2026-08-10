@@ -2292,6 +2292,13 @@
                 "path": "embeddings",
                 "category": "embeddings",
                 "filename": "CyberRealistic_Negative-neg.pt"
+            },
+            {
+                "name": "FastNegativeV2.pt",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Embeddings/FastNegativeV2.pt?download=true",
+                "path": "embeddings",
+                "category": "embeddings",
+                "filename": "FastNegativeV2.pt"
             }
         ]
     }
