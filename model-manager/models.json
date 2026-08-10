@@ -2277,6 +2277,15 @@
                 "category": "loras",
                 "filename": "add_detail.safetensors"
             }
+        ],
+        "embeddings": [
+            {
+                "name": "BadDream.pt",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Embeddings/BadDream.pt?download=true",
+                "path": "embeddings",
+                "category": "embeddings",
+                "filename": "BadDream.pt"
+            }
         ]
     }
 }
