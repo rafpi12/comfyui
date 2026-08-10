@@ -2253,15 +2253,7 @@
         ]
     },
     "SD 1.5": {
-        "diffusion_models": [
-            {
-                "name": "juggernaut_reborn.safetensors",
-                "url": "https://civitai.com/api/download/models/274039?fileId=214158",
-                "path": "diffusion_models",
-                "category": "diffusion_models",
-                "filename": "juggernaut_reborn.safetensors"
-            }
-        ],
+        "diffusion_models": [],
         "loras": [
             {
                 "name": "tumblr0ne-june-1.5-000001.safetensors",
