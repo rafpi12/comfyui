@@ -2349,6 +2349,13 @@
                 "path": "diffusion_models",
                 "category": "diffusion_models",
                 "filename": "minimax_h3_fl2va_pruned_int8_convrot.safetensors"
+            },
+            {
+                "name": "minimax_h3_ref2va_pruned_int8_convrot.safetensors",
+                "url": "https://huggingface.co/Comfy-Org/MiniMax-H3/resolve/main/diffusion_models/minimax_h3_ref2va_pruned_int8_convrot.safetensors?download=true",
+                "path": "diffusion_models",
+                "category": "diffusion_models",
+                "filename": "minimax_h3_ref2va_pruned_int8_convrot.safetensors"
             }
         ]
     }
