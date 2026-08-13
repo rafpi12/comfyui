@@ -2315,5 +2315,16 @@
                 "filename": "realisticvision-negative-embedding.pt"
             }
         ]
+    },
+    "Minimax": {
+        "vae": [
+            {
+                "name": "minimax_h3_audio_vae_fp32.safetensors",
+                "url": "https://huggingface.co/Comfy-Org/MiniMax-H3/resolve/main/vae/minimax_h3_audio_vae_fp32.safetensors?download=true",
+                "path": "vae",
+                "category": "vae",
+                "filename": "minimax_h3_audio_vae_fp32.safetensors"
+            }
+        ]
     }
 }
