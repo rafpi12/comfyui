@@ -2327,7 +2327,7 @@
             },
             {
                 "name": "minimax_h3_video_vae_fp16.safetensors",
-                "url": "https://huggingface.co/Comfy-Org/MiniMax-H3/resolve/main/vae/minimax_h3_video_vae_fp16.safetensors?download=true",
+                "url": "https://huggingface.co/Comfy-Org/MiniMax-H3/resolve/main/vae/minimax_h3_video_vae_fp16.safetensors",
                 "path": "vae",
                 "category": "vae",
                 "filename": "minimax_h3_video_vae_fp16.safetensors"
