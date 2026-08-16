@@ -2336,7 +2336,7 @@
         "text_encoders": [
             {
                 "name": "qwen3vl_32b_minimax_h3_nvfp4_awq.safetensors",
-                "url": "https://huggingface.co/Comfy-Org/MiniMax-H3/resolve/main/text_encoders/qwen3vl_32b_minimax_h3_nvfp4_awq.safetensors?download=true",
+                "url": "https://huggingface.co/Comfy-Org/MiniMax-H3/resolve/main/text_encoders/qwen3vl_32b_minimax_h3_nvfp4_awq.safetensors",
                 "path": "text_encoders",
                 "category": "text_encoders",
                 "filename": "qwen3vl_32b_minimax_h3_nvfp4_awq.safetensors"
