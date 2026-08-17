@@ -2231,6 +2231,13 @@
                 "path": "loras",
                 "category": "loras",
                 "filename": "Soviet cartoon esque 000.safetensors"
+            },
+            {
+                "name": "Vintage Mix by AK.safetensors",
+                "url": "https://civitai.com/api/download/models/3209248?fileId=3092080",
+                "path": "loras",
+                "category": "loras",
+                "filename": "Vintage Mix by AK.safetensors"
             }
         ],
         "text_encoders": [
