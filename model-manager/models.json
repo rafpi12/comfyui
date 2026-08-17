@@ -2238,6 +2238,13 @@
                 "path": "loras",
                 "category": "loras",
                 "filename": "Vintage Mix by AK.safetensors"
+            },
+            {
+                "name": "retroanime.safetensors",
+                "url": "https://huggingface.co/krea/Krea-2-LoRA-retroanime/resolve/main/retroanime.safetensors?download=true",
+                "path": "loras/Krea 2",
+                "category": "loras",
+                "filename": "retroanime.safetensors"
             }
         ],
         "text_encoders": [
