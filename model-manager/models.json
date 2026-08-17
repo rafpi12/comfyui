@@ -2224,6 +2224,13 @@
                 "path": "loras",
                 "category": "loras",
                 "filename": "UglyMedievalCatsKrea2.safetensors"
+            },
+            {
+                "name": "Soviet cartoon esque 000.safetensors",
+                "url": "https://civitai.com/api/download/models/3208764?fileId=3090396",
+                "path": "loras",
+                "category": "loras",
+                "filename": "Soviet cartoon esque 000.safetensors"
             }
         ],
         "text_encoders": [
