@@ -2245,6 +2245,13 @@
                 "path": "loras/Krea 2",
                 "category": "loras",
                 "filename": "retroanime.safetensors"
+            },
+            {
+                "name": "krea2 hyper large tits.safetensors",
+                "url": "https://civitai.red/api/download/models/3170068?fileId=3050510",
+                "path": "loras/Krea 2",
+                "category": "loras",
+                "filename": "krea2 hyper large tits.safetensors"
             }
         ],
         "text_encoders": [
