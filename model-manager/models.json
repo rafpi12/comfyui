@@ -2217,6 +2217,13 @@
                 "path": "loras",
                 "category": "loras",
                 "filename": "Aether_Gum_k2_lokr4_v1.safetensors"
+            },
+            {
+                "name": "UglyMedievalCatsKrea2.safetensors",
+                "url": "https://civitai.com/api/download/models/3210227?fileId=3091917",
+                "path": "loras",
+                "category": "loras",
+                "filename": "UglyMedievalCatsKrea2.safetensors"
             }
         ],
         "text_encoders": [
