@@ -2210,6 +2210,13 @@
                 "path": "loras/Krea 2",
                 "category": "loras",
                 "filename": "Purple_Dreams_Kr2.safetensors"
+            },
+            {
+                "name": "Aether_Gum_k2_lokr4_v1.safetensors",
+                "url": "https://civitai.com/api/download/models/3218593?fileId=3100437",
+                "path": "loras",
+                "category": "loras",
+                "filename": "Aether_Gum_k2_lokr4_v1.safetensors"
             }
         ],
         "text_encoders": [
