@@ -2298,6 +2298,13 @@
                 "path": "vae",
                 "category": "vae",
                 "filename": "Wan2_1_VAE_fp32.safetensors"
+            },
+            {
+                "name": "krea2RealVae_v10.safetensors",
+                "url": "https://huggingface.co/LS110824/vae/resolve/main/krea2RealVae_v10.safetensors?download=true",
+                "path": "vae",
+                "category": "vae",
+                "filename": "krea2RealVae_v10.safetensors"
             }
         ]
     },
