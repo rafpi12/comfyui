@@ -2286,13 +2286,6 @@
                 "filename": "qwen_image_vae.safetensors"
             },
             {
-                "name": "Qwen_Image-VAE.safetensors",
-                "url": "https://huggingface.co/QuantStack/Qwen-Image-Edit-GGUF/resolve/5cf642dd2b94af2a558ec06a9dde255c673e1fdf/VAE/Qwen_Image-VAE.safetensors?download=true",
-                "path": "vae",
-                "category": "vae",
-                "filename": "Qwen_Image-VAE.safetensors"
-            },
-            {
                 "name": "Wan2_1_VAE_fp32.safetensors",
                 "url": "https://huggingface.co/Kijai/WanVideo_comfy/resolve/main/Wan2_1_VAE_fp32.safetensors?download=true",
                 "path": "vae",
