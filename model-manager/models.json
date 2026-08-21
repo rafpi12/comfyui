@@ -2266,6 +2266,13 @@
                 "path": "loras/Krea 2",
                 "category": "loras",
                 "filename": "Famegrid-Natural-V1-Krea-2.safetensors"
+            },
+            {
+                "name": "krea2filterbypass3.safetensors",
+                "url": "https://huggingface.co/uzumix/krea2filterbypass3.safetensors/resolve/main/krea2filterbypass3.safetensors?download=true",
+                "path": "loras/Krea 2",
+                "category": "loras",
+                "filename": "krea2filterbypass3.safetensors"
             }
         ],
         "text_encoders": [
