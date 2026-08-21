@@ -2180,6 +2180,13 @@
                 "path": "diffusion_models",
                 "category": "diffusion_models",
                 "filename": "krea2GPTGrandPUSSYTruth_krea2GPT.safetensors"
+            },
+            {
+                "name": "krea2_raw_bf16.safetensors",
+                "url": "https://huggingface.co/Comfy-Org/Krea-2/resolve/main/diffusion_models/krea2_raw_bf16.safetensors?download=true",
+                "path": "diffusion_models",
+                "category": "diffusion_models",
+                "filename": "krea2_raw_bf16.safetensors"
             }
         ],
         "loras": [
