@@ -2259,6 +2259,13 @@
                 "path": "loras/Krea 2",
                 "category": "loras",
                 "filename": "krea2_identity_edit_v1_2.safetensors"
+            },
+            {
+                "name": "Famegrid-Natural-V1-Krea-2.safetensors",
+                "url": "https://civitai.red/api/download/models/3248281?fileId=3131186",
+                "path": "loras/Krea 2",
+                "category": "loras",
+                "filename": "Famegrid-Natural-V1-Krea-2.safetensors"
             }
         ],
         "text_encoders": [
