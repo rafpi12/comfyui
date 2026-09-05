@@ -2456,6 +2456,13 @@
                 "path": "loras",
                 "category": "loras",
                 "filename": "minimax_h3_turbo_v4_step600.safetensors"
+            },
+            {
+                "name": "minimax_h3_turbo_v4_step600_ema.safetensors",
+                "url": "https://huggingface.co/larryvrh/MiniMax-H3-Turbo-Lora/resolve/main/minimax_h3_turbo_v4_step600_ema.safetensors?download=true",
+                "path": "loras",
+                "category": "loras",
+                "filename": "minimax_h3_turbo_v4_step600_ema.safetensors"
             }
         ]
     }
