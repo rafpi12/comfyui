@@ -2422,6 +2422,13 @@
                 "path": "vae",
                 "category": "vae",
                 "filename": "minimax_h3_video_vae_int8_convrot.safetensors"
+            },
+            {
+                "name": "taesd_decoder.safetensors",
+                "url": "https://huggingface.co/madebyollin/taesd/resolve/main/taesd_decoder.safetensors?download=true",
+                "path": "vae_approx",
+                "category": "vae",
+                "filename": "taesd_decoder.safetensors"
             }
         ],
         "text_encoders": [
