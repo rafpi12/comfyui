@@ -2463,6 +2463,13 @@
                 "path": "loras",
                 "category": "loras",
                 "filename": "minimax_h3_turbo_v4_step600_ema.safetensors"
+            },
+            {
+                "name": "MM-H3%20-%20Megan%20Fox%20v1.1.safetensors",
+                "url": "https://huggingface.co/Playtime-AI/Minimax_H3-Megan_Fox/resolve/main/MM-H3%20-%20Megan%20Fox%20v1.1.safetensors?download=true",
+                "path": "loras",
+                "category": "loras",
+                "filename": "MM-H3%20-%20Megan%20Fox%20v1.1.safetensors"
             }
         ]
     }
