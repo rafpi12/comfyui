@@ -2415,6 +2415,13 @@
                 "path": "vae",
                 "category": "vae",
                 "filename": "minimax_h3_video_vae_fp16.safetensors"
+            },
+            {
+                "name": "minimax_h3_video_vae_int8_convrot.safetensors",
+                "url": "https://huggingface.co/Kijai/MiniMax-H3-experimental/resolve/main/minimax_h3_video_vae_int8_convrot.safetensors?download=true",
+                "path": "vae",
+                "category": "vae",
+                "filename": "minimax_h3_video_vae_int8_convrot.safetensors"
             }
         ],
         "text_encoders": [
