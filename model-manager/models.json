@@ -1416,6 +1416,14 @@
                 "filename": "qwen_image_edit_2511_bf16.safetensors",
                 "category": "diffusion_models",
                 "_size": 0
+            },
+            {
+                "name": "Qwen Image Edit 2511 Q4_K_M (GGUF) [ARP]",
+                "url": "https://huggingface.co/unsloth/Qwen-Image-Edit-2511-GGUF/resolve/main/qwen-image-edit-2511-Q4_K_M.gguf?download=true",
+                "path": "diffusion_models",
+                "filename": "qwen-image-edit-2511-Q4_K_M.gguf",
+                "_size": 0,
+                "category": "diffusion_models"
             }
         ],
         "text_encoders": [
@@ -2046,6 +2054,14 @@
                 "filename": "LTX-2.3-distilled-Q5_K_M.gguf",
                 "category": "unet",
                 "_size": 0
+            },
+            {
+                "name": "LTX-2.3 Distilled Q4_K_M (GGUF) [ARP]",
+                "url": "https://huggingface.co/QuantStack/LTX-2.3-GGUF/resolve/main/LTX-2.3-distilled/LTX-2.3-distilled-Q4_K_M.gguf?download=true",
+                "path": "unet",
+                "filename": "LTX-2.3-distilled-Q4_K_M.gguf",
+                "_size": 0,
+                "category": "unet"
             }
         ],
         "upscale_models": [
@@ -2074,6 +2090,30 @@
                 "filename": "ltx-2-19b-lora-camera-control-static.safetensors",
                 "category": "loras",
                 "_size": 0
+            },
+            {
+                "name": "LTX-2.3 IC-LoRA In/Outpainting 0.9 (gated) [ARP]",
+                "url": "https://huggingface.co/Lightricks/LTX-2.3-22b-IC-LoRA-In-Outpainting/resolve/main/ltx-2.3-22b-ic-lora-in-outpainting-0.9.safetensors?download=true",
+                "path": "loras",
+                "filename": "ltx-2.3-22b-ic-lora-in-outpainting-0.9.safetensors",
+                "_size": 0,
+                "category": "loras"
+            },
+            {
+                "name": "LTX-2.3 IC-LoRA Outpaint oumoumad [ARP]",
+                "url": "https://huggingface.co/oumoumad/LTX-2.3-22b-IC-LoRA-Outpaint/resolve/main/ltx-2.3-22b-ic-lora-outpaint.safetensors?download=true",
+                "path": "loras",
+                "filename": "ltx-2.3-22b-ic-lora-outpaint.safetensors",
+                "_size": 0,
+                "category": "loras"
+            },
+            {
+                "name": "LTX-2.3 Dearchive LoRA [ARP]",
+                "url": "https://huggingface.co/oumoumad/ltx-2.3-dearchive-lora/resolve/main/lora_weights_step_05000.safetensors?download=true",
+                "path": "loras",
+                "filename": "ltx-2.3-dearchive-lora.safetensors",
+                "_size": 0,
+                "category": "loras"
             }
         ],
         "vae": [
@@ -2120,6 +2160,24 @@
                 "path": "text_encoders",
                 "category": "text_encoders",
                 "filename": "ltx-2.3_text_projection_bf16.safetensors"
+            },
+            {
+                "name": "Gemma 3 12B IT FP8 scaled [ARP]",
+                "url": "https://huggingface.co/Comfy-Org/ltx-2/resolve/main/split_files/text_encoders/gemma_3_12B_it_fp8_scaled.safetensors?download=true",
+                "path": "text_encoders",
+                "filename": "gemma_3_12B_it_fp8_scaled.safetensors",
+                "_size": 0,
+                "category": "text_encoders"
+            }
+        ],
+        "checkpoints": [
+            {
+                "name": "LTX-2.3 22B Dev FP8 [ARP]",
+                "url": "https://huggingface.co/Lightricks/LTX-2.3-fp8/resolve/main/ltx-2.3-22b-dev-fp8.safetensors?download=true",
+                "path": "checkpoints",
+                "filename": "ltx-2.3-22b-dev-fp8.safetensors",
+                "_size": 0,
+                "category": "checkpoints"
             }
         ]
     },
