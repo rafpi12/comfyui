@@ -2235,6 +2235,13 @@
                 "filename": "ltx-2.3-temporal-upscaler-x2-1.0.safetensors",
                 "category": "upscale_models",
                 "_size": 0
+            },
+            {
+                "name": "ltx-2.3-spatial-upscaler-x2-1.0.safetensors",
+                "url": "https://huggingface.co/Lightricks/LTX-2.3/resolve/5a9c1c680bc66c159f708143bf274739961ecd08/ltx-2.3-spatial-upscaler-x2-1.0.safetensors",
+                "path": "upscale_models",
+                "category": "upscale_models",
+                "filename": "ltx-2.3-spatial-upscaler-x2-1.0.safetensors"
             }
         ],
         "loras": [
