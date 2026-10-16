@@ -2690,6 +2690,13 @@
                 "path": "loras",
                 "category": "loras",
                 "filename": "MM-H3 - Megan Fox v1.1.safetensors"
+            },
+            {
+                "name": "minimax_h3_ref2v_turbo_4step_v0.1_comfyui_bf16.safetensors",
+                "url": "https://huggingface.co/Comfy-Org/MiniMax-H3/resolve/main/loras/minimax_h3_ref2v_turbo_4step_v0.1_comfyui_bf16.safetensors",
+                "path": "loras",
+                "category": "loras",
+                "filename": "minimax_h3_ref2v_turbo_4step_v0.1_comfyui_bf16.safetensors"
             }
         ]
     },
