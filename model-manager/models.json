@@ -450,6 +450,97 @@
                 "path": "loras",
                 "category": "loras",
                 "filename": "gta6_amateur_photography_zimagebase_v2.safetensors"
+            },
+            {
+                "name": "B00B13S.safetensors",
+                "url": "https://civitai.com/api/download/models/2641902",
+                "path": "loras",
+                "category": "loras",
+                "filename": "B00B13S.safetensors"
+            },
+            {
+                "name": "BetterCurvy.safetensors",
+                "url": "https://civitai.com/api/download/models/2537045",
+                "path": "loras",
+                "category": "loras",
+                "filename": "BetterCurvy.safetensors"
+            },
+            {
+                "name": "MewtoV2.safetensors",
+                "url": "https://civitai.com/api/download/models/2642749",
+                "path": "loras",
+                "category": "loras",
+                "filename": "MewtoV2.safetensors"
+            },
+            {
+                "name": "PBP5M9RD57YECAZ68AJN2W3MF0.safetensors",
+                "url": "https://civitai.com/api/download/models/2529900",
+                "path": "loras",
+                "category": "loras",
+                "filename": "PBP5M9RD57YECAZ68AJN2W3MF0.safetensors"
+            },
+            {
+                "name": "SteepSlopeTiddies_XXL_ZIT.safetensors",
+                "url": "https://civitai.com/api/download/models/2469955",
+                "path": "loras",
+                "category": "loras",
+                "filename": "SteepSlopeTiddies_XXL_ZIT.safetensors"
+            },
+            {
+                "name": "Technically_Color_Z_Image_Turbo_v1_renderartist_2000.safetensors",
+                "url": "https://civitai.com/api/download/models/2448632",
+                "path": "loras",
+                "category": "loras",
+                "filename": "Technically_Color_Z_Image_Turbo_v1_renderartist_2000.safetensors"
+            },
+            {
+                "name": "TeeKaysTittyTime_AQueensTits_V1-2_ZIT.safetensors",
+                "url": "https://civitai.com/api/download/models/2491378",
+                "path": "loras",
+                "category": "loras",
+                "filename": "TeeKaysTittyTime_AQueensTits_V1-2_ZIT.safetensors"
+            },
+            {
+                "name": "bondage outfit 03.safetensors",
+                "url": "https://civitai.com/api/download/models/2472185",
+                "path": "loras",
+                "category": "loras",
+                "filename": "bondage outfit 03.safetensors"
+            },
+            {
+                "name": "girl xbody 09 V2.safetensors",
+                "url": "https://civitai.com/api/download/models/2485207",
+                "path": "loras",
+                "category": "loras",
+                "filename": "girl xbody 09 V2.safetensors"
+            },
+            {
+                "name": "lenovo_z.safetensors",
+                "url": "https://civitai.com/api/download/models/2452071",
+                "path": "loras",
+                "category": "loras",
+                "filename": "lenovo_z.safetensors"
+            },
+            {
+                "name": "skin texture v2.1.safetensors",
+                "url": "https://civitai.com/api/download/models/2524277",
+                "path": "loras",
+                "category": "loras",
+                "filename": "skin texture v2.1.safetensors"
+            },
+            {
+                "name": "aestheticphotoz.safetensors",
+                "url": "https://huggingface.co/Arno777/astheticimages/resolve/main/aestheticphotoz.safetensors?download=true",
+                "path": "loras",
+                "category": "loras",
+                "filename": "aestheticphotoz.safetensors"
+            },
+            {
+                "name": "aestheticphotoz4.safetensors",
+                "url": "https://huggingface.co/Arno777/aestheticphotoz4/resolve/main/aestheticphotoz4.safetensors?download=true",
+                "path": "loras",
+                "category": "loras",
+                "filename": "aestheticphotoz4.safetensors"
             }
         ],
         "loras/Vyesna": [
@@ -1069,6 +1160,43 @@
                 "filename": "qwen-4b-zimage-heretic-q8.gguf",
                 "_size": 4280404896,
                 "category": "clip"
+            }
+        ],
+        "loras/Red Z-Image": [
+            {
+                "name": "CrunchyBanana_ZIT_Pokies_V1.safetensors",
+                "url": "https://civitai.com/api/download/models/2493795",
+                "path": "loras/Red Z-Image",
+                "category": "loras",
+                "filename": "CrunchyBanana_ZIT_Pokies_V1.safetensors"
+            },
+            {
+                "name": "Mystic-XXX-ZIT-v2.safetensors",
+                "url": "https://civitai.com/api/download/models/2506518",
+                "path": "loras/Red Z-Image",
+                "category": "loras",
+                "filename": "Mystic-XXX-ZIT-v2.safetensors"
+            },
+            {
+                "name": "hbm_v3hbm_bs4_2000.safetensors",
+                "url": "https://civitai.com/api/download/models/2476946",
+                "path": "loras/Red Z-Image",
+                "category": "loras",
+                "filename": "hbm_v3hbm_bs4_2000.safetensors"
+            },
+            {
+                "name": "redcraftRedzimageUpdatedDEC03_redzimage15AIO.safetensors",
+                "url": "https://civitai.com/api/download/models/2462789",
+                "path": "loras/Red Z-Image",
+                "category": "loras",
+                "filename": "redcraftRedzimageUpdatedDEC03_redzimage15AIO.safetensors"
+            },
+            {
+                "name": "zimage_asianslider.safetensors",
+                "url": "https://civitai.com/api/download/models/2483794",
+                "path": "loras/Red Z-Image",
+                "category": "loras",
+                "filename": "zimage_asianslider.safetensors"
             }
         ]
     },
@@ -2689,32 +2817,11 @@
         ],
         "loras": [
             {
-                "name": "B00B13S.safetensors",
-                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/backup/models/loras/B00B13S.safetensors?download=true",
-                "path": "loras",
-                "category": "loras",
-                "filename": "B00B13S.safetensors"
-            },
-            {
-                "name": "BetterCurvy.safetensors",
-                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/backup/models/loras/BetterCurvy.safetensors?download=true",
-                "path": "loras",
-                "category": "loras",
-                "filename": "BetterCurvy.safetensors"
-            },
-            {
                 "name": "Haeeriy_000005000.safetensors",
                 "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/backup/models/loras/Haeeriy_000005000.safetensors?download=true",
                 "path": "loras",
                 "category": "loras",
                 "filename": "Haeeriy_000005000.safetensors"
-            },
-            {
-                "name": "MewtoV2.safetensors",
-                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/backup/models/loras/MewtoV2.safetensors?download=true",
-                "path": "loras",
-                "category": "loras",
-                "filename": "MewtoV2.safetensors"
             },
             {
                 "name": "OSMIN-ZIB-NoCapNoTrig-512x512_000002250.safetensors",
@@ -2766,74 +2873,11 @@
                 "filename": "Olivia-Ernie-512x512-CapTrig_000004400.safetensors"
             },
             {
-                "name": "PBP5M9RD57YECAZ68AJN2W3MF0.safetensors",
-                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/backup/models/loras/PBP5M9RD57YECAZ68AJN2W3MF0.safetensors?download=true",
-                "path": "loras",
-                "category": "loras",
-                "filename": "PBP5M9RD57YECAZ68AJN2W3MF0.safetensors"
-            },
-            {
-                "name": "SteepSlopeTiddies_XXL_ZIT.safetensors",
-                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/backup/models/loras/SteepSlopeTiddies_XXL_ZIT.safetensors?download=true",
-                "path": "loras",
-                "category": "loras",
-                "filename": "SteepSlopeTiddies_XXL_ZIT.safetensors"
-            },
-            {
-                "name": "Technically_Color_Z_Image_Turbo_v1_renderartist_2000.safetensors",
-                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/backup/models/loras/Technically_Color_Z_Image_Turbo_v1_renderartist_2000.safetensors?download=true",
-                "path": "loras",
-                "category": "loras",
-                "filename": "Technically_Color_Z_Image_Turbo_v1_renderartist_2000.safetensors"
-            },
-            {
-                "name": "TeeKaysTittyTime_AQueensTits_V1-2_ZIT.safetensors",
-                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/backup/models/loras/TeeKaysTittyTime_AQueensTits_V1-2_ZIT.safetensors?download=true",
-                "path": "loras",
-                "category": "loras",
-                "filename": "TeeKaysTittyTime_AQueensTits_V1-2_ZIT.safetensors"
-            },
-            {
                 "name": "aesthetic_exp1.safetensors",
                 "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/backup/models/loras/aesthetic_exp1.safetensors?download=true",
                 "path": "loras",
                 "category": "loras",
                 "filename": "aesthetic_exp1.safetensors"
-            },
-            {
-                "name": "aestheticphotoz.safetensors",
-                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/backup/models/loras/aestheticphotoz.safetensors?download=true",
-                "path": "loras",
-                "category": "loras",
-                "filename": "aestheticphotoz.safetensors"
-            },
-            {
-                "name": "aestheticphotoz4.safetensors",
-                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/backup/models/loras/aestheticphotoz4.safetensors?download=true",
-                "path": "loras",
-                "category": "loras",
-                "filename": "aestheticphotoz4.safetensors"
-            },
-            {
-                "name": "bondage outfit 03.safetensors",
-                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/backup/models/loras/bondage%20outfit%2003.safetensors?download=true",
-                "path": "loras",
-                "category": "loras",
-                "filename": "bondage outfit 03.safetensors"
-            },
-            {
-                "name": "girl xbody 09 V2.safetensors",
-                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/backup/models/loras/girl%20xbody%2009%20V2.safetensors?download=true",
-                "path": "loras",
-                "category": "loras",
-                "filename": "girl xbody 09 V2.safetensors"
-            },
-            {
-                "name": "lenovo_z.safetensors",
-                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/backup/models/loras/lenovo_z.safetensors?download=true",
-                "path": "loras",
-                "category": "loras",
-                "filename": "lenovo_z.safetensors"
             },
             {
                 "name": "perfct_body_copy_000000750.safetensors",
@@ -2848,13 +2892,6 @@
                 "path": "loras",
                 "category": "loras",
                 "filename": "perfectbush_000002000.safetensors"
-            },
-            {
-                "name": "skin texture v2.1.safetensors",
-                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/backup/models/loras/skin%20texture%20v2.1.safetensors?download=true",
-                "path": "loras",
-                "category": "loras",
-                "filename": "skin texture v2.1.safetensors"
             }
         ],
         "loras/Krea 2": [
@@ -2955,43 +2992,6 @@
                 "path": "loras/Krea 2",
                 "category": "loras/Krea 2",
                 "filename": "oliviaInstagramkrea2_000003250.safetensors"
-            }
-        ],
-        "loras/Red Z-Image": [
-            {
-                "name": "CrunchyBanana_ZIT_Pokies_V1.safetensors",
-                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/backup/models/loras/Red%20Z-Image/CrunchyBanana_ZIT_Pokies_V1.safetensors?download=true",
-                "path": "loras/Red Z-Image",
-                "category": "loras/Red Z-Image",
-                "filename": "CrunchyBanana_ZIT_Pokies_V1.safetensors"
-            },
-            {
-                "name": "Mystic-XXX-ZIT-v2.safetensors",
-                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/backup/models/loras/Red%20Z-Image/Mystic-XXX-ZIT-v2.safetensors?download=true",
-                "path": "loras/Red Z-Image",
-                "category": "loras/Red Z-Image",
-                "filename": "Mystic-XXX-ZIT-v2.safetensors"
-            },
-            {
-                "name": "hbm_v3hbm_bs4_2000.safetensors",
-                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/backup/models/loras/Red%20Z-Image/hbm_v3hbm_bs4_2000.safetensors?download=true",
-                "path": "loras/Red Z-Image",
-                "category": "loras/Red Z-Image",
-                "filename": "hbm_v3hbm_bs4_2000.safetensors"
-            },
-            {
-                "name": "redcraftRedzimageUpdatedDEC03_redzimage15AIO.safetensors",
-                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/backup/models/loras/Red%20Z-Image/redcraftRedzimageUpdatedDEC03_redzimage15AIO.safetensors?download=true",
-                "path": "loras/Red Z-Image",
-                "category": "loras/Red Z-Image",
-                "filename": "redcraftRedzimageUpdatedDEC03_redzimage15AIO.safetensors"
-            },
-            {
-                "name": "zimage_asianslider.safetensors",
-                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/backup/models/loras/Red%20Z-Image/zimage_asianslider.safetensors?download=true",
-                "path": "loras/Red Z-Image",
-                "category": "loras/Red Z-Image",
-                "filename": "zimage_asianslider.safetensors"
             }
         ],
         "loras/SDXL": [
