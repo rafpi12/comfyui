@@ -2229,14 +2229,6 @@
         ],
         "upscale_models": [
             {
-                "name": "LTX-2.3 Spatial Upscaler x2",
-                "url": "https://huggingface.co/Lightricks/LTX-2.3/resolve/main/ltx-2.3-spatial-upscaler-x2-1.0.safetensors?download=true",
-                "path": "upscale_models",
-                "filename": "ltx-2.3-spatial-upscaler-x2-1.0.safetensors",
-                "category": "upscale_models",
-                "_size": 0
-            },
-            {
                 "name": "LTX-2.3 Temporal Upscaler x2",
                 "url": "https://huggingface.co/Lightricks/LTX-2.3/resolve/main/ltx-2.3-temporal-upscaler-x2-1.0.safetensors?download=true",
                 "path": "upscale_models",
