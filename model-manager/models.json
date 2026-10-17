@@ -2697,6 +2697,13 @@
                 "path": "loras",
                 "category": "loras",
                 "filename": "minimax_h3_ref2v_turbo_4step_v0.1_comfyui_bf16.safetensors"
+            },
+            {
+                "name": "GOLDENBOY_H3_V3-step00004500.safetensors",
+                "url": "https://civitai.com/api/download/models/3404835?fileId=3296054",
+                "path": "loras",
+                "category": "loras",
+                "filename": "GOLDENBOY_H3_V3-step00004500.safetensors"
             }
         ]
     },
