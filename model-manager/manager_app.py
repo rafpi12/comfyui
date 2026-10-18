@@ -177,6 +177,175 @@ async def fetch_civitai_name(url: str):
     except:
         return {"filename": ""}
 
+# ── WORKFLOW : modeles manquants ─────────────────────────────
+WORKFLOWS_DIR = "/workspace/ComfyUI/user/default/workflows"
+HF_REPO = "rafatribe/Personnal_Loras"
+MODEL_EXT = ('.safetensors', '.gguf', '.pth', '.pt', '.ckpt', '.bin', '.sft', '.onnx')
+NODE_FOLDERS = [   # (morceau du type de node, dossier) ; premier qui matche
+    ("lora", "loras"), ("vae", "vae"), ("clipvision", "clip_vision"), ("clip_vision", "clip_vision"),
+    ("clip", "text_encoders"), ("textencoder", "text_encoders"), ("upscalemodel", "upscale_models"),
+    ("latentupscale", "latent_upscale_models"), ("controlnet", "controlnet"), ("modelpatch", "model_patches"),
+    ("checkpoint", "checkpoints"), ("gguf", "diffusion_models"), ("unet", "diffusion_models"),
+    ("diffusion", "diffusion_models"), ("model", "diffusion_models"),
+]
+_hf_index = {"t": 0, "files": {}}
+
+def hf_repo_index():
+    """nom de fichier -> chemin dans le repo HF prive (cache 10 min)."""
+    if time.time() - _hf_index["t"] < 600:
+        return _hf_index["files"]
+    files = {}
+    try:
+        from huggingface_hub import HfApi
+        for f in HfApi(token=HF_TOKEN or None).list_repo_files(HF_REPO):
+            name = f.split("/")[-1]
+            if name.lower().endswith(MODEL_EXT):
+                # priorite au backup/models/
+                if name not in files or f.startswith("backup/models/"):
+                    files[name] = f
+    except Exception:
+        pass
+    _hf_index.update(t=time.time(), files=files)
+    return files
+
+def catalogue_index():
+    idx = {}
+    if os.path.exists(CONFIG_PATH):
+        cfg = json.load(open(CONFIG_PATH, encoding="utf-8"))
+        for env in cfg.values():
+            for cat, items in env.items():
+                for m in items:
+                    idx.setdefault(m["filename"], {"url": m["url"], "path": m.get("path") or cat})
+    return idx
+
+def disk_index():
+    """nom de fichier -> chemin relatif a models/ (tous dossiers)."""
+    idx = {}
+    for root, dirs, files in os.walk(BASE_MODELS_PATH, followlinks=True):
+        dirs[:] = [d for d in dirs if not d.startswith('.')]
+        for f in files:
+            full = os.path.join(root, f)
+            try:
+                if os.path.getsize(full) > 0:
+                    idx.setdefault(f, os.path.relpath(full, BASE_MODELS_PATH))
+            except OSError:
+                pass
+    return idx
+
+def folder_for(node_type):
+    t = node_type.lower().replace(" ", "").replace("_", "")
+    for key, folder in NODE_FOLDERS:
+        if key.replace("_", "") in t:
+            return folder
+    return ""
+
+def walk_strings(v):
+    if isinstance(v, str):
+        yield v
+    elif isinstance(v, dict):
+        for x in v.values(): yield from walk_strings(x)
+    elif isinstance(v, list):
+        for x in v: yield from walk_strings(x)
+
+def models_from_workflow(wf):
+    """Liste de {value, folder, url} a partir d'un workflow ComfyUI (nodes + subgraphs)."""
+    nodes = list(wf.get("nodes", []))
+    for sg in (wf.get("definitions") or {}).get("subgraphs", []):
+        nodes += sg.get("nodes", [])
+    found = {}
+    for n in nodes:
+        if n.get("mode", 0) in (2, 4):      # node muet ou bypass : ignore
+            continue
+        ntype = n.get("type", "")
+        embedded = {m.get("name"): m for m in (n.get("properties") or {}).get("models", []) if m.get("name")}
+        for s in walk_strings(n.get("widgets_values")):
+            if not s.lower().endswith(MODEL_EXT) or s.startswith(("http", "/")):
+                continue
+            name = s.replace("\\", "/").split("/")[-1]
+            emb = embedded.get(name) or {}
+            found.setdefault(s.replace("\\", "/"), {
+                "value": s.replace("\\", "/"),
+                "folder": emb.get("directory") or folder_for(ntype),
+                "url": emb.get("url", ""),
+                "node": ntype,
+            })
+    return list(found.values())
+
+def models_from_text(text):
+    out = {}
+    for m in re.findall(r"[\w\-.+()\[\]/\\]+\.(?:safetensors|gguf|pth|pt|ckpt|bin|sft|onnx)\b", text):
+        v = m.strip().replace("\\", "/")
+        out.setdefault(v, {"value": v, "folder": "", "url": "", "node": ""})
+    return list(out.values())
+
+def hf_size(url):
+    try:
+        h = {"Authorization": f"Bearer {HF_TOKEN}"} if HF_TOKEN else {}
+        r = requests.head(url, headers=h, allow_redirects=False, timeout=6)
+        return int(r.headers.get("X-Linked-Size") or r.headers.get("Content-Length") or 0)
+    except Exception:
+        return 0
+
+@app.get("/workflows")
+async def list_workflows():
+    res = []
+    if os.path.isdir(WORKFLOWS_DIR):
+        for root, _, files in os.walk(WORKFLOWS_DIR, followlinks=True):
+            for f in files:
+                if f.endswith(".json"):
+                    res.append(os.path.relpath(os.path.join(root, f), WORKFLOWS_DIR))
+    return sorted(res, key=str.lower)
+
+@app.post("/analyze-workflow")
+async def analyze_workflow(request: Request):
+    data = await request.json()
+    text = data.get("text", "")
+    if data.get("workflow"):
+        p = os.path.realpath(os.path.join(WORKFLOWS_DIR, data["workflow"]))
+        text = open(p, encoding="utf-8").read()
+    try:
+        items = models_from_workflow(json.loads(text))
+    except Exception:
+        items = models_from_text(text)
+
+    disk, cat, hf = disk_index(), catalogue_index(), hf_repo_index()
+    results = []
+    for it in items:
+        value = it["value"]
+        name = value.split("/")[-1]
+        sub = "/".join(value.split("/")[:-1])          # sous-dossier tel qu'ecrit dans le workflow
+        entry = {"value": value, "filename": name, "node": it["node"], "size": 0}
+        c = cat.get(name)
+        folder = it["folder"] or (c["path"].split("/")[0] if c else "")
+        if not folder and hf.get(name, "").startswith("backup/models/"):
+            folder = hf[name][len("backup/models/"):].split("/")[0]
+        entry["path"] = "/".join(x for x in (folder, sub) if x)
+        if not sub and c and "/" in c["path"] and c["path"].split("/")[0] == folder:
+            entry["path"] = c["path"]                   # sous-dossier du catalogue
+        if name in disk:
+            entry.update(status="present", where=disk[name])
+        elif name in hf:
+            entry.update(status="manquant", source="HF perso",
+                         url=f"https://huggingface.co/{HF_REPO}/resolve/main/{hf[name]}")
+        elif c:
+            entry.update(status="manquant", source="catalogue", url=c["url"])
+        elif it["url"]:
+            entry.update(status="manquant", source="lien du workflow", url=it["url"])
+        else:
+            entry.update(status="introuvable")
+        if entry.get("status") == "manquant" and not folder:
+            entry["status"] = "dossier inconnu"
+        results.append(entry)
+
+    from concurrent.futures import ThreadPoolExecutor
+    todo = [e for e in results if e.get("url", "").startswith("https://huggingface.co")]
+    with ThreadPoolExecutor(8) as ex:
+        for e, size in zip(todo, ex.map(lambda e: hf_size(e["url"]), todo)):
+            e["size"] = size
+    order = {"manquant": 0, "dossier inconnu": 1, "introuvable": 2, "present": 3}
+    results.sort(key=lambda e: (order.get(e["status"], 9), e["filename"].lower()))
+    return results
+
 @app.get("/", response_class=HTMLResponse)
 async def index():
     if os.path.exists("index.html"): return open("index.html").read()
