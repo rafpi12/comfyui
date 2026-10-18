@@ -85,6 +85,24 @@
             </div>
         </div>
 
+
+        <div class="card p-8 mb-8 shadow-2xl border-t-4 border-purple-500">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xs font-bold text-purple-400 uppercase tracking-widest">Modèles d'un workflow</h2>
+                <span class="text-[10px] text-slate-500">Workflow sauvegardé, fichier .json, ou noms copiés depuis ComfyUI</span>
+            </div>
+            <div class="flex gap-3 mb-3">
+                <select id="wf-select" class="flex-1"><option value="">Workflows sauvegardés dans ComfyUI...</option></select>
+                <label class="bg-slate-800 px-4 py-2 rounded-lg text-xs font-bold hover:bg-slate-700 cursor-pointer flex items-center"><i class="fas fa-file-import mr-2"></i>FICHIER .JSON<input type="file" accept=".json" class="hidden" onchange="wfFile(this)"></label>
+                <button onclick="analyzeWorkflow()" class="bg-purple-600 hover:bg-purple-500 px-6 rounded-lg text-xs font-bold">ANALYSER</button>
+            </div>
+            <textarea id="wf-text" rows="3" class="w-full text-xs font-mono p-3 rounded-lg" style="background:#111827;color:white;border:1px solid #475569" placeholder="...ou colle ici le workflow JSON ou les noms des modèles manquants (un par ligne)"></textarea>
+            <div id="wf-results" class="mt-4 space-y-1 text-[11px] font-mono"></div>
+            <div id="wf-actions" class="mt-4 hidden">
+                <button id="wf-dl-btn" onclick="downloadWorkflowModels()" class="btn-action w-full bg-purple-600 hover:bg-purple-500">Télécharger les manquants</button>
+            </div>
+        </div>
+
         <div id="tasks-ui" class="space-y-3 mb-8"></div>
 
         <div class="card p-8 shadow-xl border-t-4 border-yellow-600 mb-8">
@@ -469,7 +487,71 @@
             document.getElementById('sort-name').className = `flex-1 cursor-pointer flex items-center gap-1 ${sortState.key === 'name' ? 'text-blue-400' : 'text-slate-500 hover:text-blue-400'}`;
             document.getElementById('sort-size').className = `w-20 text-right cursor-pointer flex items-center justify-end gap-1 ${sortState.key === 'size' ? 'text-blue-400' : 'text-slate-500 hover:text-blue-400'}`;
         }
+
+        // ── WORKFLOW : modeles manquants ──
+        let wfRows = [];
+        const WF_FOLDERS = ["diffusion_models","loras","vae","text_encoders","clip_vision","checkpoints","upscale_models","controlnet","model_patches","latent_upscale_models","unet","embeddings"];
+        async function loadWorkflowList() {
+            try {
+                const list = await (await fetch('/workflows')).json();
+                const sel = document.getElementById('wf-select');
+                list.forEach(w => sel.add(new Option(w.replace(/\.json$/, ''), w)));
+            } catch(e) {}
+        }
+        function wfFile(input) {
+            const f = input.files[0]; if (!f) return;
+            const r = new FileReader();
+            r.onload = () => { document.getElementById('wf-text').value = r.result; document.getElementById('wf-select').value = ''; analyzeWorkflow(); };
+            r.readAsText(f); input.value = '';
+        }
+        async function analyzeWorkflow() {
+            const workflow = document.getElementById('wf-select').value;
+            const text = document.getElementById('wf-text').value;
+            if (!workflow && !text.trim()) return;
+            const box = document.getElementById('wf-results');
+            box.innerHTML = '<div class="text-slate-400">Analyse...</div>';
+            const r = await fetch('/analyze-workflow', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(workflow ? {workflow} : {text}) });
+            wfRows = await r.json();
+            renderWorkflowRows();
+        }
+        function renderWorkflowRows() {
+            const box = document.getElementById('wf-results');
+            if (!wfRows.length) { box.innerHTML = '<div class="text-slate-400">Aucun modèle trouvé.</div>'; document.getElementById('wf-actions').classList.add('hidden'); return; }
+            const style = {
+                "present":         ["●", "text-green-400", "présent"],
+                "manquant":        ["○", "text-white", ""],
+                "dossier inconnu": ["?", "text-yellow-400", "choisis le dossier"],
+                "introuvable":     ["✕", "text-red-400", "absent du catalogue et de HF : ajoute-le avec l'éditeur ci-dessous"],
+            };
+            box.innerHTML = wfRows.map((e, i) => {
+                const [icon, color, note] = style[e.status] || ["·", "text-slate-400", e.status];
+                const canDl = e.status === "manquant" || e.status === "dossier inconnu";
+                const check = canDl ? `<input type="checkbox" class="wf-check" data-i="${i}" checked onchange="updateWfButton()">` : '<span class="inline-block w-[13px]"></span>';
+                const folderSel = e.status === "dossier inconnu"
+                    ? `<select class="wf-folder !p-1 !text-[10px]" data-i="${i}" onchange="wfRows[${i}].path=this.value; wfRows[${i}].status='manquant'; renderWorkflowRows()"><option value="">dossier ?</option>${WF_FOLDERS.map(f => `<option>${f}</option>`).join('')}</select>`
+                    : `<span class="text-slate-500">${e.status === 'present' ? (e.where || '') : e.path}</span>`;
+                const right = [e.source ? `<span class="text-purple-300">${e.source}</span>` : '', e.size ? formatSize(e.size) : '', note ? `<span class="${color}">${note}</span>` : ''].filter(Boolean).join(' · ');
+                return `<div class="flex items-center gap-3 bg-black/30 px-3 py-2 rounded"><span>${check}</span><span class="${color} w-3">${icon}</span><span class="flex-1 truncate ${color}" title="${e.value}">${e.filename}</span>${folderSel}<span class="text-[10px] text-slate-400 whitespace-nowrap">${right}</span></div>`;
+            }).join('');
+            updateWfButton();
+        }
+        function updateWfButton() {
+            const checked = Array.from(document.querySelectorAll('.wf-check:checked')).map(c => wfRows[+c.dataset.i]).filter(e => e.status === 'manquant');
+            const total = checked.reduce((a, e) => a + (e.size || 0), 0);
+            document.getElementById('wf-actions').classList.toggle('hidden', checked.length === 0);
+            document.getElementById('wf-dl-btn').textContent = `Télécharger ${checked.length} modèle(s)` + (total ? ` (${formatSize(total)}${checked.some(e => !e.size) ? ' +' : ''})` : '');
+        }
+        async function downloadWorkflowModels() {
+            const rows = Array.from(document.querySelectorAll('.wf-check:checked')).map(c => wfRows[+c.dataset.i]).filter(e => e.status === 'manquant' && e.path);
+            for (const e of rows) {
+                const r = await (await fetch('/download', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({url: e.url, path: e.path, filename: e.filename}) })).json();
+                addLog(r.status === 'ok' ? `Ajout file d'attente : ${e.path}/${e.filename}` : `Erreur ${e.filename} : ${r.message}`, r.status !== 'ok');
+                e.status = 'en cours';
+            }
+            renderWorkflowRows();
+        }
         start();
+        loadWorkflowList();
     </script>
 </body>
 </html>
