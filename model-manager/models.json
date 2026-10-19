@@ -3405,5 +3405,34 @@
                 "filename": "stable-diffusion-v1-4-VAE.safetensors"
             }
         ]
+    },
+    "MOSS-Image": {
+        "vae": [
+            {
+                "name": "flux2-vae_small.safetensors",
+                "url": "https://huggingface.co/Comfy-Org/MOSS-Image/resolve/main/vae/flux2-vae_small.safetensors",
+                "path": "vae",
+                "category": "vae",
+                "filename": "flux2-vae_small.safetensors"
+            }
+        ],
+        "diffusion_models": [
+            {
+                "name": "moss_image_sft_int8_convrot.safetensors",
+                "url": "https://huggingface.co/Comfy-Org/MOSS-Image/resolve/main/diffusion_models/moss_image_sft_int8_convrot.safetensors",
+                "path": "diffusion_models",
+                "category": "diffusion_models",
+                "filename": "moss_image_sft_int8_convrot.safetensors"
+            }
+        ],
+        "text_encoders": [
+            {
+                "name": "qwen3.5_9b_w4a8_gptq.safetensors",
+                "url": "https://huggingface.co/Comfy-Org/MOSS-Image/resolve/main/text_encoders/qwen3.5_9b_w4a8_gptq.safetensors",
+                "path": "text_encoders",
+                "category": "text_encoders",
+                "filename": "qwen3.5_9b_w4a8_gptq.safetensors"
+            }
+        ]
     }
 }
