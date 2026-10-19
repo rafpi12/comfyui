@@ -680,22 +680,25 @@ async def disk_usage():
     - /workspace sur le Container Disk (pod sans Volume Disk) : df est fiable.
     - /workspace sur un Volume Disk ou un network volume (MooseFS) : df montre tout le cluster,
       on prend la taille declaree par l'API RunPod et on mesure l'occupe nous-memes."""
-    GB = 1_000_000_000
+    GB = 1_073_741_824   # Go "RunPod" (= Gio, comme df -h)
     try:
-        q = fetch_runpod_quota() or {}
+        import asyncio
+        q = await asyncio.to_thread(fetch_runpod_quota) or {}
         same_fs = os.stat("/workspace").st_dev == os.stat("/").st_dev
         if same_fs:
             du = shutil.disk_usage("/workspace")
-            total, used, kind = du.total / GB, (du.total - du.free) / GB, "container"
+            total, used, kind = du.total / GB, du.used / GB, "container"
+            free = du.free / GB
         else:
             total = q.get("network") or q.get("volume") or 0
-            used, kind = workspace_used_bytes() / GB, ("network" if q.get("network") else "volume")
+            used, kind = (await asyncio.to_thread(workspace_used_bytes)) / GB, ("network" if q.get("network") else "volume")
+            free = max(total - used, 0)
         if not total:
             return {"workspace": {"total_gb": None, "used_gb": round(used, 1), "free_gb": None, "used_pct": None, "kind": kind}}
         return {"workspace": {
             "total_gb": round(total, 1), "used_gb": round(used, 1),
-            "free_gb": round(max(total - used, 0), 1),
-            "used_pct": round(min(used / total * 100, 100), 1), "kind": kind,
+            "free_gb": round(free, 1),
+            "used_pct": round(min((total - free) / total * 100, 100), 1), "kind": kind,
         }}
     except Exception as e:
         return {"workspace": None, "error": str(e)}
