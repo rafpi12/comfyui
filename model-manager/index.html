@@ -279,8 +279,8 @@
             <div class="panel-head">
                 <div class="panel-title"><span class="panel-num">03</span><h2>Modèles d'un workflow</h2></div>
                 <div class="tabs">
-                    <button class="tab" data-tab="tpl" onclick="wfTab('tpl')">Catalogue ComfyUI</button>
                     <button class="tab" data-tab="mine" onclick="wfTab('mine')">Mes workflows</button>
+                    <button class="tab" data-tab="tpl" onclick="wfTab('tpl')">Catalogue ComfyUI</button>
                     <button class="tab" data-tab="paste" onclick="wfTab('paste')">Coller / fichier</button>
                 </div>
             </div>
@@ -626,7 +626,6 @@
         function wfTab(tab) {
             document.querySelectorAll('.wf-pane').forEach(p => p.classList.toggle('hidden', p.id !== 'wf-pane-' + tab));
             document.querySelectorAll('.tab').forEach(b => b.classList.toggle('on', b.dataset.tab === tab));
-            try { localStorage.setItem('wfTab', tab); } catch(e) {}
             if (tab === 'tpl' && !templates.length) loadTemplates();
         }
         async function loadWorkflowList() {
@@ -799,7 +798,7 @@
 
         start();
         loadWorkflowList();
-        (() => { let t = 'tpl'; try { t = localStorage.getItem('wfTab') || 'tpl'; } catch(e) {} wfTab(t); })();
+        wfTab('mine');
     </script>
 </body>
 </html>
