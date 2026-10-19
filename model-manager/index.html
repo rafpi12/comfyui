@@ -171,6 +171,11 @@
         .addcat em { color: var(--warn); font-style: normal; }
         .addcat input:not([type=checkbox]) { flex: 1; min-width: 200px; }
 
+        .dropzone { margin-top: 14px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; height: 150px; border: 1px dashed var(--hair-2); border-radius: 24px; cursor: pointer; transition: border-color .15s, background .15s; text-align: center; padding: 0 20px; }
+        .dropzone:hover { border-color: rgba(255,255,255,.3); background: rgba(255,255,255,.02); }
+        .dropzone.over, body.dragging .dropzone { border-color: #fff; background: rgba(255,255,255,.05); }
+        .dz-title { font: 500 17px var(--sans); letter-spacing: -0.02em; }
+        .dz-sub { font-size: 13.5px; color: var(--ink-3); }
         /* ── journal + toast ── */
         #log-console { height: 140px; overflow-y: auto; color: var(--ink-2); font: 400 13px/1.7 var(--mono); padding: 16px 20px; border-radius: 18px; border: 1px solid var(--hair); }
         #log-console .t { color: var(--ink-3); margin-right: 12px; }
@@ -302,6 +307,11 @@
                     <select id="wf-select" class="grow"><option value="">Workflows sauvegardés dans ComfyUI…</option></select>
                     <button onclick="analyzeWorkflow({workflow: document.getElementById('wf-select').value})" class="btn primary">Analyser</button>
                 </div>
+                <label id="wf-drop" class="dropzone">
+                    <input type="file" accept=".json,.png,application/json,image/png" class="hidden" onchange="handleWfFiles(this.files); this.value=''">
+                    <span class="dz-title">Glisse un workflow ici</span>
+                    <span class="dz-sub">Fichier .json, ou image PNG générée par ComfyUI · ou clique pour choisir</span>
+                </label>
             </div>
 
             <div id="wf-pane-paste" class="wf-pane hidden">
@@ -680,6 +690,46 @@
             }
             analyzeWorkflow({template: name}, t ? t.title : name);
         }
+        // Glisser-deposer : .json, ou PNG ComfyUI (le workflow est stocke dans le chunk texte "workflow")
+        async function pngWorkflow(file) {
+            const buf = new Uint8Array(await file.arrayBuffer());
+            const dv = new DataView(buf.buffer); let pos = 8; const chunks = {};
+            while (pos + 8 <= buf.length) {
+                const len = dv.getUint32(pos), type = String.fromCharCode(...buf.slice(pos + 4, pos + 8));
+                if (type === 'tEXt' || type === 'iTXt') {
+                    const data = buf.slice(pos + 8, pos + 8 + len), z = data.indexOf(0);
+                    const key = new TextDecoder().decode(data.slice(0, z));
+                    let rest = data.slice(z + 1);
+                    if (type === 'iTXt') { let k = 2, n = 0; while (n < 2 && k < rest.length) { if (rest[k] === 0) n++; k++; } rest = rest.slice(k); }
+                    chunks[key] = new TextDecoder().decode(rest);
+                }
+                if (type === 'IEND') break;
+                pos += 12 + len;
+            }
+            return chunks.workflow || chunks.prompt || null;
+        }
+        async function handleWfFiles(files) {
+            const f = files && files[0]; if (!f) return;
+            const title = f.name.replace(/\.(json|png)$/i, '');
+            let text = null;
+            if (/\.png$/i.test(f.name) || f.type === 'image/png') {
+                text = await pngWorkflow(f);
+                if (!text) { addLog(`Aucun workflow dans l'image ${esc(f.name)}.`, true); return; }
+            } else text = await f.text();
+            wfTab('mine');
+            analyzeWorkflow({text}, title);
+        }
+        (() => {
+            let depth = 0;
+            const zone = () => document.getElementById('wf-drop');
+            window.addEventListener('dragenter', e => { if ([...e.dataTransfer.types].includes('Files')) { depth++; document.body.classList.add('dragging'); } });
+            window.addEventListener('dragleave', () => { if (--depth <= 0) { depth = 0; document.body.classList.remove('dragging'); } });
+            window.addEventListener('dragover', e => e.preventDefault());
+            window.addEventListener('drop', e => {
+                e.preventDefault(); depth = 0; document.body.classList.remove('dragging');
+                if (e.dataTransfer.files.length) { handleWfFiles(e.dataTransfer.files); zone()?.scrollIntoView({behavior: 'smooth', block: 'center'}); }
+            });
+        })();
         function wfFile(input) {
             const f = input.files[0]; if (!f) return;
             const r = new FileReader();
