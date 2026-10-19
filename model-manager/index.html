@@ -89,17 +89,49 @@
         <div class="card p-8 mb-8 shadow-2xl border-t-4 border-purple-500">
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-xs font-bold text-purple-400 uppercase tracking-widest">Modèles d'un workflow</h2>
-                <span class="text-[10px] text-slate-500">Workflow sauvegardé, fichier .json, ou noms copiés depuis ComfyUI</span>
+                <div class="flex gap-1 text-[10px] font-bold">
+                    <button class="wf-tab px-3 py-1.5 rounded" data-tab="tpl" onclick="wfTab('tpl')">CATALOGUE COMFYUI</button>
+                    <button class="wf-tab px-3 py-1.5 rounded" data-tab="mine" onclick="wfTab('mine')">MES WORKFLOWS</button>
+                    <button class="wf-tab px-3 py-1.5 rounded" data-tab="paste" onclick="wfTab('paste')">COLLER / FICHIER</button>
+                </div>
             </div>
-            <div class="flex gap-3 mb-3">
-                <select id="wf-select" class="flex-1"><option value="">Workflows sauvegardés dans ComfyUI...</option></select>
-                <label class="bg-slate-800 px-4 py-2 rounded-lg text-xs font-bold hover:bg-slate-700 cursor-pointer flex items-center"><i class="fas fa-file-import mr-2"></i>FICHIER .JSON<input type="file" accept=".json" class="hidden" onchange="wfFile(this)"></label>
-                <button onclick="analyzeWorkflow()" class="bg-purple-600 hover:bg-purple-500 px-6 rounded-lg text-xs font-bold">ANALYSER</button>
+
+            <div id="wf-pane-tpl" class="wf-pane">
+                <div class="flex gap-3 mb-3">
+                    <input id="tpl-search" type="text" placeholder="Rechercher un modèle (wan, flux, qwen, upscale...)" class="flex-1" oninput="renderTemplates()">
+                    <select id="tpl-cat" class="w-1/4" onchange="renderTemplates()"><option value="">Toutes catégories</option></select>
+                    <label class="flex items-center gap-2 text-[10px] text-slate-400 whitespace-nowrap"><input type="checkbox" id="tpl-api" onchange="renderTemplates()"> modèles API</label>
+                </div>
+                <div id="tpl-grid" class="grid grid-cols-4 gap-3 overflow-y-auto pr-1" style="max-height:440px"></div>
+                <div id="tpl-info" class="text-[10px] text-slate-500 mt-2"></div>
             </div>
-            <textarea id="wf-text" rows="3" class="w-full text-xs font-mono p-3 rounded-lg" style="background:#111827;color:white;border:1px solid #475569" placeholder="...ou colle ici le workflow JSON ou les noms des modèles manquants (un par ligne)"></textarea>
-            <div id="wf-results" class="mt-4 space-y-1 text-[11px] font-mono"></div>
+
+            <div id="wf-pane-mine" class="wf-pane hidden">
+                <div class="flex gap-3">
+                    <select id="wf-select" class="flex-1"><option value="">Workflows sauvegardés dans ComfyUI...</option></select>
+                    <button onclick="analyzeWorkflow({workflow: document.getElementById('wf-select').value})" class="bg-purple-600 hover:bg-purple-500 px-6 rounded-lg text-xs font-bold">ANALYSER</button>
+                </div>
+            </div>
+
+            <div id="wf-pane-paste" class="wf-pane hidden">
+                <textarea id="wf-text" rows="3" class="w-full text-xs font-mono p-3 rounded-lg" style="background:#111827;color:white;border:1px solid #475569" placeholder="Colle ici un workflow JSON ou les noms des modèles manquants (un par ligne)"></textarea>
+                <div class="flex gap-3 mt-2">
+                    <label class="bg-slate-800 px-4 py-2 rounded-lg text-xs font-bold hover:bg-slate-700 cursor-pointer flex items-center"><i class="fas fa-file-import mr-2"></i>FICHIER .JSON<input type="file" accept=".json" class="hidden" onchange="wfFile(this)"></label>
+                    <button onclick="analyzeWorkflow({text: document.getElementById('wf-text').value})" class="bg-purple-600 hover:bg-purple-500 px-6 rounded-lg text-xs font-bold">ANALYSER</button>
+                </div>
+            </div>
+
+            <div id="wf-title" class="text-sm font-bold text-white mt-5 hidden"></div>
+            <div id="wf-results" class="mt-3 space-y-1 text-[11px] font-mono"></div>
             <div id="wf-actions" class="mt-4 hidden">
-                <button id="wf-dl-btn" onclick="downloadWorkflowModels()" class="btn-action w-full bg-purple-600 hover:bg-purple-500">Télécharger les manquants</button>
+                <div class="flex items-center gap-3 mb-3 bg-black/30 p-3 rounded-lg text-[11px]">
+                    <label class="flex items-center gap-2 whitespace-nowrap"><input type="checkbox" id="wf-addcat" checked onchange="updateWfButton()"> Ajouter les modèles <span class="text-yellow-400">hors catalogue</span> à models.json, environnement :</label>
+                    <input id="wf-env" list="edit-env-list" class="flex-1 !p-1.5 !text-[11px]" placeholder="ex : Wan, Flux 2, Qwen..." autocomplete="off" oninput="updateWfButton()">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <button id="wf-dl-btn" onclick="downloadWorkflowModels()" class="btn-action bg-purple-600 hover:bg-purple-500">Télécharger</button>
+                    <button id="wf-cat-btn" onclick="addWorkflowToCatalogue()" class="btn-action bg-yellow-700/60 hover:bg-yellow-600 text-yellow-100">Ajouter au catalogue seulement</button>
+                </div>
             </div>
         </div>
 
@@ -156,18 +188,20 @@
             con.scrollTop = con.scrollHeight;
         }
 
-        async function start() {
+        async function start(reload = false) {
             try {
                 const r = await fetch('/config'); cfg = await r.json();
-                const envSelector = document.getElementById('env-ui'); envSelector.innerHTML = "";
+                const envSelector = document.getElementById('env-ui');
+                const prevEnv = envSelector.value; envSelector.innerHTML = "";
                 const environments = Object.keys(cfg).sort((a, b) => a.localeCompare(b));
                 envSelector.add(new Option("Tous les environnements", "__ALL__"));
                 environments.forEach(env => envSelector.add(new Option(env, env)));
-                envSelector.value = "__ALL__";
+                envSelector.value = (reload && cfg[prevEnv]) ? prevEnv : "__ALL__";
                 // Peupler la datalist edit-env-list dynamiquement (suggestions + saisie libre pour nouvel environnement)
                 const editEnvList = document.getElementById('edit-env-list');
                 editEnvList.innerHTML = "";
                 environments.forEach(env => editEnvList.innerHTML += `<option value="${env}"></option>`);
+                if (reload) { loadModels(); renderCatalogue(); return; }
                 await updateDiskState(); loadModels(); renderCatalogue(); setInterval(loop, 2000); updateDiskWidget(); setInterval(updateDiskWidget, 30000);
                 setTimeout(async () => { await updateDiskState(); loadModels(); }, 3000);
             } catch(e) { }
@@ -489,8 +523,16 @@
         }
 
         // ── WORKFLOW : modeles manquants ──
-        let wfRows = [];
+        let wfRows = [], templates = [];
         const WF_FOLDERS = ["diffusion_models","loras","vae","text_encoders","clip_vision","checkpoints","upscale_models","controlnet","model_patches","latent_upscale_models","unet","embeddings"];
+        const esc = t => String(t ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+        function wfTab(tab) {
+            document.querySelectorAll('.wf-pane').forEach(p => p.classList.toggle('hidden', p.id !== 'wf-pane-' + tab));
+            document.querySelectorAll('.wf-tab').forEach(b => b.className = 'wf-tab px-3 py-1.5 rounded ' + (b.dataset.tab === tab ? 'bg-purple-600 text-white' : 'bg-slate-800 text-slate-400 hover:bg-slate-700'));
+            try { localStorage.setItem('wfTab', tab); } catch(e) {}
+            if (tab === 'tpl' && !templates.length) loadTemplates();
+        }
         async function loadWorkflowList() {
             try {
                 const list = await (await fetch('/workflows')).json();
@@ -498,60 +540,134 @@
                 list.forEach(w => sel.add(new Option(w.replace(/\.json$/, ''), w)));
             } catch(e) {}
         }
+        async function loadTemplates() {
+            const grid = document.getElementById('tpl-grid');
+            grid.innerHTML = '<div class="col-span-4 text-slate-400 text-xs">Chargement du catalogue...</div>';
+            try {
+                const d = await (await fetch('/templates-index')).json();
+                if (d.error) { grid.innerHTML = `<div class="col-span-4 text-red-400 text-xs">${esc(d.error)}</div>`; return; }
+                templates = d.templates;
+                const cats = [...new Set(templates.map(t => t.category))];
+                const sel = document.getElementById('tpl-cat');
+                cats.forEach(c => sel.add(new Option(c, c)));
+                renderTemplates();
+            } catch(e) { grid.innerHTML = '<div class="col-span-4 text-red-400 text-xs">Catalogue indisponible.</div>'; }
+        }
+        function renderTemplates() {
+            const q = document.getElementById('tpl-search').value.toLowerCase().trim();
+            const cat = document.getElementById('tpl-cat').value;
+            const api = document.getElementById('tpl-api').checked;
+            const list = templates.filter(t => (api || !t.api) && (!cat || t.category === cat) &&
+                (!q || [t.title, t.name, t.description, ...(t.models || []), ...(t.tags || [])].join(' ').toLowerCase().includes(q)));
+            const shown = list.slice(0, 80);
+            document.getElementById('tpl-grid').innerHTML = shown.map(t => `
+                <div class="bg-black/40 rounded-lg overflow-hidden border border-slate-700 hover:border-purple-500 cursor-pointer transition" onclick="analyzeTemplate('${esc(t.name)}')" title="${esc(t.description)}">
+                    <div class="aspect-video bg-slate-900"><img loading="lazy" src="/template-thumb/${encodeURIComponent(t.name)}?ext=${esc(t.ext)}" class="w-full h-full object-cover" onerror="this.style.display='none'"></div>
+                    <div class="p-2">
+                        <div class="text-[11px] font-bold text-white leading-tight line-clamp-2">${esc(t.title)}</div>
+                        <div class="text-[9px] text-slate-400 mt-1 truncate">${esc((t.models || []).join(', '))}${t.size ? ' · ' + formatSize(t.size) : ''}</div>
+                    </div>
+                </div>`).join('') || '<div class="col-span-4 text-slate-400 text-xs">Aucun résultat.</div>';
+            document.getElementById('tpl-info').textContent = `${list.length} workflow(s)` + (list.length > shown.length ? `, ${shown.length} affichés : affine la recherche` : '');
+        }
+        function analyzeTemplate(name) {
+            const t = templates.find(x => x.name === name);
+            const env = document.getElementById('wf-env');
+            if (t && !env.value) {   // propose l'environnement du catalogue qui correspond au modele du template
+                const envs = Object.keys(cfg);
+                const guess = (t.models || []).map(m => envs.find(e => e.toLowerCase() === m.toLowerCase()) || envs.find(e => m.toLowerCase().includes(e.toLowerCase()) || e.toLowerCase().includes(m.toLowerCase()))).find(Boolean);
+                env.value = guess || (t.models || [])[0] || '';
+            }
+            analyzeWorkflow({template: name}, t ? t.title : name);
+        }
         function wfFile(input) {
             const f = input.files[0]; if (!f) return;
             const r = new FileReader();
-            r.onload = () => { document.getElementById('wf-text').value = r.result; document.getElementById('wf-select').value = ''; analyzeWorkflow(); };
+            r.onload = () => { document.getElementById('wf-text').value = r.result; analyzeWorkflow({text: r.result}, f.name); };
             r.readAsText(f); input.value = '';
         }
-        async function analyzeWorkflow() {
-            const workflow = document.getElementById('wf-select').value;
-            const text = document.getElementById('wf-text').value;
-            if (!workflow && !text.trim()) return;
+        async function analyzeWorkflow(body, title = '') {
+            if (!body.workflow && !body.template && !(body.text || '').trim()) return;
             const box = document.getElementById('wf-results');
+            const head = document.getElementById('wf-title');
+            head.textContent = title || body.workflow || 'Workflow collé'; head.classList.remove('hidden');
             box.innerHTML = '<div class="text-slate-400">Analyse...</div>';
-            const r = await fetch('/analyze-workflow', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(workflow ? {workflow} : {text}) });
-            wfRows = await r.json();
+            document.getElementById('wf-actions').classList.add('hidden');
+            const d = await (await fetch('/analyze-workflow', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) })).json();
+            if (d.error) { box.innerHTML = `<div class="text-red-400">${esc(d.error)}</div>`; wfRows = []; return; }
+            wfRows = d;
             renderWorkflowRows();
+            head.scrollIntoView({behavior: 'smooth', block: 'start'});
         }
         function renderWorkflowRows() {
             const box = document.getElementById('wf-results');
-            if (!wfRows.length) { box.innerHTML = '<div class="text-slate-400">Aucun modèle trouvé.</div>'; document.getElementById('wf-actions').classList.add('hidden'); return; }
+            if (!wfRows.length) { box.innerHTML = '<div class="text-slate-400">Aucun modèle local dans ce workflow.</div>'; document.getElementById('wf-actions').classList.add('hidden'); return; }
             const style = {
                 "present":         ["●", "text-green-400", "présent"],
                 "manquant":        ["○", "text-white", ""],
                 "dossier inconnu": ["?", "text-yellow-400", "choisis le dossier"],
-                "introuvable":     ["✕", "text-red-400", "absent du catalogue et de HF : ajoute-le avec l'éditeur ci-dessous"],
+                "introuvable":     ["✕", "text-red-400", "aucun lien : ajoute-le avec l'éditeur ci-dessous"],
+                "en cours":        ["↓", "text-blue-300", "en téléchargement"],
             };
             box.innerHTML = wfRows.map((e, i) => {
                 const [icon, color, note] = style[e.status] || ["·", "text-slate-400", e.status];
                 const canDl = e.status === "manquant" || e.status === "dossier inconnu";
                 const check = canDl ? `<input type="checkbox" class="wf-check" data-i="${i}" checked onchange="updateWfButton()">` : '<span class="inline-block w-[13px]"></span>';
                 const folderSel = e.status === "dossier inconnu"
-                    ? `<select class="wf-folder !p-1 !text-[10px]" data-i="${i}" onchange="wfRows[${i}].path=this.value; wfRows[${i}].status='manquant'; renderWorkflowRows()"><option value="">dossier ?</option>${WF_FOLDERS.map(f => `<option>${f}</option>`).join('')}</select>`
-                    : `<span class="text-slate-500">${e.status === 'present' ? (e.where || '') : e.path}</span>`;
-                const right = [e.source ? `<span class="text-purple-300">${e.source}</span>` : '', e.size ? formatSize(e.size) : '', note ? `<span class="${color}">${note}</span>` : ''].filter(Boolean).join(' · ');
-                return `<div class="flex items-center gap-3 bg-black/30 px-3 py-2 rounded"><span>${check}</span><span class="${color} w-3">${icon}</span><span class="flex-1 truncate ${color}" title="${e.value}">${e.filename}</span>${folderSel}<span class="text-[10px] text-slate-400 whitespace-nowrap">${right}</span></div>`;
+                    ? `<select class="!p-1 !text-[10px]" onchange="wfRows[${i}].path=this.value; wfRows[${i}].status='manquant'; renderWorkflowRows()"><option value="">dossier ?</option>${WF_FOLDERS.map(f => `<option>${f}</option>`).join('')}</select>`
+                    : `<span class="text-slate-500">${esc(e.status === 'present' ? (e.where || '') : e.path)}</span>`;
+                const badge = (!e.in_catalogue && (e.public_url || e.url)) ? '<span class="text-[9px] px-1.5 py-0.5 rounded bg-yellow-900/60 text-yellow-300">hors catalogue</span>' : '';
+                const right = [e.source && e.status !== 'present' ? `<span class="text-purple-300">${esc(e.source)}</span>` : '', e.size ? formatSize(e.size) : '', note ? `<span class="${color}">${note}</span>` : ''].filter(Boolean).join(' · ');
+                return `<div class="flex items-center gap-3 bg-black/30 px-3 py-2 rounded"><span>${check}</span><span class="${color} w-3">${icon}</span><span class="flex-1 truncate ${color}" title="${esc(e.value)}">${esc(e.filename)}</span>${badge}${folderSel}<span class="text-[10px] text-slate-400 whitespace-nowrap">${right}</span></div>`;
             }).join('');
             updateWfButton();
         }
+        function wfChecked() { return Array.from(document.querySelectorAll('.wf-check:checked')).map(c => wfRows[+c.dataset.i]).filter(e => e.status === 'manquant' && e.path); }
+        function wfCatalogueCandidates() { return wfRows.filter(e => !e.in_catalogue && (e.public_url || e.url) && e.path && e.status !== 'dossier inconnu'); }
         function updateWfButton() {
-            const checked = Array.from(document.querySelectorAll('.wf-check:checked')).map(c => wfRows[+c.dataset.i]).filter(e => e.status === 'manquant');
+            const checked = wfChecked();
             const total = checked.reduce((a, e) => a + (e.size || 0), 0);
-            document.getElementById('wf-actions').classList.toggle('hidden', checked.length === 0);
-            document.getElementById('wf-dl-btn').textContent = `Télécharger ${checked.length} modèle(s)` + (total ? ` (${formatSize(total)}${checked.some(e => !e.size) ? ' +' : ''})` : '');
+            const cand = wfCatalogueCandidates();
+            document.getElementById('wf-actions').classList.toggle('hidden', checked.length === 0 && cand.length === 0);
+            const dl = document.getElementById('wf-dl-btn');
+            dl.disabled = checked.length === 0; dl.style.opacity = checked.length ? 1 : .3;
+            dl.textContent = `Télécharger ${checked.length} modèle(s)` + (total ? ` (${formatSize(total)}${checked.some(e => !e.size) ? ' +' : ''})` : '');
+            const cb = document.getElementById('wf-cat-btn');
+            cb.disabled = cand.length === 0; cb.style.opacity = cand.length ? 1 : .3;
+            cb.textContent = `Ajouter ${cand.length} modèle(s) au catalogue`;
+        }
+        async function addCatalogue(rows) {
+            const env = document.getElementById('wf-env').value.trim();
+            if (!rows.length) return true;
+            if (!env) { addLog('⚠️ Indique un environnement pour les modèles hors catalogue.', true); document.getElementById('wf-env').focus(); return false; }
+            const items = rows.map(e => ({filename: e.filename, url: e.public_url || e.url, path: e.path}));
+            const r = await (await fetch('/add-to-catalogue', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({env, items}) })).json();
+            if (r.status !== 'ok') { addLog('Catalogue : ' + (r.message || 'erreur'), true); return false; }
+            rows.forEach(e => e.in_catalogue = true);
+            addLog(`📚 ${r.added} modèle(s) ajouté(s) à "${env}"` + (r.github_sync === 'ok' ? ' (GitHub synchronisé)' : ' (sync GitHub échouée)'), r.github_sync !== 'ok');
+            if (r.github_sync === 'ok') showGitHubToast();
+            await start(true);   // recharge models.json dans la page
+            return true;
+        }
+        async function addWorkflowToCatalogue() {
+            if (await addCatalogue(wfCatalogueCandidates())) renderWorkflowRows();
         }
         async function downloadWorkflowModels() {
-            const rows = Array.from(document.querySelectorAll('.wf-check:checked')).map(c => wfRows[+c.dataset.i]).filter(e => e.status === 'manquant' && e.path);
+            const rows = wfChecked();
+            if (document.getElementById('wf-addcat').checked) {
+                const cand = wfCatalogueCandidates().filter(e => rows.includes(e));
+                if (!(await addCatalogue(cand))) return;
+            }
             for (const e of rows) {
                 const r = await (await fetch('/download', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({url: e.url, path: e.path, filename: e.filename}) })).json();
                 addLog(r.status === 'ok' ? `Ajout file d'attente : ${e.path}/${e.filename}` : `Erreur ${e.filename} : ${r.message}`, r.status !== 'ok');
-                e.status = 'en cours';
+                if (r.status === 'ok') e.status = 'en cours';
             }
             renderWorkflowRows();
         }
         start();
         loadWorkflowList();
+        (() => { let t = 'tpl'; try { t = localStorage.getItem('wfTab') || 'tpl'; } catch(e) {} wfTab(t); })();
     </script>
 </body>
 </html>
