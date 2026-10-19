@@ -252,23 +252,28 @@ def models_from_workflow(wf):
     nodes = list(wf.get("nodes", []))
     for sg in (wf.get("definitions") or {}).get("subgraphs", []):
         nodes += sg.get("nodes", [])
+    # liens et dossiers declares dans le workflow (templates ComfyUI), toutes sources confondues
+    embedded = {}
+    for m in list(wf.get("models") or []) + [m for n in nodes for m in ((n.get("properties") or {}).get("models") or [])]:
+        if isinstance(m, dict) and m.get("name"):
+            e = embedded.setdefault(m["name"], {})
+            e.setdefault("url", m.get("url", ""))
+            e.setdefault("directory", m.get("directory", ""))
     found = {}
     for n in nodes:
         if n.get("mode", 0) in (2, 4):      # node muet ou bypass : ignore
             continue
         ntype = n.get("type", "")
-        embedded = {m.get("name"): m for m in (n.get("properties") or {}).get("models", []) if m.get("name")}
         for s in walk_strings(n.get("widgets_values")):
             if not s.lower().endswith(MODEL_EXT) or s.startswith(("http", "/")):
                 continue
-            name = s.replace("\\", "/").split("/")[-1]
-            emb = embedded.get(name) or {}
-            found.setdefault(s.replace("\\", "/"), {
-                "value": s.replace("\\", "/"),
-                "folder": emb.get("directory") or folder_for(ntype),
-                "url": emb.get("url", ""),
-                "node": ntype,
-            })
+            value = s.replace("\\", "/")
+            emb = embedded.get(value.split("/")[-1]) or {}
+            cur = found.setdefault(value, {"value": value, "folder": "", "url": "", "node": ""})
+            cur["folder"] = cur["folder"] or emb.get("directory") or folder_for(ntype)
+            cur["url"] = cur["url"] or emb.get("url", "")
+            if folder_for(ntype):
+                cur["node"] = cur["node"] or ntype
     return list(found.values())
 
 def models_from_text(text):
@@ -303,6 +308,11 @@ async def analyze_workflow(request: Request):
     if data.get("workflow"):
         p = os.path.realpath(os.path.join(WORKFLOWS_DIR, data["workflow"]))
         text = open(p, encoding="utf-8").read()
+    elif data.get("template"):
+        raw = template_file(data["template"] + ".json")
+        if raw is None:
+            return {"error": "Template introuvable (ni dans ComfyUI, ni sur GitHub)."}
+        text = raw.decode("utf-8")
     try:
         items = models_from_workflow(json.loads(text))
     except Exception:
@@ -314,7 +324,7 @@ async def analyze_workflow(request: Request):
         value = it["value"]
         name = value.split("/")[-1]
         sub = "/".join(value.split("/")[:-1])          # sous-dossier tel qu'ecrit dans le workflow
-        entry = {"value": value, "filename": name, "node": it["node"], "size": 0}
+        entry = {"value": value, "filename": name, "node": it["node"], "size": 0, "in_catalogue": name in cat}
         c = cat.get(name)
         folder = it["folder"] or (c["path"].split("/")[0] if c else "")
         if not folder and hf.get(name, "").startswith("backup/models/"):
@@ -322,29 +332,109 @@ async def analyze_workflow(request: Request):
         entry["path"] = "/".join(x for x in (folder, sub) if x)
         if not sub and c and "/" in c["path"] and c["path"].split("/")[0] == folder:
             entry["path"] = c["path"]                   # sous-dossier du catalogue
+        if name in hf:
+            entry.update(source="HF perso", url=f"https://huggingface.co/{HF_REPO}/resolve/main/{hf[name]}")
+        elif c:
+            entry.update(source="catalogue", url=c["url"])
+        elif it["url"]:
+            entry.update(source="lien du workflow", url=it["url"])
+        entry["public_url"] = it["url"] or (c["url"] if c else "")   # lien a ecrire dans le catalogue
         if name in disk:
             entry.update(status="present", where=disk[name])
-        elif name in hf:
-            entry.update(status="manquant", source="HF perso",
-                         url=f"https://huggingface.co/{HF_REPO}/resolve/main/{hf[name]}")
-        elif c:
-            entry.update(status="manquant", source="catalogue", url=c["url"])
-        elif it["url"]:
-            entry.update(status="manquant", source="lien du workflow", url=it["url"])
+        elif entry.get("url"):
+            entry["status"] = "manquant" if folder else "dossier inconnu"
         else:
-            entry.update(status="introuvable")
-        if entry.get("status") == "manquant" and not folder:
-            entry["status"] = "dossier inconnu"
+            entry["status"] = "introuvable"
         results.append(entry)
 
     from concurrent.futures import ThreadPoolExecutor
-    todo = [e for e in results if e.get("url", "").startswith("https://huggingface.co")]
+    todo = [e for e in results if e["status"] != "present" and e.get("url", "").startswith("https://huggingface.co")]
     with ThreadPoolExecutor(8) as ex:
         for e, size in zip(todo, ex.map(lambda e: hf_size(e["url"]), todo)):
             e["size"] = size
     order = {"manquant": 0, "dossier inconnu": 1, "introuvable": 2, "present": 3}
     results.sort(key=lambda e: (order.get(e["status"], 9), e["filename"].lower()))
     return results
+
+# ── CATALOGUE DE TEMPLATES COMFYUI ───────────────────────────
+COMFY_URL = "http://127.0.0.1:8188"
+TEMPLATES_GH = "https://raw.githubusercontent.com/Comfy-Org/workflow_templates/main/templates"
+_tpl_cache = {"t": 0, "data": None}
+_thumb_cache = {}
+
+def template_file(fname):
+    """Fichier de template : d'abord le ComfyUI local (version installee), sinon GitHub."""
+    for base in (f"{COMFY_URL}/templates", TEMPLATES_GH):
+        try:
+            r = requests.get(f"{base}/{fname}", timeout=8 if base == COMFY_URL else 20)
+            if r.status_code == 200 and r.content:
+                return r.content
+        except Exception:
+            pass
+    return None
+
+@app.get("/templates-index")
+async def templates_index():
+    if _tpl_cache["data"] and time.time() - _tpl_cache["t"] < 3600:
+        return _tpl_cache["data"]
+    raw = template_file("index.fr.json") or template_file("index.json")
+    if raw is None:
+        return {"error": "Catalogue indisponible (ComfyUI arrete et GitHub injoignable).", "templates": []}
+    out = []
+    for cat in json.loads(raw):
+        for t in cat.get("templates", []):
+            out.append({
+                "name": t["name"], "title": t.get("title", t["name"]), "description": t.get("description", ""),
+                "category": cat.get("title", ""), "tags": t.get("tags", []), "models": t.get("models", []),
+                "size": t.get("size", 0), "api": t.get("openSource") is False or "API" in t.get("tags", []),
+                "date": t.get("date", ""), "ext": t.get("mediaSubtype", "webp"),
+            })
+    data = {"templates": out}
+    _tpl_cache.update(t=time.time(), data=data)
+    return data
+
+@app.get("/template-thumb/{name}")
+async def template_thumb(name: str, ext: str = "webp"):
+    from fastapi.responses import Response
+    key = f"{name}.{ext}"
+    if key not in _thumb_cache:
+        raw = template_file(f"{name}-1.{ext}")
+        if raw is None:
+            return Response(status_code=404)
+        try:   # miniature 360 px (les vignettes d'origine font ~1 Mo)
+            from PIL import Image
+            import io
+            im = Image.open(io.BytesIO(raw)); im.thumbnail((360, 360))
+            buf = io.BytesIO(); im.convert("RGB").save(buf, "WEBP", quality=80)
+            raw, ext = buf.getvalue(), "webp"
+        except Exception:
+            pass
+        _thumb_cache[key] = (raw, ext)
+    raw, ext = _thumb_cache[key]
+    return Response(raw, media_type=f"image/{ext}", headers={"Cache-Control": "max-age=86400"})
+
+@app.post("/add-to-catalogue")
+async def add_to_catalogue(request: Request):
+    """Ajoute des modeles au models.json (env choisi) puis synchronise GitHub."""
+    data = await request.json()
+    env, items = (data.get("env") or "").strip(), data.get("items", [])
+    if not env or not items:
+        return {"status": "error", "message": "Environnement et modeles obligatoires."}
+    cfg = json.load(open(CONFIG_PATH, encoding="utf-8")) if os.path.exists(CONFIG_PATH) else {}
+    added = 0
+    for it in items:
+        path = it["path"].strip("/")
+        cat = path.split("/")[0]
+        obj = {"name": it["filename"], "url": it["url"], "path": path, "category": cat, "filename": it["filename"]}
+        lst = cfg.setdefault(env, {}).setdefault(cat, [])
+        i = next((k for k, m in enumerate(lst) if m["filename"] == it["filename"]), None)
+        if i is None:
+            lst.append(obj); added += 1
+        else:
+            lst[i] = obj
+    with open(CONFIG_PATH, "w", encoding="utf-8") as f:
+        json.dump(cfg, f, indent=4)
+    return {"status": "ok", "added": added, "github_sync": "ok" if sync_to_github() else "failed"}
 
 @app.get("/", response_class=HTMLResponse)
 async def index():
