@@ -44,29 +44,27 @@ def refresh_dir(path: str):
 # ── RUNPOD QUOTA ──────────────────────────────────────────
 
 def fetch_runpod_quota():
+    """Tailles declarees par RunPod pour ce pod (Go) : volume, container, network volume."""
     global _workspace_quota_gb
     if _workspace_quota_gb is not None:
         return _workspace_quota_gb
-    try:
-        pod_id = os.environ.get("RUNPOD_POD_ID", "")
-        api_key = os.environ.get("RUNPOD_API_KEY", "")
-        if not pod_id or not api_key:
-            return None
-        query = f'{{ pod(input: {{podId: "{pod_id}"}}) {{ volumeInGb networkVolume {{ size }} }} }}'
-        r = requests.post(
-            f"https://api.runpod.io/graphql?api_key={api_key}",
-            json={"query": query},
-            timeout=5
-        )
-        pod = r.json()["data"]["pod"]
-        net_vol = pod.get("networkVolume") or {}
-        net_size = net_vol.get("size", 0) or 0
-        vol_size = pod.get("volumeInGb", 0) or 0
-        quota = net_size if net_size > 0 else vol_size
-        _workspace_quota_gb = float(quota) if quota else None
-        return _workspace_quota_gb
-    except:
-        return None
+    pod_id, api_key = os.environ.get("RUNPOD_POD_ID", ""), os.environ.get("RUNPOD_API_KEY", "")
+    if not pod_id or not api_key:
+        return {}
+    query = f'{{ pod(input: {{podId: "{pod_id}"}}) {{ volumeInGb containerDiskInGb networkVolume {{ size }} }} }}'
+    for kw in ({"headers": {"Authorization": f"Bearer {api_key}"}, "url": "https://api.runpod.io/graphql"},
+               {"headers": {}, "url": f"https://api.runpod.io/graphql?api_key={api_key}"}):
+        try:
+            pod = requests.post(kw["url"], json={"query": query}, headers=kw["headers"], timeout=6).json()["data"]["pod"]
+            _workspace_quota_gb = {
+                "volume": float(pod.get("volumeInGb") or 0),
+                "container": float(pod.get("containerDiskInGb") or 0),
+                "network": float((pod.get("networkVolume") or {}).get("size") or 0),
+            }
+            return _workspace_quota_gb
+        except Exception:
+            continue
+    return {}
 
 def get_client():
     try:
@@ -659,39 +657,46 @@ def filename_fallback(download):
     except:
         return "Initialisation..."
 
+_du_cache = {"t": 0, "bytes": 0}
+
+def workspace_used_bytes():
+    """Place occupee dans /workspace (parcours complet, cache 60 s : lent sur stockage reseau)."""
+    if time.time() - _du_cache["t"] < 60:
+        return _du_cache["bytes"]
+    total = 0
+    for root, dirs, files in os.walk("/workspace"):
+        refresh_dir(root)
+        for f in files:
+            try:
+                total += os.lstat(os.path.join(root, f)).st_size
+            except OSError:
+                pass
+    _du_cache.update(t=time.time(), bytes=total)
+    return total
+
 @app.get("/disk-usage")
 async def disk_usage():
+    """Espace reel de /workspace.
+    - /workspace sur le Container Disk (pod sans Volume Disk) : df est fiable.
+    - /workspace sur un Volume Disk ou un network volume (MooseFS) : df montre tout le cluster,
+      on prend la taille declaree par l'API RunPod et on mesure l'occupe nous-memes."""
+    GB = 1_000_000_000
     try:
-        used_bytes = 0
-        if os.path.exists(BASE_MODELS_PATH):
-            for root, _, files in os.walk(BASE_MODELS_PATH):
-                refresh_dir(root)  # flush chaque dossier pendant le calcul
-                for f in files:
-                    try:
-                        used_bytes += os.path.getsize(os.path.join(root, f))
-                    except:
-                        pass
-
-        GB = 1_073_741_824
-        used_gb = round(used_bytes / GB, 2)
-        total_gb = fetch_runpod_quota()
-
-        if total_gb:
-            free_gb = round(total_gb - used_gb, 2)
-            used_pct = round((used_gb / total_gb) * 100, 1)
-            return {"workspace": {
-                "total_gb": total_gb,
-                "used_gb": used_gb,
-                "free_gb": max(free_gb, 0),
-                "used_pct": min(used_pct, 100),
-            }}
+        q = fetch_runpod_quota() or {}
+        same_fs = os.stat("/workspace").st_dev == os.stat("/").st_dev
+        if same_fs:
+            du = shutil.disk_usage("/workspace")
+            total, used, kind = du.total / GB, (du.total - du.free) / GB, "container"
         else:
-            return {"workspace": {
-                "total_gb": None,
-                "used_gb": used_gb,
-                "free_gb": None,
-                "used_pct": None,
-            }}
+            total = q.get("network") or q.get("volume") or 0
+            used, kind = workspace_used_bytes() / GB, ("network" if q.get("network") else "volume")
+        if not total:
+            return {"workspace": {"total_gb": None, "used_gb": round(used, 1), "free_gb": None, "used_pct": None, "kind": kind}}
+        return {"workspace": {
+            "total_gb": round(total, 1), "used_gb": round(used, 1),
+            "free_gb": round(max(total - used, 0), 1),
+            "used_pct": round(min(used / total * 100, 100), 1), "kind": kind,
+        }}
     except Exception as e:
         return {"workspace": None, "error": str(e)}
 
