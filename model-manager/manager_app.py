@@ -291,6 +291,17 @@ def hf_size(url):
     except Exception:
         return 0
 
+def fix_url(url, name):
+    """Lien HF dont le fichier ne porte pas le nom attendu (erreur frequente dans les templates) :
+    essaie le meme dossier avec le bon nom. Renvoie (url, corrige)."""
+    if "huggingface.co" not in url:
+        return url, False
+    base = unquote(urlparse(url).path.split("/")[-1])
+    if base == name:
+        return url, False
+    cand = url.split("?")[0].rsplit("/", 1)[0] + "/" + name
+    return (cand, True) if hf_size(cand) > 0 else (url, False)
+
 @app.get("/workflows")
 async def list_workflows():
     res = []
@@ -339,6 +350,13 @@ async def analyze_workflow(request: Request):
         elif it["url"]:
             entry.update(source="lien du workflow", url=it["url"])
         entry["public_url"] = it["url"] or (c["url"] if c else "")   # lien a ecrire dans le catalogue
+        if entry.get("url") and entry.get("source") != "HF perso":
+            entry["url"], fixed = fix_url(entry["url"], name)
+            if fixed:
+                entry["public_url"] = entry["url"]
+                entry["url_fixed"] = True
+                if c:
+                    entry["in_catalogue"] = False      # lien faux dans models.json : a reecrire
         if name in disk:
             entry.update(status="present", where=disk[name])
         elif entry.get("url"):
@@ -426,12 +444,12 @@ async def add_to_catalogue(request: Request):
         path = it["path"].strip("/")
         cat = path.split("/")[0]
         obj = {"name": it["filename"], "url": it["url"], "path": path, "category": cat, "filename": it["filename"]}
-        lst = cfg.setdefault(env, {}).setdefault(cat, [])
-        i = next((k for k, m in enumerate(lst) if m["filename"] == it["filename"]), None)
-        if i is None:
-            lst.append(obj); added += 1
+        existing = [(l, k) for e in cfg.values() for l in e.values() for k, m in enumerate(l) if m["filename"] == it["filename"]]
+        if existing:                     # deja au catalogue (lien a corriger) : mise a jour sur place
+            for l, k in existing:
+                l[k]["url"] = it["url"]
         else:
-            lst[i] = obj
+            cfg.setdefault(env, {}).setdefault(cat, []).append(obj); added += 1
     with open(CONFIG_PATH, "w", encoding="utf-8") as f:
         json.dump(cfg, f, indent=4)
     return {"status": "ok", "added": added, "github_sync": "ok" if sync_to_github() else "failed"}
