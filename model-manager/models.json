@@ -2528,6 +2528,13 @@
                 "path": "loras/Krea 2",
                 "category": "loras",
                 "filename": "krea2_turbo_lora_rank_64_bf16.safetensors"
+            },
+            {
+                "name": "roi_oiseau_krea2.safetensors",
+                "url": "https://civitai.red/api/download/models/3145356?fileId=3025757",
+                "path": "loras",
+                "category": "loras",
+                "filename": "roi_oiseau_krea2.safetensors"
             }
         ],
         "text_encoders": [
