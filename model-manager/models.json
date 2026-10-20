@@ -3444,6 +3444,13 @@
                 "path": "diffusion_models",
                 "category": "diffusion_models",
                 "filename": "moss_image_sft_int8_convrot.safetensors"
+            },
+            {
+                "name": "moss_image_base_int8_convrot.safetensors",
+                "url": "https://huggingface.co/Comfy-Org/MOSS-Image/resolve/main/diffusion_models/moss_image_base_int8_convrot.safetensors",
+                "path": "diffusion_models",
+                "category": "diffusion_models",
+                "filename": "moss_image_base_int8_convrot.safetensors"
             }
         ],
         "text_encoders": [
