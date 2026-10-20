@@ -246,7 +246,12 @@ def walk_strings(v):
         for x in v: yield from walk_strings(x)
 
 def models_from_workflow(wf):
-    """Liste de {value, folder, url} a partir d'un workflow ComfyUI (nodes + subgraphs)."""
+    """Liste de {value, folder, url} a partir d'un workflow ComfyUI (nodes + subgraphs),
+    ou d'un prompt au format API (images PNG de certains sites : {"id": {"class_type", "inputs"}})."""
+    if "nodes" not in wf and all(isinstance(v, dict) and "class_type" in v for v in wf.values()):
+        wf = {"nodes": [{"type": v["class_type"], "mode": 0,
+                         "widgets_values": [x for x in v.get("inputs", {}).values() if isinstance(x, str)]}
+                        for v in wf.values()]}
     nodes = list(wf.get("nodes", []))
     for sg in (wf.get("definitions") or {}).get("subgraphs", []):
         nodes += sg.get("nodes", [])
