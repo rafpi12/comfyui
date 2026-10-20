@@ -3482,6 +3482,15 @@
                 "category": "text_encoders",
                 "filename": "qwen3.5_9b_w4a8_gptq.safetensors"
             }
+        ],
+        "loras": [
+            {
+                "name": "feverdream-epoch-07.safetensors",
+                "url": "https://civitai.com/api/download/models/3418563?fileId=3312049",
+                "path": "loras",
+                "category": "loras",
+                "filename": "feverdream-epoch-07.safetensors"
+            }
         ]
     }
 }
