@@ -2535,6 +2535,13 @@
                 "path": "loras",
                 "category": "loras",
                 "filename": "roi_oiseau_krea2.safetensors"
+            },
+            {
+                "name": "MidCenturyDisneyKrea2Raw.safetensors",
+                "url": "https://civitai.red/api/download/models/3360784?fileId=3251147",
+                "path": "loras",
+                "category": "loras",
+                "filename": "MidCenturyDisneyKrea2Raw.safetensors"
             }
         ],
         "text_encoders": [
