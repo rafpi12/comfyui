@@ -279,6 +279,56 @@ def models_from_workflow(wf):
                 cur["node"] = cur["node"] or ntype
     return list(found.values())
 
+# ── IMAGES DE SITES DE GENERATION : noms internes "EMS-xxxx-EMS" ──────────
+# Le site renomme les fichiers (EMS-<id>-EMS.safetensors) dans le prompt ComfyUI, mais le bloc
+# "generation_data" de l'image garde le SHA256 de chaque modele : Civitai le retrouve (by-hash).
+EMS_RE = re.compile(r"^EMS-\d+-EMS\.safetensors$", re.I)
+
+def civitai_by_hash(sha):
+    try:
+        h = {"Authorization": f"Bearer {CIVITAI_TOKEN}"} if CIVITAI_TOKEN else {}
+        r = requests.get(f"https://civitai.com/api/v1/model-versions/by-hash/{sha}", headers=h, timeout=10)
+        if r.status_code != 200:
+            return None
+        d = r.json()
+        f = next((f for f in d.get("files", []) if (f.get("hashes") or {}).get("SHA256", "").upper() == sha.upper()), None) \
+            or next((f for f in d.get("files", []) if f.get("primary")), None) or (d.get("files") or [None])[0]
+        if not f:
+            return None
+        return {"filename": f["name"], "url": f.get("downloadUrl") or f"https://civitai.com/api/download/models/{d['id']}",
+                "type": (d.get("model") or {}).get("type", ""), "title": f"{(d.get('model') or {}).get('name', '')} / {d.get('name', '')}"}
+    except Exception:
+        return None
+
+def resolve_ems(items, gen_text, known):
+    """Remplace les noms EMS par les vrais fichiers, d'apres generation_data (ordre : base puis LoRAs)."""
+    try:
+        gd, _ = json.JSONDecoder().raw_decode(gen_text.strip())
+    except Exception:
+        return items
+    base = gd.get("baseModel") or {}
+    loras = [m for m in gd.get("models", []) if str(m.get("type", "")).upper() in ("LORA", "LOCON", "LYCORIS")]
+    for it in items:
+        if not EMS_RE.match(it["value"]):
+            continue
+        src = loras.pop(0) if it["folder"] == "loras" and loras else (base if base else None)
+        if src is base:
+            base = {}
+        if not src:
+            continue
+        guess = (src.get("modelFileName") or "") + ".safetensors"
+        it["ems"] = it["value"]
+        if guess != ".safetensors" and guess in known:      # deja connu sous son vrai nom (disque, catalogue, HF)
+            it["value"] = guess
+            continue
+        c = civitai_by_hash(src.get("hash", "")) if src.get("hash") else None
+        if c:
+            it["value"], it["url"] = c["filename"], c["url"]
+            it["civitai"] = c["title"]
+        elif guess != ".safetensors":
+            it["value"] = guess
+    return items
+
 def models_from_text(text):
     out = {}
     for m in re.findall(r"[\w\-.+()\[\]/\\]+\.(?:safetensors|gguf|pth|pt|ckpt|bin|sft|onnx)\b", text):
@@ -333,12 +383,15 @@ async def analyze_workflow(request: Request):
         items = models_from_text(text)
 
     disk, cat, hf = disk_index(), catalogue_index(), hf_repo_index()
+    if data.get("generation_data") and any(EMS_RE.match(i["value"]) for i in items):
+        items = resolve_ems(items, data["generation_data"], set(disk) | set(cat) | set(hf))
     results = []
     for it in items:
         value = it["value"]
         name = value.split("/")[-1]
         sub = "/".join(value.split("/")[:-1])          # sous-dossier tel qu'ecrit dans le workflow
-        entry = {"value": value, "filename": name, "node": it["node"], "size": 0, "in_catalogue": name in cat}
+        entry = {"value": value, "filename": name, "node": it["node"], "size": 0, "in_catalogue": name in cat,
+                 "ems": it.get("ems", ""), "civitai": it.get("civitai", "")}
         c = cat.get(name)
         folder = it["folder"] or (c["path"].split("/")[0] if c else "")
         if not folder and hf.get(name, "").startswith("backup/models/"):

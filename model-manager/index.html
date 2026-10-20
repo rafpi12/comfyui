@@ -706,18 +706,18 @@
                 if (type === 'IEND') break;
                 pos += 12 + len;
             }
-            return chunks.workflow || chunks.prompt || null;
+            return { text: chunks.workflow || chunks.prompt || null, gen: chunks.generation_data || null };
         }
         async function handleWfFiles(files) {
             const f = files && files[0]; if (!f) return;
             const title = f.name.replace(/\.(json|png)$/i, '');
-            let text = null;
+            let text = null, gen = null;
             if (/\.png$/i.test(f.name) || f.type === 'image/png') {
-                text = await pngWorkflow(f);
+                ({ text, gen } = await pngWorkflow(f));
                 if (!text) { addLog(`Aucun workflow dans l'image ${esc(f.name)}.`, true); return; }
             } else text = await f.text();
             wfTab('mine');
-            analyzeWorkflow({text}, title);
+            analyzeWorkflow(gen ? {text, generation_data: gen} : {text}, title);
         }
         (() => {
             let depth = 0;
@@ -768,7 +768,7 @@
                 const where = e.status === "dossier inconnu"
                     ? `<select style="padding:5px 28px 5px 9px;font-size:11px" onclick="event.stopPropagation()" onchange="wfRows[${i}].path=this.value; wfRows[${i}].status='manquant'; renderWorkflowRows()"><option value="">dossier ?</option>${WF_FOLDERS.map(f => `<option>${f}</option>`).join('')}</select>`
                     : `<span class="wf-path">${esc(e.status === 'present' ? (e.where || '') : e.path)}</span>`;
-                const chips = (e.url_fixed ? '<span class="chip fixed" title="Le lien du workflow pointait vers un autre fichier : corrigé">lien corrigé</span>' : '')
+                const chips = (e.ems ? `<span class="chip fixed" title="Nom interne du site de génération : ${esc(e.ems)}${e.civitai ? ' · Civitai : ' + esc(e.civitai) : ''}">${e.civitai ? 'identifié Civitai' : 'renommé'}</span>` : '') + (e.url_fixed ? '<span class="chip fixed" title="Le lien du workflow pointait vers un autre fichier : corrigé">lien corrigé</span>' : '')
                     + ((!e.in_catalogue && (e.public_url || e.url)) ? '<span class="chip out">hors catalogue</span>' : '');
                 const info = [e.source && e.status !== 'present' ? `<span class="src">${esc(e.source)}</span>` : '', e.size ? formatSize(e.size) : '', note ? `<span class="${cls}">${note}</span>` : ''].filter(Boolean).join('<span style="opacity:.4">·</span>');
                 return `<div class="wf-row ${i === wfSel ? 'sel' : ''}" onclick="wfSelect(${i})" title="Cliquer pour l'ouvrir dans l'éditeur catalogue">${check}<span class="wf-icon ${cls}">${icon}</span><span class="wf-name ${cls}" title="${esc(e.value)}">${esc(e.filename)}</span><span style="display:flex;gap:6px">${chips}</span>${where}<span class="wf-info">${info}</span></div>`;
