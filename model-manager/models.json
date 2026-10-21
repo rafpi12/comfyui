@@ -3526,15 +3526,7 @@
                 "filename": "stable_audio_3_medium.safetensors"
             }
         ],
-        "vae": [
-            {
-                "name": "minimax_music3_dav.safetensors",
-                "url": "https://huggingface.co/Comfy-Org/MiniMax-Music-3/resolve/main/vae/minimax_music3_dav.safetensors",
-                "path": "vae",
-                "category": "vae",
-                "filename": "minimax_music3_dav.safetensors"
-            }
-        ],
+        "vae": [],
         "diffusion_models": [
             {
                 "name": "minimax_music3_dit_fp16.safetensors",
