@@ -3515,6 +3515,13 @@
                 "path": "text_encoders",
                 "category": "text_encoders",
                 "filename": "t5gemma_b_b_ul2.safetensors"
+            },
+            {
+                "name": "minimax_music3_text_encoder_pruned_int8_convrot.safetensors",
+                "url": "https://huggingface.co/Comfy-Org/MiniMax-Music-3/resolve/main/text_encoders/minimax_music3_text_encoder_pruned_int8_convrot.safetensors",
+                "path": "text_encoders",
+                "category": "text_encoders",
+                "filename": "minimax_music3_text_encoder_pruned_int8_convrot.safetensors"
             }
         ],
         "checkpoints": [
@@ -3524,6 +3531,24 @@
                 "path": "checkpoints",
                 "category": "checkpoints",
                 "filename": "stable_audio_3_medium.safetensors"
+            }
+        ],
+        "vae": [
+            {
+                "name": "minimax_music3_dav.safetensors",
+                "url": "https://huggingface.co/Comfy-Org/MiniMax-Music-3/resolve/main/vae/minimax_music3_dav.safetensors",
+                "path": "vae",
+                "category": "vae",
+                "filename": "minimax_music3_dav.safetensors"
+            }
+        ],
+        "diffusion_models": [
+            {
+                "name": "minimax_music3_dit_fp16.safetensors",
+                "url": "https://huggingface.co/Comfy-Org/MiniMax-Music-3/resolve/main/diffusion_models/minimax_music3_dit_fp16.safetensors",
+                "path": "diffusion_models",
+                "category": "diffusion_models",
+                "filename": "minimax_music3_dit_fp16.safetensors"
             }
         ]
     }
