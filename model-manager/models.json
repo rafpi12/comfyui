@@ -3577,5 +3577,16 @@
                 "filename": "minimax_music3_text_encoder_pruned_int8_convrot.safetensors"
             }
         ]
+    },
+    "SAM": {
+        "checkpoints": [
+            {
+                "name": "sam3.1_multiplex_fp16.safetensors",
+                "url": "https://huggingface.co/Comfy-Org/sam3.1/resolve/main/checkpoints/sam3.1_multiplex_fp16.safetensors",
+                "path": "checkpoints",
+                "category": "checkpoints",
+                "filename": "sam3.1_multiplex_fp16.safetensors"
+            }
+        ]
     }
 }
