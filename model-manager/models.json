@@ -3490,6 +3490,13 @@
                 "path": "loras",
                 "category": "loras",
                 "filename": "feverdream-epoch-07.safetensors"
+            },
+            {
+                "name": "lora_dmd2.safetensors",
+                "url": "https://huggingface.co/lodestones/MOSS-Image-Base-8-steps-dmd/resolve/main/lora_dmd2.safetensors",
+                "path": "loras",
+                "category": "loras",
+                "filename": "lora_dmd2.safetensors"
             }
         ]
     }
