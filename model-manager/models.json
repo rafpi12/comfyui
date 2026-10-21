@@ -3550,6 +3550,15 @@
                 "category": "diffusion_models",
                 "filename": "minimax_music3_dit_fp16.safetensors"
             }
+        ],
+        "audio_encoders": [
+            {
+                "name": "sheetsage2_bf16.safetensors",
+                "url": "https://huggingface.co/Comfy-Org/YuE2/resolve/main/audio_encoders/sheetsage2_bf16.safetensors",
+                "path": "audio_encoders",
+                "category": "audio_encoders",
+                "filename": "sheetsage2_bf16.safetensors"
+            }
         ]
     },
     "YuE2": {
