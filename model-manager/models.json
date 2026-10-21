@@ -3515,13 +3515,6 @@
                 "path": "text_encoders",
                 "category": "text_encoders",
                 "filename": "t5gemma_b_b_ul2.safetensors"
-            },
-            {
-                "name": "minimax_music3_text_encoder_pruned_int8_convrot.safetensors",
-                "url": "https://huggingface.co/Comfy-Org/MiniMax-Music-3/resolve/main/text_encoders/minimax_music3_text_encoder_pruned_int8_convrot.safetensors",
-                "path": "text_encoders",
-                "category": "text_encoders",
-                "filename": "minimax_music3_text_encoder_pruned_int8_convrot.safetensors"
             }
         ],
         "checkpoints": [
