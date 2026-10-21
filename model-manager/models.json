@@ -3567,6 +3567,15 @@
                 "category": "diffusion_models",
                 "filename": "minimax_music3_dit_fp16.safetensors"
             }
+        ],
+        "text_encoders": [
+            {
+                "name": "minimax_music3_text_encoder_pruned_int8_convrot.safetensors",
+                "url": "https://huggingface.co/Comfy-Org/MiniMax-Music-3/resolve/main/text_encoders/minimax_music3_text_encoder_pruned_int8_convrot.safetensors",
+                "path": "text_encoders",
+                "category": "text_encoders",
+                "filename": "minimax_music3_text_encoder_pruned_int8_convrot.safetensors"
+            }
         ]
     }
 }
