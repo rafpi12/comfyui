@@ -3551,5 +3551,16 @@
                 "filename": "minimax_music3_dit_fp16.safetensors"
             }
         ]
+    },
+    "YuE2": {
+        "checkpoints": [
+            {
+                "name": "yue2_3b_int8_convrot.safetensors",
+                "url": "https://huggingface.co/Comfy-Org/YuE2/resolve/main/checkpoints/yue2_3b_int8_convrot.safetensors",
+                "path": "checkpoints",
+                "category": "checkpoints",
+                "filename": "yue2_3b_int8_convrot.safetensors"
+            }
+        ]
     }
 }
