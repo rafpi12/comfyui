@@ -3527,15 +3527,7 @@
             }
         ],
         "vae": [],
-        "diffusion_models": [
-            {
-                "name": "minimax_music3_dit_fp16.safetensors",
-                "url": "https://huggingface.co/Comfy-Org/MiniMax-Music-3/resolve/main/diffusion_models/minimax_music3_dit_fp16.safetensors",
-                "path": "diffusion_models",
-                "category": "diffusion_models",
-                "filename": "minimax_music3_dit_fp16.safetensors"
-            }
-        ],
+        "diffusion_models": [],
         "audio_encoders": [
             {
                 "name": "sheetsage2_bf16.safetensors",
