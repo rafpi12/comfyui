@@ -3534,7 +3534,15 @@
             }
         ],
         "vae": [],
-        "diffusion_models": [],
+        "diffusion_models": [
+            {
+                "name": "stable_audio_3_medium_base.safetensors",
+                "url": "https://huggingface.co/Comfy-Org/stable-audio-3/resolve/main/checkpoints/stable_audio_3_medium_base.safetensors",
+                "path": "checkpoints",
+                "category": "diffusion_models",
+                "filename": "stable_audio_3_medium_base.safetensors"
+            }
+        ],
         "audio_encoders": [
             {
                 "name": "sheetsage2_bf16.safetensors",
