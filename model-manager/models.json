@@ -3543,6 +3543,15 @@
                 "category": "audio_encoders",
                 "filename": "sheetsage2_bf16.safetensors"
             }
+        ],
+        "loras": [
+            {
+                "name": "dk-spaceghost-v1-2500.safetensors",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/stable-audio/dk-spaceghost-v1/comfyui/dk-spaceghost-v1-2500.safetensors",
+                "path": "loras",
+                "category": "loras",
+                "filename": "dk-spaceghost-v1-2500.safetensors"
+            }
         ]
     },
     "YuE2": {
