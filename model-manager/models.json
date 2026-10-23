@@ -3524,15 +3524,7 @@
                 "filename": "t5gemma_b_b_ul2.safetensors"
             }
         ],
-        "checkpoints": [
-            {
-                "name": "stable_audio_3_medium.safetensors",
-                "url": "https://huggingface.co/Comfy-Org/stable-audio-3/resolve/main/checkpoints/stable_audio_3_medium.safetensors",
-                "path": "checkpoints",
-                "category": "checkpoints",
-                "filename": "stable_audio_3_medium.safetensors"
-            }
-        ],
+        "checkpoints": [],
         "vae": [],
         "diffusion_models": [
             {
