@@ -3558,6 +3558,13 @@
                 "path": "loras",
                 "category": "loras",
                 "filename": "dk-spaceghost-v1-1500-medium.safetensors"
+            },
+            {
+                "name": "dk-spaceghost-v1-1500.safetensors",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/stable-audio/dk-spaceghost-v1/comfyui/dk-spaceghost-v1-1500.safetensors?download=true",
+                "path": "loras",
+                "category": "loras",
+                "filename": "dk-spaceghost-v1-1500.safetensors"
             }
         ]
     },
