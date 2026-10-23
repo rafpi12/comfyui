@@ -3533,6 +3533,13 @@
                 "path": "checkpoints",
                 "category": "diffusion_models",
                 "filename": "stable_audio_3_medium_base.safetensors"
+            },
+            {
+                "name": "stable_audio_3_medium.safetensors",
+                "url": "https://huggingface.co/Comfy-Org/stable-audio-3/resolve/main/checkpoints/stable_audio_3_medium.safetensors",
+                "path": "checkpoints",
+                "category": "diffusion_models",
+                "filename": "stable_audio_3_medium.safetensors"
             }
         ],
         "audio_encoders": [
