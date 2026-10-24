@@ -2549,6 +2549,13 @@
                 "path": "loras",
                 "category": "loras",
                 "filename": "MidCenturyDisneyKrea2Raw.safetensors"
+            },
+            {
+                "name": "denver_style_krea2_v2_000003750.safetensors",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Loras/denver/denver_style_krea2_v2_000003750.safetensors",
+                "path": "loras",
+                "category": "loras",
+                "filename": "denver_style_krea2_v2_000003750.safetensors"
             }
         ],
         "text_encoders": [
