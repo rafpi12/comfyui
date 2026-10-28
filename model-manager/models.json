@@ -2556,6 +2556,13 @@
                 "path": "loras",
                 "category": "loras",
                 "filename": "denver_style_krea2_v2_000003750.safetensors"
+            },
+            {
+                "name": "tmblr0ne_scifi_krea2_v2.safetensors",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Loras/tmblr0ne_scifi/tmblr0ne_scifi_krea2_v2.safetensors?download=true",
+                "path": "loras",
+                "category": "loras",
+                "filename": "tmblr0ne_scifi_krea2_v2.safetensors"
             }
         ],
         "text_encoders": [
