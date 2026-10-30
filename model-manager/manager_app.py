@@ -461,7 +461,7 @@ async def templates_index():
                 "name": t["name"], "title": t.get("title", t["name"]), "description": t.get("description", ""),
                 "category": cat.get("title", ""), "tags": t.get("tags", []), "models": t.get("models", []),
                 "size": t.get("size", 0), "api": t.get("openSource") is False or "API" in t.get("tags", []),
-                "date": t.get("date", ""), "ext": t.get("mediaSubtype", "webp"),
+                "date": t.get("date", ""), "ext": t.get("mediaSubtype", "webp"), "usage": t.get("usage", 0),
             })
     data = {"templates": out}
     _tpl_cache.update(t=time.time(), data=data)
