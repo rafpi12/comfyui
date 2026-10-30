@@ -331,7 +331,8 @@ def resolve_ems(items, gen_text, known):
 
 def models_from_text(text):
     out = {}
-    for m in re.findall(r"[\w\-.+()\[\]/\\]+\.(?:safetensors|gguf|pth|pt|ckpt|bin|sft|onnx)\b", text):
+    # pas de debut de nom colle a un lien (https://...) ni a un crochet de lien Markdown [nom](url)
+    for m in re.findall(r"(?<![\w\-.+/\\:])[\w\-.+()]+(?:[/\\][\w\-.+()]+)*\.(?:safetensors|gguf|pth|pt|ckpt|bin|sft|onnx)\b", text):
         v = m.strip().replace("\\", "/")
         out.setdefault(v, {"value": v, "folder": "", "url": "", "node": ""})
     return list(out.values())
@@ -461,7 +462,7 @@ async def templates_index():
                 "name": t["name"], "title": t.get("title", t["name"]), "description": t.get("description", ""),
                 "category": cat.get("title", ""), "tags": t.get("tags", []), "models": t.get("models", []),
                 "size": t.get("size", 0), "api": t.get("openSource") is False or "API" in t.get("tags", []),
-                "date": t.get("date", ""), "ext": t.get("mediaSubtype", "webp"), "usage": t.get("usage", 0),
+                "date": t.get("date", ""), "ext": t.get("mediaSubtype", "webp"),
             })
     data = {"templates": out}
     _tpl_cache.update(t=time.time(), data=data)
