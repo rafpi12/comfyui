@@ -2563,6 +2563,13 @@
                 "path": "loras",
                 "category": "loras",
                 "filename": "tmblr0ne_scifi_krea2_v2.safetensors"
+            },
+            {
+                "name": "Krea2Olivia_000002800.safetensors",
+                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/Olivia/Krea%202/Krea2Olivia_000002800.safetensors?download=true",
+                "path": "loras",
+                "category": "loras",
+                "filename": "Krea2Olivia_000002800.safetensors"
             }
         ],
         "text_encoders": [
