@@ -1103,21 +1103,52 @@
             return null;
         }
         async function mediaWorkflow(file) {
-            const t = new TextDecoder('utf-8').decode(await file.arrayBuffer());
+            // les metadonnees sont au debut ou a la fin du fichier : inutile de lire une grosse video en entier
+            const MB = 16 * 1048576;
+            const part = file.size > 2 * MB ? new Blob([file.slice(0, MB), file.slice(-MB)]) : file;
+            let bytes = new Uint8Array(await part.arrayBuffer());
+            // Ogg (Opus, Vorbis) : le texte est coupe en pages de ~64 Ko, on recolle le contenu des pages
+            if (bytes[0] === 0x4f && bytes[1] === 0x67 && bytes[2] === 0x67 && bytes[3] === 0x53) {
+                const out = []; let p = 0;
+                while (p + 27 <= bytes.length && bytes[p] === 0x4f && bytes[p + 1] === 0x67 && bytes[p + 2] === 0x67 && bytes[p + 3] === 0x53) {
+                    const nseg = bytes[p + 26]; let len = 0;
+                    for (let k = 0; k < nseg; k++) len += bytes[p + 27 + k];
+                    const start = p + 27 + nseg;
+                    out.push(bytes.subarray(start, start + len));
+                    p = start + len;
+                }
+                const total = out.reduce((a, c) => a + c.length, 0), joined = new Uint8Array(total);
+                let o = 0; out.forEach(c => { joined.set(c, o); o += c.length; });
+                bytes = joined;
+            }
+            const t = new TextDecoder('utf-8').decode(bytes);
+            const tryParse = raw => { try { return JSON.parse(raw); } catch(e) { return null; } };
+            const isWf = o => o && Array.isArray(o.nodes);
+            const isPrompt = o => o && !Array.isArray(o) && Object.values(o).some(v => v && v.class_type);
+            // 1) JSON place juste apres la cle "workflow" (MP3, FLAC, Opus, WebP)
             for (const key of ['workflow', 'prompt']) {
                 const re = new RegExp(key + '[\\s\\S]{0,24}?\\{', 'gi');
                 let m;
                 while ((m = re.exec(t))) {
                     const raw = jsonAt(t, m.index + m[0].length - 1);
-                    if (!raw) continue;
-                    try {
-                        const o = JSON.parse(raw);
-                        if (Array.isArray(o.nodes) || Object.values(o).some(v => v && v.class_type)) return raw;
-                    } catch(e) {}
+                    const o = raw && tryParse(raw);
+                    if (isWf(o) || isPrompt(o)) return raw;
                     re.lastIndex = m.index + m[0].length;
                 }
             }
-            return null;
+            // 2) MP4 / MOV : les noms des cles et leurs valeurs sont ranges separement,
+            //    on teste chaque objet JSON qui ressemble a un workflow (prioritaire) ou a un prompt
+            let prompt = null;
+            const re = /\{"(?:id|last_node_id|\d+)"\s*:/g;
+            let m;
+            while ((m = re.exec(t))) {
+                const raw = jsonAt(t, m.index);
+                const o = raw && tryParse(raw);
+                if (isWf(o)) return raw;
+                if (!prompt && isPrompt(o)) prompt = raw;
+                if (o) re.lastIndex = m.index + raw.length;
+            }
+            return prompt;
         }
         async function handleWfFiles(files) {
             const f = files && files[0]; if (!f) return;
