@@ -380,9 +380,9 @@
                         <button onclick="analyzeWorkflow({workflow: document.getElementById('wf-select').value})" class="btn primary">Analyser</button>
                     </div>
                     <label id="wf-drop" class="dropzone">
-                        <input type="file" accept=".json,.png,application/json,image/png" class="hidden" onchange="handleWfFiles(this.files); this.value=''">
+                        <input type="file" accept=".json,application/json,image/*,audio/*,video/*" class="hidden" onchange="handleWfFiles(this.files); this.value=''">
                         <span class="dz-title">Glisse un workflow ici</span>
-                        <span class="dz-sub">Fichier .json ou image PNG générée par ComfyUI, ou clique pour choisir</span>
+                        <span class="dz-sub">Fichier .json, ou image, audio ou vidéo générés par ComfyUI (PNG, WebP, MP3, FLAC, MP4…), ou clique pour choisir</span>
                     </label>
                 </div>
 
@@ -1088,14 +1088,47 @@
             }
             return { text: chunks.workflow || chunks.prompt || null, gen: chunks.generation_data || null };
         }
+        // Audio, video, WebP... : ComfyUI range le workflow dans les metadonnees du fichier
+        // (ID3 pour le MP3, commentaires Vorbis pour FLAC/Opus, EXIF pour le WebP, tags pour MP4/WebM).
+        // On cherche le JSON qui suit la cle "workflow" (sinon "prompt") et on verifie qu'il est valide.
+        function jsonAt(t, i) {
+            let depth = 0, inStr = false, escp = false;
+            for (let k = i; k < t.length; k++) {
+                const c = t[k];
+                if (inStr) { if (escp) escp = false; else if (c === '\\') escp = true; else if (c === '"') inStr = false; continue; }
+                if (c === '"') inStr = true;
+                else if (c === '{') depth++;
+                else if (c === '}' && --depth === 0) return t.slice(i, k + 1);
+            }
+            return null;
+        }
+        async function mediaWorkflow(file) {
+            const t = new TextDecoder('utf-8').decode(await file.arrayBuffer());
+            for (const key of ['workflow', 'prompt']) {
+                const re = new RegExp(key + '[\\s\\S]{0,24}?\\{', 'gi');
+                let m;
+                while ((m = re.exec(t))) {
+                    const raw = jsonAt(t, m.index + m[0].length - 1);
+                    if (!raw) continue;
+                    try {
+                        const o = JSON.parse(raw);
+                        if (Array.isArray(o.nodes) || Object.values(o).some(v => v && v.class_type)) return raw;
+                    } catch(e) {}
+                    re.lastIndex = m.index + m[0].length;
+                }
+            }
+            return null;
+        }
         async function handleWfFiles(files) {
             const f = files && files[0]; if (!f) return;
-            const title = f.name.replace(/\.(json|png)$/i, '');
+            const title = f.name.replace(/\.[^.]+$/, '');
             let text = null, gen = null;
-            if (/\.png$/i.test(f.name) || f.type === 'image/png') {
-                ({ text, gen } = await pngWorkflow(f));
-                if (!text) { addLog(`Aucun workflow dans l'image ${esc(f.name)}.`, true); return; }
-            } else text = await f.text();
+            if (/\.json$/i.test(f.name) || f.type === 'application/json') text = await f.text();
+            else {
+                if (/\.png$/i.test(f.name) || f.type === 'image/png') ({ text, gen } = await pngWorkflow(f));
+                if (!text) text = await mediaWorkflow(f);
+                if (!text) { addLog(`Aucun workflow ComfyUI dans ${esc(f.name)}.`, true); return; }
+            }
             wfTab('mine');
             analyzeWorkflow(gen ? {text, generation_data: gen} : {text}, title);
         }
