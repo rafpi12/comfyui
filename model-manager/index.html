@@ -10,632 +10,885 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
-            --bg: #101010; --surface: #1c1c1c; --well: #161616;
-            --hair: rgba(255,255,255,.09); --hair-2: rgba(255,255,255,.16);
-            --ink: #ffffff; --ink-2: #ababab; --ink-3: #6e6e6e;
-            --ok: #9fd3a8; --ok-dim: rgba(159,211,168,.10);
-            --warn: #e6c27a; --warn-dim: rgba(230,194,122,.10);
-            --err: #ef8a76; --err-dim: rgba(239,138,118,.10);
-            --info: #9ab8e8; --info-dim: rgba(154,184,232,.10);
+            --bg: #0e0e0e; --card: #151515; --surface: #1c1c1c; --well: #121212; --raise: #232323;
+            --hair: rgba(255,255,255,.08); --hair-2: rgba(255,255,255,.15); --row: rgba(255,255,255,.035);
+            --ink: #f4f4f4; --ink-2: #a8a8a8; --ink-3: #6a6a6a;
+            --ok: #9fd3a8; --ok-dim: rgba(159,211,168,.12);
+            --warn: #e6c27a; --warn-dim: rgba(230,194,122,.12);
+            --err: #ef8a76; --err-dim: rgba(239,138,118,.12);
+            --info: #9ab8e8; --info-dim: rgba(154,184,232,.12);
             --sans: "Geist", ui-sans-serif, system-ui, sans-serif;
             --mono: "Geist Mono", ui-monospace, monospace;
-            --pill: 999px;
+            --r: 10px; --head: 60px;
         }
         * { box-sizing: border-box; }
         html { scroll-behavior: smooth; }
-        body { margin: 0; background: var(--bg); color: var(--ink); font: 400 15px/1.5 var(--sans); letter-spacing: -0.01em; -webkit-font-smoothing: antialiased; }
+        body { margin: 0; background: var(--bg); color: var(--ink); font: 400 14px/1.5 var(--sans); letter-spacing: -0.01em; -webkit-font-smoothing: antialiased; }
         ::selection { background: #fff; color: #000; }
-        .wrap { max-width: 1240px; margin: 0 auto; padding: 28px 40px 80px; }
         .hidden { display: none !important; }
+        .spacer { flex: 1; }
+        .mono { font-family: var(--mono) !important; letter-spacing: 0 !important; }
+        .muted { color: var(--ink-3); font-size: 13px; }
+        .err-text { color: var(--err); font-size: 13px; }
 
-        /* ── en-tete ── */
-        header { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding-bottom: 28px; margin-bottom: 56px; border-bottom: 1px solid var(--hair); flex-wrap: wrap; }
-        .brand { display: flex; align-items: center; gap: 14px; }
-        .brand-mark { width: 26px; height: 26px; display: grid; grid-template-columns: 1fr 1fr; gap: 3px; }
-        .brand-mark i { background: #fff; border-radius: 50%; }
-        .brand-kicker { display: none; }
-        h1 { margin: 0; font: 500 19px/1 var(--sans); letter-spacing: -0.02em; }
-        h1 em { font-style: normal; color: var(--ink-3); font-weight: 400; }
-        .head-tools { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-
-        .meter { display: flex; align-items: center; gap: 14px; height: 42px; padding: 0 20px; border: 1px solid var(--hair); border-radius: var(--pill); background: var(--surface); }
-        .meter-top { display: flex; gap: 10px; font: 400 13px var(--sans); color: var(--ink-2); white-space: nowrap; }
-        .meter-top > span { display: none; }
-        .meter-top b { font-weight: 500; color: var(--ink); }
-        .meter-track { width: 110px; height: 3px; background: var(--hair-2); border-radius: 3px; overflow: hidden; }
+        /* ── barre du haut ── */
+        .top { position: sticky; top: 0; z-index: 40; height: var(--head); display: flex; align-items: center; gap: 22px; padding: 0 24px; background: rgba(14,14,14,.82); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-bottom: 1px solid var(--hair); }
+        .brand { font: 500 16px var(--sans); letter-spacing: -0.02em; white-space: nowrap; }
+        .brand em { font-style: normal; color: var(--ink-3); font-weight: 400; }
+        .top nav { display: flex; gap: 4px; }
+        .top nav a { color: var(--ink-3); text-decoration: none; font-size: 13.5px; padding: 6px 10px; border-radius: 8px; transition: color .15s, background .15s; }
+        .top nav a:hover { color: var(--ink); background: rgba(255,255,255,.05); }
+        .meter { display: flex; align-items: center; gap: 12px; height: 34px; padding: 0 14px; border: 1px solid var(--hair); border-radius: var(--r); background: var(--card); font-size: 12.5px; color: var(--ink-2); white-space: nowrap; }
+        .meter b { font-weight: 500; color: var(--ink); }
+        .meter-track { width: 90px; height: 3px; background: var(--hair-2); border-radius: 3px; overflow: hidden; }
         #ws-bar { height: 100%; width: 0%; background: #fff; transition: width .6s ease; }
         #ws-bar.warn { background: var(--warn); } #ws-bar.crit { background: var(--err); }
-        .meter-free { font: 13px var(--sans); color: var(--ink-3); white-space: nowrap; }
-        .meter-free span { color: var(--ink-2); }
-        .meter-free .meter-kind { color: var(--ink-3); margin-left: 6px; padding: 2px 8px; border: 1px solid var(--hair-2); border-radius: 999px; font-size: 11.5px; }
+        .meter-kind { color: var(--ink-3); padding: 1px 7px; border: 1px solid var(--hair-2); border-radius: 999px; font-size: 11px; }
         .meter-kind:empty { display: none; }
 
-        /* ── boutons ── */
-        .btn { font: 500 14px/1 var(--sans); letter-spacing: -0.01em; height: 42px; padding: 0 20px; border-radius: var(--pill); border: 1px solid var(--hair-2); background: transparent; color: var(--ink); cursor: pointer; transition: background .15s, border-color .15s, opacity .15s; display: inline-flex; align-items: center; justify-content: center; gap: 9px; white-space: nowrap; }
+        /* ── boutons et champs ── */
+        .btn { font: 500 13px/1 var(--sans); height: 34px; padding: 0 14px; border-radius: var(--r); border: 1px solid var(--hair-2); background: transparent; color: var(--ink); cursor: pointer; transition: background .15s, border-color .15s, opacity .15s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; white-space: nowrap; }
         .btn:hover { background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.28); }
         .btn.primary { background: #fff; color: #0b0b0b; border-color: #fff; }
-        .btn.primary:hover { background: #e6e6e6; border-color: #e6e6e6; }
-        .btn.danger { color: var(--err); border-color: rgba(239,138,118,.35); }
+        .btn.primary:hover { background: #e2e2e2; }
+        .btn.danger { color: var(--err); border-color: rgba(239,138,118,.3); }
         .btn.danger:hover { background: var(--err-dim); }
-        .btn.brass { color: var(--ink); }
-        .btn.ok { color: var(--ink); }
-        .btn.big { height: 48px; font-size: 15px; width: 100%; }
-        .btn.sm { height: 34px; padding: 0 16px; font-size: 13px; }
+        .btn.ghost { border-color: transparent; color: var(--ink-2); }
+        .btn.ghost:hover { color: var(--ink); background: rgba(255,255,255,.05); }
+        .btn.lg { height: 40px; font-size: 14px; }
+        .btn.sm { height: 28px; padding: 0 10px; font-size: 12px; }
         .btn:disabled { opacity: .3; pointer-events: none; }
+        .icon-btn { background: none; border: none; color: var(--ink-3); cursor: pointer; width: 28px; height: 28px; border-radius: 8px; flex: none; display: inline-grid; place-content: center; }
+        .icon-btn:hover { color: var(--ink); background: rgba(255,255,255,.06); }
+        .icon-btn.del:hover { color: var(--err); background: var(--err-dim); }
 
-        /* ── sections ── */
-        .panel { padding: 0 0 64px; margin-bottom: 64px; border-bottom: 1px solid var(--hair); }
-        .panel-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 28px; flex-wrap: wrap; }
-        .panel-title { display: flex; align-items: baseline; gap: 14px; }
-        .panel-num { font: 400 13px var(--mono); color: var(--ink-3); }
-        .panel-title h2 { margin: 0; font: 500 30px/1.1 var(--sans); letter-spacing: -0.035em; }
-        .panel-sub { font-size: 14px; color: var(--ink-3); }
-
-        /* ── champs ── */
-        input, select, textarea { font: 400 15px var(--sans); letter-spacing: -0.01em; color: var(--ink); background: var(--surface); border: 1px solid var(--hair); border-radius: var(--pill); height: 48px; padding: 0 20px; outline: none; transition: border-color .15s, background .15s; min-width: 0; }
-        textarea { height: auto; border-radius: 18px; padding: 16px 20px; line-height: 1.5; }
+        input, select, textarea { font: 400 13.5px var(--sans); color: var(--ink); background: var(--surface); border: 1px solid var(--hair); border-radius: var(--r); height: 36px; padding: 0 12px; outline: none; transition: border-color .15s, background .15s; min-width: 0; }
+        textarea { height: auto; padding: 12px; line-height: 1.5; }
         input::placeholder, textarea::placeholder { color: var(--ink-3); }
         input:hover, select:hover, textarea:hover { border-color: var(--hair-2); }
-        input:focus, select:focus, textarea:focus { border-color: rgba(255,255,255,.4); background: #212121; }
-        select { appearance: none; padding-right: 42px; cursor: pointer;
+        input:focus, select:focus, textarea:focus { border-color: rgba(255,255,255,.4); background: var(--raise); }
+        select { appearance: none; padding-right: 32px; cursor: pointer;
             background-image: linear-gradient(45deg, transparent 50%, var(--ink-2) 50%), linear-gradient(135deg, var(--ink-2) 50%, transparent 50%);
-            background-position: calc(100% - 22px) 52%, calc(100% - 17px) 52%; background-size: 5px 5px; background-repeat: no-repeat; }
-        select[multiple] { background-image: none; height: auto; border-radius: 18px; padding: 8px; }
-        input[type=checkbox] { appearance: none; width: 18px; height: 18px; padding: 0; border-radius: 6px; border: 1px solid var(--hair-2); background: transparent; cursor: pointer; display: inline-grid; place-content: center; flex: none; }
+            background-position: calc(100% - 17px) 52%, calc(100% - 12px) 52%; background-size: 5px 5px; background-repeat: no-repeat; }
+        input[type=checkbox] { appearance: none; width: 16px; height: 16px; padding: 0; border-radius: 5px; border: 1px solid var(--hair-2); background: transparent; cursor: pointer; display: inline-grid; place-content: center; flex: none; }
         input[type=checkbox]:checked { background: #fff; border-color: #fff; }
-        input[type=checkbox]:checked::after { content: ""; width: 9px; height: 5px; border-left: 2px solid #000; border-bottom: 2px solid #000; transform: rotate(-45deg) translate(1px,-1px); }
-        .mono { font-family: var(--mono) !important; letter-spacing: 0 !important; }
-        .row { display: flex; gap: 12px; align-items: center; }
-        .grow { flex: 1; }
-        .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .label { font: 400 13px var(--sans); color: var(--ink-3); }
+        input[type=checkbox]:checked::after { content: ""; width: 8px; height: 4px; border-left: 2px solid #000; border-bottom: 2px solid #000; transform: rotate(-45deg) translate(1px,-1px); }
+        .seg { display: inline-flex; background: var(--well); border: 1px solid var(--hair); border-radius: var(--r); padding: 3px; gap: 2px; }
+        .seg button { height: 28px; padding: 0 11px; border: 0; background: none; color: var(--ink-3); border-radius: 7px; font: 500 12.5px var(--sans); cursor: pointer; white-space: nowrap; }
+        .seg button:hover { color: var(--ink-2); }
+        .seg button.on { background: var(--raise); color: var(--ink); }
+        kbd { font: 11px var(--mono); color: var(--ink-3); border: 1px solid var(--hair-2); border-radius: 5px; padding: 0 5px; }
 
-        /* ── catalogue ── */
-        .well { margin-top: 8px; }
-        .status-line { display: flex; justify-content: space-between; align-items: center; margin: 22px 4px 12px; }
-        .diode { width: 7px; height: 7px; border-radius: 50%; background: var(--ink-3); }
-        .sort-bar { display: flex; padding: 0 22px 8px; font: 400 13px var(--sans); color: var(--ink-3); user-select: none; }
-        .sort-bar div { cursor: pointer; display: flex; gap: 6px; align-items: center; transition: color .15s; }
-        .sort-bar div:hover, .sort-bar .on { color: var(--ink); }
-        #models-ui { width: 100%; height: 300px; font: 400 13.5px/1.2 var(--mono); background: var(--well); border-color: var(--hair); }
-        #models-ui option { padding: 9px 14px; border-radius: 10px; color: var(--ink-2); }
-        #models-ui option:checked { background: #2a2a2a linear-gradient(0deg, #2a2a2a, #2a2a2a); color: #fff; }
+        /* ── espace de travail : catalogue + editeur ── */
+        main { max-width: 1680px; margin: 0 auto; padding: 18px 24px 120px; }
+        .workspace { display: grid; grid-template-columns: minmax(0, 1fr) 410px; gap: 18px; height: calc(100vh - var(--head) - 36px); min-height: 560px; scroll-margin-top: calc(var(--head) + 18px); }
+        .card { background: var(--card); border: 1px solid var(--hair); border-radius: 18px; display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
+        .card-head { display: flex; align-items: center; gap: 12px; padding: 14px 18px; border-bottom: 1px solid var(--hair); min-height: 58px; }
+        .card-head h2 { margin: 0; font: 500 16px var(--sans); letter-spacing: -0.02em; }
+        .count { font: 12px var(--mono); color: var(--ink-3); }
+        .toolbar { display: flex; gap: 8px; padding: 12px 18px; border-bottom: 1px solid var(--hair); flex-wrap: wrap; align-items: center; }
+        .search { position: relative; flex: 1; min-width: 180px; }
+        .search input { width: 100%; padding-left: 34px; padding-right: 34px; }
+        .search > i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--ink-3); font-size: 12px; }
+        .search kbd { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); }
 
-        /* ── telechargements ── */
-        #tasks-ui { display: grid; gap: 10px; margin: -32px 0 64px; }
-        #tasks-ui:empty { display: none; }
-        .task { border: 1px solid var(--hair); border-radius: 18px; padding: 16px 22px; background: var(--well); }
-        .task-top { display: flex; justify-content: space-between; gap: 12px; font: 400 14px var(--mono); margin-bottom: 12px; }
-        .task-top .name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .task-top span:last-child { font-family: var(--sans) !important; text-transform: none !important; letter-spacing: 0 !important; font-size: 13px !important; }
-        .task-track { height: 2px; background: var(--hair-2); border-radius: 2px; overflow: hidden; margin-bottom: 10px; }
-        .task-fill { height: 100%; background: #fff; transition: width .5s ease; }
-        .task.done .task-fill { background: var(--ok); } .task.err .task-fill { background: var(--err); }
-        .task.wait .task-fill { width: 100% !important; background: var(--hair-2); animation: pulse 1.4s ease-in-out infinite; }
-        .task-bottom { display: flex; justify-content: space-between; font: 400 13px var(--mono); color: var(--ink-3); }
-        @keyframes pulse { 50% { opacity: .35; } }
+        .cols { display: grid; grid-template-columns: 16px 8px minmax(0, 1fr) minmax(0, 210px) 70px; gap: 12px; align-items: center; padding: 0 18px; }
+        .list-head { height: 32px; font: 12px var(--sans); color: var(--ink-3); border-bottom: 1px solid var(--hair); user-select: none; background: var(--well); }
+        .list-head .sort { cursor: pointer; display: flex; gap: 5px; align-items: center; transition: color .15s; }
+        .list-head .sort:hover, .list-head .sort.on { color: var(--ink); }
+        .list-head .right { justify-content: flex-end; text-align: right; }
+        #models-list { flex: 1; overflow-y: auto; outline: none; user-select: none; }
+        .item { height: 34px; cursor: pointer; border-bottom: 1px solid var(--row); transition: background .1s; }
+        .item:hover { background: rgba(255,255,255,.03); }
+        .item.sel { background: rgba(255,255,255,.07); }
+        .item.focus { box-shadow: inset 2px 0 0 #fff; }
+        .item input[type=checkbox] { opacity: .35; }
+        .item:hover input[type=checkbox], .item.sel input[type=checkbox] { opacity: 1; }
+        .dot { width: 7px; height: 7px; border-radius: 50%; border: 1.5px solid var(--ink-3); }
+        .item.on .dot { background: var(--ok); border-color: var(--ok); }
+        .fname { font: 13px var(--mono); color: var(--ink-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .item.on .fname, .item.sel .fname { color: var(--ink); }
+        .meta { font-size: 12px; color: var(--ink-3); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: right; }
+        .size { font: 12px var(--mono); color: var(--ink-3); text-align: right; }
+        mark { background: rgba(230,194,122,.22); color: inherit; border-radius: 3px; padding: 0 1px; }
+        .empty { padding: 40px 18px; text-align: center; color: var(--ink-3); }
+        #preset-ui { min-width: 190px; }
+        .preset-chip { display: inline-flex; align-items: center; gap: 8px; height: 30px; padding: 0 6px 0 12px; border-radius: 999px; background: var(--info-dim); border: 1px solid rgba(154,184,232,.3); color: var(--info); font: 500 12.5px var(--sans); white-space: nowrap; }
+        .preset-chip b { font-weight: 500; color: #fff; }
+        .preset-chip .warn { color: var(--warn); }
+        .preset-chip button { background: none; border: 0; color: var(--info); cursor: pointer; width: 22px; height: 22px; border-radius: 50%; }
+        .preset-chip button:hover { background: rgba(154,184,232,.15); color: #fff; }
+        .actionbar { display: flex; align-items: center; gap: 8px; padding: 10px 18px; border-top: 1px solid var(--hair); background: var(--well); flex-wrap: wrap; }
+        .actionbar .info { font-size: 13px; color: var(--ink-2); }
+        .actionbar .info span { color: var(--ink-3); }
 
         /* ── editeur ── */
-        .editor { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
-        .editor-form { display: flex; flex-direction: column; gap: 12px; border-radius: 24px; }
-        .editor.flash .editor-form { animation: flash 1.1s ease; }
-        @keyframes flash { 0% { box-shadow: 0 0 0 0 rgba(255,255,255,.35); } 100% { box-shadow: 0 0 0 18px rgba(255,255,255,0); } }
-        #path-browser { position: absolute; width: 100%; top: calc(100% + 6px); left: 0; background: #1f1f1f; border: 1px solid var(--hair-2); border-radius: 18px; max-height: 220px; overflow-y: auto; z-index: 50; display: none; padding: 6px; box-shadow: 0 24px 60px -12px rgba(0,0,0,.9); }
-        .path-item { padding: 10px 14px; font: 13px var(--mono); cursor: pointer; border-radius: 12px; display: flex; gap: 10px; align-items: center; color: var(--ink-2); }
+        .inspector.flash { animation: flash 1s ease; }
+        @keyframes flash { 0% { box-shadow: 0 0 0 0 rgba(255,255,255,.3); } 100% { box-shadow: 0 0 0 14px rgba(255,255,255,0); } }
+        .badge { font: 500 11.5px var(--sans); padding: 3px 9px; border-radius: 999px; border: 1px solid var(--hair-2); color: var(--ink-3); white-space: nowrap; }
+        .badge.new { color: var(--warn); border-color: rgba(230,194,122,.3); background: var(--warn-dim); }
+        .badge.in { color: var(--ok); border-color: rgba(159,211,168,.3); background: var(--ok-dim); }
+        .ins-body { flex: 1; overflow-y: auto; padding: 18px; display: flex; flex-direction: column; gap: 14px; }
+        .field label { display: block; font-size: 12px; color: var(--ink-3); margin-bottom: 6px; }
+        .field input, .field select { width: 100%; }
+        .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .path-wrap { position: relative; }
+        .path-row { display: flex; gap: 6px; }
+        .path-row input { flex: 1; }
+        #path-browser { position: absolute; width: 100%; top: calc(100% + 4px); left: 0; background: var(--raise); border: 1px solid var(--hair-2); border-radius: 12px; max-height: 220px; overflow-y: auto; z-index: 50; display: none; padding: 4px; box-shadow: 0 20px 50px -12px rgba(0,0,0,.9); }
+        .path-item { padding: 8px 10px; font: 12.5px var(--mono); cursor: pointer; border-radius: 8px; display: flex; gap: 10px; align-items: center; color: var(--ink-2); }
         .path-item:hover { background: rgba(255,255,255,.06); color: #fff; }
         .path-item i { color: var(--ink-3); }
-        #catalogue-list { border: 1px solid var(--hair); border-radius: 24px; padding: 10px; overflow-y: auto; max-height: 330px; display: flex; flex-direction: column; gap: 2px; }
-        .cat-entry { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 14px; transition: background .15s; }
-        .cat-entry:hover { background: rgba(255,255,255,.04); }
-        .cat-entry.hl { background: rgba(255,255,255,.07); }
-        .cat-entry .env { font: 400 12.5px var(--sans); color: var(--ink-3); }
-        .cat-entry .file { font: 400 13.5px var(--mono); color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .icon-btn { background: none; border: none; color: var(--ink-3); cursor: pointer; width: 32px; height: 32px; border-radius: 50%; flex: none; }
-        .icon-btn:hover { color: var(--err); background: var(--err-dim); }
-        .folder-btn { width: 48px; height: 48px; padding: 0; }
+        .ins-actions { display: grid; grid-template-columns: 1fr auto; gap: 8px; }
+        .divider { height: 1px; background: var(--hair); margin: 4px 0; }
+        .sub-title { font-size: 12px; color: var(--ink-3); display: flex; justify-content: space-between; }
+        #catalogue-list { display: flex; flex-direction: column; gap: 4px; }
+        .cat-entry { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 10px 12px; border-radius: var(--r); background: var(--well); border: 1px solid var(--hair); }
+        .cat-entry .env { font-size: 12px; color: var(--ink-3); }
+        .cat-entry .file { font: 12.5px var(--mono); color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: block; }
+        .hint { font-size: 13px; color: var(--ink-3); line-height: 1.6; padding: 12px; border: 1px dashed var(--hair-2); border-radius: var(--r); }
 
-        /* ── workflow ── */
-        .tabs { display: flex; gap: 26px; }
-        .tab { font: 500 16px var(--sans); letter-spacing: -0.02em; color: var(--ink-3); background: none; border: none; padding: 6px 0; cursor: pointer; transition: color .15s; position: relative; }
+        /* ── workflows ── */
+        .section { margin-top: 40px; scroll-margin-top: calc(var(--head) + 18px); }
+        .section .card { overflow: visible; }
+        .tabs { display: flex; gap: 4px; }
+        .tab { font: 500 13px var(--sans); color: var(--ink-3); background: none; border: none; padding: 7px 12px; border-radius: 8px; cursor: pointer; transition: color .15s, background .15s; }
         .tab:hover { color: var(--ink-2); }
-        .tab.on { color: #fff; }
-        .tpl-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 34px 28px; max-height: 760px; overflow-y: auto; padding: 4px 4px 4px 0; margin-top: 32px; }
+        .tab.on { color: #fff; background: var(--raise); }
+        .wf-pane { padding: 18px; }
+        .row { display: flex; gap: 10px; align-items: center; }
+        .grow { flex: 1; }
+        .tpl-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 24px 20px; max-height: 640px; overflow-y: auto; margin-top: 18px; padding-right: 4px; }
         .tpl { cursor: pointer; }
-        .tpl-img { aspect-ratio: 4/3; background: #1a1a1a; overflow: hidden; }
-        .tpl-img img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .5s cubic-bezier(.2,.7,.2,1), opacity .3s; }
-        .tpl:hover .tpl-img img { transform: scale(1.03); }
-        .tpl-body { padding: 12px 2px 0; }
-        .tpl-title { font: 500 15px/1.3 var(--sans); letter-spacing: -0.02em; color: var(--ink); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        .tpl-meta { font: 400 13px var(--sans); color: var(--ink-3); margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .muted { color: var(--ink-3); font-size: 14px; }
-        .err-text { color: var(--err); font-size: 14px; }
-
-        .wf-title { margin: 56px 0 18px; font: 500 24px var(--sans); letter-spacing: -0.03em; }
-        .wf-list { display: flex; flex-direction: column; border-top: 1px solid var(--hair); }
-        .wf-row { display: grid; grid-template-columns: 18px 12px minmax(0,1fr) auto auto auto; align-items: center; gap: 16px; padding: 16px 12px; border-bottom: 1px solid var(--hair); cursor: pointer; transition: background .15s; }
+        .tpl-img { aspect-ratio: 4/3; background: var(--surface); overflow: hidden; border-radius: 12px; }
+        .tpl-img img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .5s cubic-bezier(.2,.7,.2,1); }
+        .tpl:hover .tpl-img img { transform: scale(1.04); }
+        .tpl-title { font: 500 14px/1.3 var(--sans); margin-top: 10px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .tpl-meta { font-size: 12px; color: var(--ink-3); margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .dropzone { margin-top: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; height: 120px; border: 1px dashed var(--hair-2); border-radius: 14px; cursor: pointer; transition: border-color .15s, background .15s; text-align: center; padding: 0 20px; }
+        .dropzone:hover { border-color: rgba(255,255,255,.3); background: rgba(255,255,255,.02); }
+        .dropzone.over, body.dragging .dropzone { border-color: #fff; background: rgba(255,255,255,.05); }
+        .dz-title { font: 500 15px var(--sans); }
+        .dz-sub { font-size: 12.5px; color: var(--ink-3); }
+        .wf-result { border-top: 1px solid var(--hair); }
+        .wf-title { padding: 16px 18px 8px; font: 500 15px var(--sans); }
+        .wf-row { display: grid; grid-template-columns: 16px 12px minmax(0,1fr) auto auto auto; align-items: center; gap: 14px; padding: 10px 18px; border-bottom: 1px solid var(--row); cursor: pointer; transition: background .1s; }
         .wf-row:hover { background: rgba(255,255,255,.03); }
-        .wf-row.sel { background: rgba(255,255,255,.07); }
+        .wf-row.sel { background: rgba(255,255,255,.07); box-shadow: inset 2px 0 0 #fff; }
         .wf-icon { font: 12px var(--mono); text-align: center; }
-        .wf-name { font: 400 14px var(--mono); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .wf-path { font: 400 13px var(--mono); color: var(--ink-3); white-space: nowrap; }
-        .wf-info { font: 400 13px var(--sans); color: var(--ink-3); white-space: nowrap; display: flex; gap: 8px; align-items: center; }
+        .wf-name { font: 13px var(--mono); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .wf-path { font: 12px var(--mono); color: var(--ink-3); white-space: nowrap; }
+        .wf-info { font-size: 12px; color: var(--ink-3); white-space: nowrap; display: flex; gap: 8px; align-items: center; }
         .s-present { color: var(--ok); } .s-manquant { color: var(--ink); } .s-inconnu { color: var(--warn); } .s-introuvable { color: var(--err); } .s-cours { color: var(--info); }
         .wf-name.s-present { color: var(--ink-2); }
-        .chip { font: 500 12px var(--sans); padding: 4px 10px; border-radius: var(--pill); white-space: nowrap; border: 1px solid var(--hair-2); color: var(--ink-2); }
+        .chip { font: 500 11px var(--sans); padding: 3px 8px; border-radius: 999px; white-space: nowrap; border: 1px solid var(--hair-2); color: var(--ink-2); }
         .chip.out { color: var(--warn); border-color: rgba(230,194,122,.3); }
         .chip.fixed { color: var(--info); border-color: rgba(154,184,232,.3); }
         .src { color: var(--ink-2); }
-        .wf-actions { margin-top: 28px; }
-        .addcat { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; font-size: 14px; color: var(--ink-2); flex-wrap: wrap; }
-        .addcat label { display: flex; gap: 10px; align-items: center; cursor: pointer; }
+        .mini { height: 28px; font-size: 12px; padding: 0 28px 0 8px; }
+        .wf-actions { padding: 16px 18px; border-top: 1px solid var(--hair); background: var(--well); border-radius: 0 0 18px 18px; }
+        .addcat { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; font-size: 13px; color: var(--ink-2); flex-wrap: wrap; }
+        .addcat label { display: flex; gap: 8px; align-items: center; cursor: pointer; }
         .addcat em { color: var(--warn); font-style: normal; }
         .addcat input:not([type=checkbox]) { flex: 1; min-width: 200px; }
 
-        .dropzone { margin-top: 14px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; height: 150px; border: 1px dashed var(--hair-2); border-radius: 24px; cursor: pointer; transition: border-color .15s, background .15s; text-align: center; padding: 0 20px; }
-        .dropzone:hover { border-color: rgba(255,255,255,.3); background: rgba(255,255,255,.02); }
-        .dropzone.over, body.dragging .dropzone { border-color: #fff; background: rgba(255,255,255,.05); }
-        .dz-title { font: 500 17px var(--sans); letter-spacing: -0.02em; }
-        .dz-sub { font-size: 13.5px; color: var(--ink-3); }
-        /* ── journal + toast ── */
-        #log-console { height: 140px; overflow-y: auto; color: var(--ink-2); font: 400 13px/1.7 var(--mono); padding: 16px 20px; border-radius: 18px; border: 1px solid var(--hair); }
-        #log-console .t { color: var(--ink-3); margin-right: 12px; }
+        /* ── dock telechargements / journal ── */
+        .dock { position: fixed; right: 20px; bottom: 20px; width: 400px; max-width: calc(100vw - 40px); z-index: 60; background: rgba(24,24,24,.94); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border: 1px solid var(--hair-2); border-radius: 16px; box-shadow: 0 24px 60px -12px rgba(0,0,0,.85); overflow: hidden; }
+        .dock-head { display: flex; align-items: center; gap: 2px; padding: 6px; }
+        .dtab { font: 500 12.5px var(--sans); color: var(--ink-3); background: none; border: 0; padding: 7px 10px; border-radius: 8px; cursor: pointer; display: inline-flex; gap: 7px; align-items: center; }
+        .dtab:hover { color: var(--ink-2); }
+        .dock:not(.collapsed) .dtab.on { color: #fff; background: var(--raise); }
+        .dcount { font: 11px var(--mono); background: #fff; color: #000; border-radius: 999px; padding: 0 6px; min-width: 18px; text-align: center; }
+        .dcount:empty { display: none; }
+        .ldot { width: 6px; height: 6px; border-radius: 50%; background: var(--err); }
+        .dock-body { border-top: 1px solid var(--hair); max-height: 46vh; overflow-y: auto; }
+        .dock.collapsed .dock-body { display: none; }
+        .dock.collapsed #dock-chev { transform: rotate(180deg); }
+        #tasks-ui { display: flex; flex-direction: column; gap: 6px; padding: 10px; }
+        .task { padding: 10px 12px; border-radius: 12px; background: var(--well); border: 1px solid var(--hair); }
+        .task-top { display: flex; justify-content: space-between; gap: 10px; font: 12.5px var(--mono); margin-bottom: 8px; }
+        .task-top .name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .task-top .st { font: 500 11px var(--sans); white-space: nowrap; }
+        .task-track { height: 2px; background: var(--hair-2); border-radius: 2px; overflow: hidden; margin-bottom: 6px; }
+        .task-fill { height: 100%; background: #fff; transition: width .5s ease; }
+        .task.done .task-fill { background: var(--ok); } .task.err .task-fill { background: var(--err); }
+        .task.wait .task-fill { width: 100% !important; background: var(--hair-2); animation: pulse 1.4s ease-in-out infinite; }
+        .task-bottom { display: flex; justify-content: space-between; font: 11.5px var(--mono); color: var(--ink-3); }
+        @keyframes pulse { 50% { opacity: .35; } }
+        .dock-foot { display: flex; justify-content: flex-end; padding: 0 10px 10px; }
+        #log-console { color: var(--ink-2); font: 12px/1.7 var(--mono); padding: 12px 14px; }
+        #log-console .t { color: var(--ink-3); margin-right: 10px; }
         #log-console .e { color: var(--err); }
-        #github-toast { position: fixed; bottom: 28px; left: 50%; background: #fff; color: #0b0b0b; padding: 0 22px; height: 46px; border-radius: var(--pill); display: flex; align-items: center; gap: 10px; transform: translate(-50%, 120px); opacity: 0; transition: transform .4s cubic-bezier(.2,.8,.2,1), opacity .3s; z-index: 1000; font: 500 14px var(--sans); box-shadow: 0 20px 50px -10px rgba(0,0,0,.8); }
+
+        #github-toast { position: fixed; top: 74px; left: 50%; background: #fff; color: #0b0b0b; padding: 0 18px; height: 40px; border-radius: 999px; display: flex; align-items: center; gap: 10px; transform: translate(-50%, -80px); opacity: 0; transition: transform .4s cubic-bezier(.2,.8,.2,1), opacity .3s; z-index: 1000; font: 500 13px var(--sans); box-shadow: 0 20px 50px -10px rgba(0,0,0,.8); }
         #github-toast.show { transform: translate(-50%, 0); opacity: 1; }
 
         ::-webkit-scrollbar { width: 10px; height: 10px; }
-        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,.12); border-radius: 10px; border: 3px solid transparent; background-clip: padding-box; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,.1); border-radius: 10px; border: 3px solid transparent; background-clip: padding-box; }
+        ::-webkit-scrollbar-thumb:hover { background-color: rgba(255,255,255,.2); }
         ::-webkit-scrollbar-track { background: transparent; }
-        @media (max-width: 860px) { .wrap { padding: 20px 18px 60px; } .editor, .grid2 { grid-template-columns: 1fr; } .wf-row { grid-template-columns: 18px 12px minmax(0,1fr) auto; } .wf-path, .wf-info .src { display: none; } }
+
+        @media (max-width: 1100px) { .cols { grid-template-columns: 16px 8px minmax(0,1fr) 70px; } .meta, .list-head .h-meta { display: none; } }
+        @media (max-width: 900px) {
+            .workspace { grid-template-columns: 1fr; height: auto; }
+            #models-list { max-height: 60vh; }
+            .top nav, .meter-track { display: none; }
+            main { padding: 14px 16px 120px; }
+            .wf-row { grid-template-columns: 16px 12px minmax(0,1fr) auto; }
+            .wf-path, .wf-info .src { display: none; }
+        }
     </style>
 </head>
 <body>
     <div id="github-toast"><i class="fab fa-github"></i><span>Catalogue synchronisé sur GitHub</span></div>
-    <div class="wrap">
 
-        <header>
-            <div class="brand">
-                <h1>Model Manager <em>Pro</em></h1>
-            </div>
-            <div class="head-tools">
-                <div id="disk-widget" class="meter">
-                    <div class="meter-top"><span>Volume /workspace</span><b><span id="ws-used">—</span> / <span id="ws-total">—</span></b></div>
-                    <div class="meter-track"><div id="ws-bar"></div></div>
-                    <div class="meter-free"><span id="ws-free">—</span> libres <span id="ws-kind" class="meter-kind"></span></div>
-                </div>
-                <button onclick="fetch('/purge',{method:'POST'})" class="btn">Purger aria2</button>
-                <button onclick="syncGithub()" class="btn ok"><i class="fab fa-github"></i>Sync</button>
-                <button onclick="location.reload()" class="btn">Actualiser</button>
-            </div>
-        </header>
+    <header class="top">
+        <div class="brand">Model Manager <em>Pro</em></div>
+        <nav>
+            <a href="#workspace">Catalogue</a>
+            <a href="#wf-panel">Workflows</a>
+        </nav>
+        <span class="spacer"></span>
+        <div id="disk-widget" class="meter">
+            <b><span id="ws-used">…</span> / <span id="ws-total">…</span></b>
+            <div class="meter-track"><div id="ws-bar"></div></div>
+            <span><span id="ws-free">…</span> libres</span>
+            <span id="ws-kind" class="meter-kind"></span>
+        </div>
+        <button onclick="syncGithub()" class="btn" title="Pousser models.json sur GitHub"><i class="fab fa-github"></i>Sync</button>
+        <button onclick="refreshAll()" class="btn" title="Rescanner le disque"><i class="fas fa-rotate"></i></button>
+    </header>
 
-        <!-- 01 CATALOGUE -->
-        <section class="panel">
-            <div class="panel-head">
-                <div class="panel-title"><span class="panel-num">01</span><h2>Catalogue</h2></div>
-                <span class="panel-sub">● sur le disque&nbsp;&nbsp;○ à télécharger</span>
-            </div>
-            <div class="row" style="margin-bottom:14px">
-                <select id="env-ui" style="width:24%" onchange="loadModels()"></select>
-                <select id="type-ui" style="width:24%" onchange="loadModels()">
-                    <option value="all">Toutes catégories</option>
-                    <option value="diffusion_models">Diffusion models</option>
-                    <option value="loras">LoRAs</option>
-                    <option value="vae">VAE</option>
-                    <option value="clip">CLIP / text encoders</option>
-                    <option value="unet">UNet / GGUF</option>
-                    <option value="upscale_models">Upscalers</option>
-                    <option value="controlnet">ControlNet</option>
-                    <option value="embeddings">Embeddings</option>
-                </select>
-                <input id="search-ui" type="text" placeholder="Rechercher un fichier…" class="grow" onkeyup="loadModels()">
-            </div>
-            <div class="well">
-                <div class="status-line">
-                    <div class="row" style="gap:10px"><div id="diode-ui" class="diode"></div><span id="status-text" class="label">Sélection multiple prête</span></div>
-                    <div id="path-ui" class="muted" style="font-style:italic">Prêt.</div>
-                </div>
-                <div class="sort-bar">
-                    <div class="grow" onclick="setSortAndReload('name')" id="sort-name">Fichier <span id="sort-name-icon">↕</span></div>
-                    <div style="justify-content:flex-end" onclick="setSortAndReload('size')" id="sort-size"><span id="sort-size-icon">↕</span> Taille</div>
-                </div>
-                <select id="models-ui" multiple onclick="syncToEditor()" onchange="checkStatus()"></select>
-                <div class="grid2" style="margin-top:14px">
-                    <button onclick="startSmartDownload()" class="btn primary big">Télécharger la sélection</button>
-                    <button id="delete-btn" onclick="deleteFromDisk()" class="btn danger big" disabled>Supprimer du disque</button>
-                </div>
-            </div>
-        </section>
+    <main>
+        <!-- CATALOGUE + EDITEUR -->
+        <section class="workspace" id="workspace">
 
-        <div id="tasks-ui"></div>
-
-        <!-- 02 EDITEUR -->
-        <section class="panel" id="editor-panel">
-            <div class="panel-head">
-                <div class="panel-title"><span class="panel-num">02</span><h2>Éditeur catalogue</h2></div>
-                <button onclick="resetEditor()" class="btn sm">Vider</button>
+            <div class="card">
+                <div class="card-head">
+                    <h2>Catalogue</h2>
+                    <span id="list-count" class="count"></span>
+                    <span class="spacer"></span>
+                    <div class="seg" id="presence-seg">
+                        <button data-p="all" class="on" onclick="setPresence('all')">Tous</button>
+                        <button data-p="disk" onclick="setPresence('disk')">Sur le disque</button>
+                        <button data-p="missing" onclick="setPresence('missing')">À télécharger</button>
+                    </div>
+                </div>
+                <div class="toolbar">
+                    <div class="search">
+                        <i class="fas fa-search"></i>
+                        <input id="search-ui" type="text" placeholder="Rechercher un fichier" oninput="loadModels()" autocomplete="off">
+                        <kbd>/</kbd>
+                    </div>
+                    <select id="env-ui" onchange="loadModels()"></select>
+                    <select id="type-ui" onchange="loadModels()">
+                        <option value="all">Toutes catégories</option>
+                        <option value="diffusion_models">Diffusion models</option>
+                        <option value="loras">LoRAs</option>
+                        <option value="vae">VAE</option>
+                        <option value="clip">CLIP / text encoders</option>
+                        <option value="unet">UNet / GGUF</option>
+                        <option value="checkpoints">Checkpoints</option>
+                        <option value="upscale_models">Upscalers</option>
+                        <option value="controlnet">ControlNet</option>
+                        <option value="embeddings">Embeddings</option>
+                    </select>
+                    <select id="preset-ui" onchange="applyPreset(this.value)" title="Sélectionne les fichiers de base d'un environnement"></select>
+                    <span id="preset-chip" class="preset-chip hidden"></span>
+                </div>
+                <div class="cols list-head">
+                    <input type="checkbox" id="check-all" title="Tout sélectionner" onchange="toggleAll(this.checked)">
+                    <span></span>
+                    <div class="sort" id="sort-name" onclick="setSortAndReload('name')">Fichier <span id="sort-name-icon">↑</span></div>
+                    <div class="h-meta right" style="display:flex">Environnement · dossier</div>
+                    <div class="sort right" id="sort-size" onclick="setSortAndReload('size')"><span id="sort-size-icon">↕</span> Taille</div>
+                </div>
+                <div id="models-list" tabindex="0"></div>
+                <div class="actionbar">
+                    <div class="info" id="sel-info"></div>
+                    <span class="spacer"></span>
+                    <button id="clear-btn" class="btn ghost sm" onclick="clearSelection()">Désélectionner</button>
+                    <button id="delete-btn" class="btn danger" onclick="deleteFromDisk()" disabled><i class="fas fa-trash-can"></i><span>Supprimer</span></button>
+                    <button id="dl-btn" class="btn primary" onclick="startSmartDownload()" disabled><i class="fas fa-arrow-down"></i><span>Télécharger</span></button>
+                </div>
             </div>
-            <div class="editor" id="editor">
-                <div class="editor-form">
+
+            <div class="card inspector" id="editor">
+                <div class="card-head">
+                    <h2>Éditeur</h2>
+                    <span id="ed-mode" class="badge">Vide</span>
+                    <span class="spacer"></span>
+                    <button onclick="resetEditor()" class="btn ghost sm">Vider</button>
+                </div>
+                <div class="ins-body">
+                    <div class="field">
+                        <label>Nom du fichier</label>
+                        <input id="edit-file" class="mono" placeholder="modele.safetensors" oninput="renderCatalogue(this.value.trim())">
+                    </div>
+                    <div class="field">
+                        <label>URL Hugging Face ou Civitai</label>
+                        <input id="edit-url" class="mono" style="font-size:12px" placeholder="https://…" oninput="autoFetchName(this.value)">
+                    </div>
                     <div class="grid2">
-                        <div>
-                            <input id="edit-env" list="edit-env-list" style="width:100%" placeholder="Environnement (existant ou nouveau)" autocomplete="off">
+                        <div class="field">
+                            <label>Environnement</label>
+                            <input id="edit-env" list="edit-env-list" placeholder="Existant ou nouveau" autocomplete="off">
                             <datalist id="edit-env-list"></datalist>
                         </div>
-                        <select id="edit-cat" style="width:100%" onchange="updatePathByCategory()">
-                            <option value="diffusion_models">diffusion_models</option><option value="loras">loras</option><option value="vae">vae</option><option value="clip">clip</option><option value="unet">unet</option><option value="text_encoders">text_encoders</option><option value="clip_vision">clip_vision</option><option value="checkpoints">checkpoints</option><option value="upscale_models">upscale_models</option><option value="latent_upscale_models">latent_upscale_models</option><option value="controlnet">controlnet</option><option value="model_patches">model_patches</option><option value="embeddings">embeddings</option>
-                        </select>
+                        <div class="field">
+                            <label>Catégorie</label>
+                            <select id="edit-cat" onchange="updatePathByCategory()">
+                                <option value="diffusion_models">diffusion_models</option><option value="loras">loras</option><option value="vae">vae</option><option value="clip">clip</option><option value="unet">unet</option><option value="text_encoders">text_encoders</option><option value="clip_vision">clip_vision</option><option value="checkpoints">checkpoints</option><option value="upscale_models">upscale_models</option><option value="latent_upscale_models">latent_upscale_models</option><option value="controlnet">controlnet</option><option value="model_patches">model_patches</option><option value="embeddings">embeddings</option>
+                            </select>
+                        </div>
                     </div>
-                    <div style="position:relative">
-                        <div class="row" style="gap:8px">
-                            <input id="edit-path" placeholder="Chemin" class="grow mono" style="font-size:11.5px">
-                            <button onclick="togglePathBrowser()" class="btn folder-btn" title="Parcourir"><i class="fas fa-folder-open" style="color:var(--ink-2)"></i></button>
+                    <div class="field path-wrap">
+                        <label>Dossier de destination</label>
+                        <div class="path-row">
+                            <input id="edit-path" class="mono" style="font-size:12px" placeholder="/workspace/ComfyUI/models/…">
+                            <button onclick="togglePathBrowser()" class="btn" title="Parcourir les sous-dossiers"><i class="fas fa-folder-open" style="color:var(--ink-2)"></i></button>
                         </div>
                         <div id="path-browser"></div>
                     </div>
-                    <input id="edit-url" placeholder="URL (Hugging Face ou Civitai)" class="mono" style="font-size:11.5px" oninput="autoFetchName(this.value)">
-                    <input id="edit-file" placeholder="Nom du fichier" class="mono" style="font-weight:500">
-                    <button onclick="saveToCatalogue()" class="btn primary big">Enregistrer dans models.json</button>
-                </div>
-                <div id="catalogue-list"></div>
-            </div>
-        </section>
-
-        <!-- 03 WORKFLOW -->
-        <section class="panel" id="wf-panel">
-            <div class="panel-head">
-                <div class="panel-title"><span class="panel-num">03</span><h2>Modèles d'un workflow</h2></div>
-                <div class="tabs">
-                    <button class="tab" data-tab="mine" onclick="wfTab('mine')">Mes workflows</button>
-                    <button class="tab" data-tab="tpl" onclick="wfTab('tpl')">Catalogue ComfyUI</button>
-                    <button class="tab" data-tab="paste" onclick="wfTab('paste')">Coller / fichier</button>
-                </div>
-            </div>
-
-            <div id="wf-pane-tpl" class="wf-pane">
-                <div class="row">
-                    <input id="tpl-search" type="text" placeholder="Rechercher : wan, flux, qwen, upscale…" class="grow" oninput="renderTemplates()">
-                    <select id="tpl-cat" style="width:24%" onchange="renderTemplates()"><option value="">Toutes catégories</option></select>
-                    <label class="row label" style="gap:8px;cursor:pointer;white-space:nowrap"><input type="checkbox" id="tpl-api" onchange="renderTemplates()"> API</label>
-                </div>
-                <div id="tpl-grid" class="tpl-grid"></div>
-                <div id="tpl-info" class="label" style="margin-top:10px"></div>
-            </div>
-
-            <div id="wf-pane-mine" class="wf-pane hidden">
-                <div class="row">
-                    <select id="wf-select" class="grow"><option value="">Workflows sauvegardés dans ComfyUI…</option></select>
-                    <button onclick="analyzeWorkflow({workflow: document.getElementById('wf-select').value})" class="btn primary">Analyser</button>
-                </div>
-                <label id="wf-drop" class="dropzone">
-                    <input type="file" accept=".json,.png,application/json,image/png" class="hidden" onchange="handleWfFiles(this.files); this.value=''">
-                    <span class="dz-title">Glisse un workflow ici</span>
-                    <span class="dz-sub">Fichier .json, ou image PNG générée par ComfyUI · ou clique pour choisir</span>
-                </label>
-            </div>
-
-            <div id="wf-pane-paste" class="wf-pane hidden">
-                <textarea id="wf-text" rows="4" class="mono" style="width:100%;font-size:12px" placeholder="Colle ici un workflow JSON, ou les noms des modèles manquants (un par ligne)"></textarea>
-                <div class="row" style="margin-top:10px">
-                    <label class="btn" style="cursor:pointer"><i class="fas fa-file-import"></i>Fichier .json<input type="file" accept=".json" class="hidden" onchange="wfFile(this)"></label>
-                    <button onclick="analyzeWorkflow({text: document.getElementById('wf-text').value})" class="btn primary">Analyser</button>
-                </div>
-            </div>
-
-            <div id="wf-title" class="wf-title hidden"></div>
-            <div id="wf-results" class="wf-list"></div>
-            <div id="wf-actions" class="wf-actions hidden">
-                <div class="addcat">
-                    <label><input type="checkbox" id="wf-addcat" checked onchange="updateWfButton()"> Ajouter les modèles <em>hors catalogue</em> à models.json, environnement</label>
-                    <input id="wf-env" list="edit-env-list" placeholder="Wan, Flux 2, Qwen…" autocomplete="off" oninput="updateWfButton()">
-                </div>
-                <div class="grid2">
-                    <button id="wf-dl-btn" onclick="downloadWorkflowModels()" class="btn primary big">Télécharger</button>
-                    <button id="wf-cat-btn" onclick="addWorkflowToCatalogue()" class="btn brass big">Ajouter au catalogue</button>
+                    <div class="ins-actions">
+                        <button onclick="saveToCatalogue()" class="btn primary lg">Enregistrer dans models.json</button>
+                        <button onclick="downloadFromEditor()" class="btn lg" title="Télécharger ce fichier"><i class="fas fa-arrow-down"></i></button>
+                    </div>
+                    <div class="divider"></div>
+                    <div class="sub-title"><span>Présence dans le catalogue</span></div>
+                    <div id="catalogue-list"></div>
                 </div>
             </div>
         </section>
 
-        <div class="label" style="margin:0 0 12px 4px">Journal</div>
-        <div id="log-console"></div>
+        <!-- WORKFLOWS -->
+        <section class="section" id="wf-panel">
+            <div class="card">
+                <div class="card-head">
+                    <h2>Modèles d'un workflow</h2>
+                    <span class="spacer"></span>
+                    <div class="tabs">
+                        <button class="tab" data-tab="mine" onclick="wfTab('mine')">Mes workflows</button>
+                        <button class="tab" data-tab="tpl" onclick="wfTab('tpl')">Catalogue ComfyUI</button>
+                        <button class="tab" data-tab="paste" onclick="wfTab('paste')">Coller / fichier</button>
+                    </div>
+                </div>
+
+                <div id="wf-pane-mine" class="wf-pane">
+                    <div class="row">
+                        <select id="wf-select" class="grow"><option value="">Workflows sauvegardés dans ComfyUI…</option></select>
+                        <button onclick="analyzeWorkflow({workflow: document.getElementById('wf-select').value})" class="btn primary">Analyser</button>
+                    </div>
+                    <label id="wf-drop" class="dropzone">
+                        <input type="file" accept=".json,.png,application/json,image/png" class="hidden" onchange="handleWfFiles(this.files); this.value=''">
+                        <span class="dz-title">Glisse un workflow ici</span>
+                        <span class="dz-sub">Fichier .json ou image PNG générée par ComfyUI, ou clique pour choisir</span>
+                    </label>
+                </div>
+
+                <div id="wf-pane-tpl" class="wf-pane hidden">
+                    <div class="row">
+                        <div class="search"><i class="fas fa-search"></i><input id="tpl-search" type="text" placeholder="wan, flux, qwen, upscale…" oninput="renderTemplates()"></div>
+                        <select id="tpl-cat" onchange="renderTemplates()"><option value="">Toutes catégories</option></select>
+                        <label class="row muted" style="gap:8px;cursor:pointer;white-space:nowrap"><input type="checkbox" id="tpl-api" onchange="renderTemplates()"> API</label>
+                    </div>
+                    <div id="tpl-grid" class="tpl-grid"></div>
+                    <div id="tpl-info" class="muted" style="margin-top:10px"></div>
+                </div>
+
+                <div id="wf-pane-paste" class="wf-pane hidden">
+                    <textarea id="wf-text" rows="4" class="mono" style="width:100%;font-size:12px" placeholder="Colle ici un workflow JSON, ou les noms des modèles manquants (un par ligne)"></textarea>
+                    <div class="row" style="margin-top:10px">
+                        <label class="btn" style="cursor:pointer"><i class="fas fa-file-import"></i>Fichier .json<input type="file" accept=".json" class="hidden" onchange="wfFile(this)"></label>
+                        <button onclick="analyzeWorkflow({text: document.getElementById('wf-text').value})" class="btn primary">Analyser</button>
+                    </div>
+                </div>
+
+                <div id="wf-result" class="wf-result hidden">
+                    <div id="wf-title" class="wf-title"></div>
+                    <div id="wf-results"></div>
+                </div>
+                <div id="wf-actions" class="wf-actions hidden">
+                    <div class="addcat">
+                        <label><input type="checkbox" id="wf-addcat" checked onchange="updateWfButton()"> Ajouter les modèles <em>hors catalogue</em> à models.json, environnement</label>
+                        <input id="wf-env" list="edit-env-list" placeholder="Wan, Flux 2, Qwen…" autocomplete="off" oninput="updateWfButton()">
+                    </div>
+                    <div class="grid2">
+                        <button id="wf-dl-btn" onclick="downloadWorkflowModels()" class="btn primary lg">Télécharger</button>
+                        <button id="wf-cat-btn" onclick="addWorkflowToCatalogue()" class="btn lg">Ajouter au catalogue</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- DOCK TELECHARGEMENTS / JOURNAL -->
+    <div id="dock" class="dock collapsed">
+        <div class="dock-head">
+            <button class="dtab on" data-d="dl" onclick="dockTab('dl')"><i class="fas fa-arrow-down"></i>Téléchargements <span id="dl-count" class="dcount"></span></button>
+            <button class="dtab" data-d="log" onclick="dockTab('log')"><i class="fas fa-terminal"></i>Journal <span id="log-dot" class="ldot hidden"></span></button>
+            <span class="spacer"></span>
+            <button class="icon-btn" onclick="toggleDock()"><i id="dock-chev" class="fas fa-chevron-down"></i></button>
+        </div>
+        <div class="dock-body">
+            <div id="dock-dl">
+                <div id="tasks-ui"></div>
+                <div class="dock-foot"><button class="btn sm" onclick="purgeAria()">Vider la liste</button></div>
+            </div>
+            <div id="dock-log" class="hidden"><div id="log-console"></div></div>
+        </div>
     </div>
 
     <script>
         const BASE_PATH = "/workspace/ComfyUI/models/";
-        let cfg = {}; let diskFiles = {}; let lastCompleteCount = 0;
+        let cfg = {}, diskFiles = {}, lastCompleteCount = 0, lastTaskCount = 0;
         let sortState = { key: 'name', dir: 1 };
+        let presence = 'all';
+        let rows = [], selected = new Set(), focusKey = null, anchorIdx = null;
+        let activePreset = null;
+
+        // ── PRESETS : fichiers de base par environnement, [environnement du catalogue, nom du fichier] ──
+        // A completer librement : le nom d'environnement doit correspondre a celui de models.json.
+        const PRESETS = [
+            { name: "Z-Image Turbo", group: "Image", items: [
+                ["Z-Image", "z_image_turbo_bf16.safetensors"], ["Z-Image", "qwen_3_4b.safetensors"], ["Z-Image", "ae.safetensors"] ] },
+            { name: "Z-Image Base", group: "Image", items: [
+                ["Z-Image", "z_image_bf16.safetensors"], ["Z-Image", "qwen_3_4b.safetensors"], ["Z-Image", "ae.safetensors"] ] },
+            { name: "Krea 2 Turbo", group: "Image", items: [
+                ["Krea 2", "krea2_turbo_fp8_scaled.safetensors"], ["Krea 2", "qwen3vl_4b_bf16.safetensors"], ["Krea 2", "qwen_image_vae.safetensors"] ] },
+            { name: "Krea 2 Raw", group: "Image", items: [
+                ["Krea 2", "krea2_raw_bf16.safetensors"], ["Krea 2", "qwen3vl_4b_bf16.safetensors"], ["Krea 2", "qwen_image_vae.safetensors"] ] },
+            { name: "Flux 2 Klein 9B", group: "Image", items: [
+                ["Flux", "flux-2-klein-9b-fp8.safetensors"], ["Flux", "qwen_3_8b_fp8mixed.safetensors"], ["Flux", "flux2-vae.safetensors"] ] },
+            { name: "Qwen Image Edit 2511", group: "Image", items: [
+                ["Qwen", "qwen_image_edit_2511_fp8_e4m3fn.safetensors"], ["Qwen", "qwen_2.5_vl_7b_fp8_scaled.safetensors"],
+                ["Qwen", "qwen_image_vae.safetensors"], ["Qwen", "Qwen-Image-Edit-2511-Lightning-4steps-V1.0-bf16.safetensors"] ] },
+            { name: "Wan 2.2 T2V (4 steps)", group: "Vidéo", items: [
+                ["Wan", "wan2.2_t2v_high_noise_14B_fp8_scaled.safetensors"], ["Wan", "wan2.2_t2v_low_noise_14B_fp8_scaled.safetensors"],
+                ["Wan", "umt5_xxl_fp8_e4m3fn_scaled.safetensors"], ["Wan", "wan_2.1_vae.safetensors"],
+                ["Wan", "wan2.2_t2v_lightx2v_4steps_lora_v1.1_high_noise.safetensors"], ["Wan", "wan2.2_t2v_lightx2v_4steps_lora_v1.1_low_noise.safetensors"] ] },
+            { name: "Minimax H3 Ref2VA", group: "Vidéo", items: [
+                ["Minimax", "minimax_h3_ref2va_pruned_int8_convrot.safetensors"], ["Minimax", "qwen3vl_32b_minimax_h3_nvfp4_awq.safetensors"],
+                ["Minimax", "minimax_h3_video_vae_fp16.safetensors"], ["Minimax", "minimax_h3_audio_vae_fp32.safetensors"],
+                ["Minimax", "minimax_h3_ref2v_turbo_4step_v0.1_comfyui_bf16.safetensors"] ] },
+            { name: "Minimax Music 3", group: "Audio", items: [
+                ["Minimax Music", "minimax_music3_dit_fp16.safetensors"], ["Minimax Music", "minimax_music3_text_encoder_pruned_int8_convrot.safetensors"],
+                ["Minimax Music", "minimax_music3_dav.safetensors"] ] },
+            { name: "ACE-Step 1.5 Turbo", group: "Audio", items: [
+                ["ACE-Step", "ace_step_1.5_turbo_aio.safetensors"] ] },
+            { name: "Stable Audio 3", group: "Audio", items: [
+                ["Stable Audio", "stable_audio_3_medium.safetensors"], ["Stable Audio", "t5gemma_b_b_ul2.safetensors"] ] },
+        ];
+
+        function populatePresets() {
+            const sel = $('preset-ui');
+            sel.innerHTML = '<option value="">Preset…</option>';
+            [...new Set(PRESETS.map(p => p.group))].forEach(g => {
+                const og = document.createElement('optgroup'); og.label = g;
+                PRESETS.forEach((p, i) => { if (p.group === g) og.appendChild(new Option(p.name, i)); });
+                sel.appendChild(og);
+            });
+        }
+        function inPreset(m) { return activePreset && activePreset.items.some(([e, f]) => e === m._env && f === m.filename); }
+        function applyPreset(idx) {
+            if (idx === '') return clearPreset();
+            activePreset = PRESETS[+idx];
+            // filtres remis a zero : la liste montre exactement le contenu du preset
+            $('env-ui').value = '__ALL__'; $('type-ui').value = 'all'; $('search-ui').value = '';
+            presence = 'all'; document.querySelectorAll('#presence-seg button').forEach(b => b.classList.toggle('on', b.dataset.p === 'all'));
+            focusKey = null; anchorIdx = null;
+            loadModels();
+            selected = new Set(rows.map(r => r._key));
+            renderList();
+            const unknown = activePreset.items.filter(([e, f]) => !(cfg[e] && Object.values(cfg[e]).some(l => l.some(m => m.filename === f))));
+            const missing = rows.filter(r => !(r._diskSize > 0)).length;
+            $('preset-chip').innerHTML = `Preset <b>${esc(activePreset.name)}</b> · ${missing ? missing + ' à télécharger' : 'complet'}`
+                + (unknown.length ? ` · <span class="warn" title="${esc(unknown.map(u => u.join(' / ')).join('\n'))}">${unknown.length} hors catalogue</span>` : '')
+                + `<button onclick="clearPreset()" title="Quitter le preset"><i class="fas fa-xmark"></i></button>`;
+            $('preset-chip').classList.remove('hidden');
+            unknown.forEach(([e, f]) => addLog(`Preset ${esc(activePreset.name)} : ${esc(f)} absent de « ${esc(e)} » dans models.json`, true));
+        }
+        function clearPreset() {
+            activePreset = null;
+            $('preset-ui').value = '';
+            $('preset-chip').classList.add('hidden');
+            selected.clear();
+            loadModels();
+        }
         const esc = t => String(t ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+        const keyOf = m => `${m._env}|${m.path}|${m.filename}`;
+        const $ = id => document.getElementById(id);
 
         function formatSize(bytes) {
-            if (!bytes) return '—';
+            if (!bytes) return '';
             if (bytes >= 1_073_741_824) return (bytes / 1_073_741_824).toFixed(2) + ' Go';
             if (bytes >= 1_048_576) return (bytes / 1_048_576).toFixed(0) + ' Mo';
             return (bytes / 1024).toFixed(0) + ' Ko';
         }
-
-        function addLog(msg, isError = false) {
-            const con = document.getElementById('log-console');
-            con.innerHTML += `<div class="${isError ? 'e' : ''}"><span class="t">${new Date().toLocaleTimeString()}</span>${msg}</div>`;
-            con.scrollTop = con.scrollHeight;
+        function hl(text, q) {
+            if (!q) return esc(text);
+            const i = text.toLowerCase().indexOf(q);
+            if (i < 0) return esc(text);
+            return esc(text.slice(0, i)) + '<mark>' + esc(text.slice(i, i + q.length)) + '</mark>' + esc(text.slice(i + q.length));
         }
 
+        // ── dock ──
+        let dockCurrent = 'dl';
+        function dockTab(t) {
+            const dock = $('dock');
+            if (!dock.classList.contains('collapsed') && dockCurrent === t) { dock.classList.add('collapsed'); return; }
+            dockCurrent = t;
+            dock.classList.remove('collapsed');
+            document.querySelectorAll('.dtab').forEach(b => b.classList.toggle('on', b.dataset.d === t));
+            $('dock-dl').classList.toggle('hidden', t !== 'dl');
+            $('dock-log').classList.toggle('hidden', t !== 'log');
+            if (t === 'log') { $('log-dot').classList.add('hidden'); const c = $('dock').querySelector('.dock-body'); c.scrollTop = c.scrollHeight; }
+        }
+        function toggleDock() { $('dock').classList.toggle('collapsed'); }
+        function addLog(msg, isError = false) {
+            const con = $('log-console');
+            con.innerHTML += `<div class="${isError ? 'e' : ''}"><span class="t">${new Date().toLocaleTimeString()}</span>${msg}</div>`;
+            const body = $('dock').querySelector('.dock-body');
+            if (dockCurrent === 'log') body.scrollTop = body.scrollHeight;
+            if (isError && ($('dock').classList.contains('collapsed') || dockCurrent !== 'log')) $('log-dot').classList.remove('hidden');
+        }
+        async function purgeAria() { await fetch('/purge', {method: 'POST'}); loop(); }
+
+        // ── demarrage ──
         async function start(reload = false) {
             try {
-                const r = await fetch('/config'); cfg = await r.json();
-                const envSelector = document.getElementById('env-ui');
+                cfg = await (await fetch('/config')).json();
+                const envSelector = $('env-ui');
                 const prevEnv = envSelector.value; envSelector.innerHTML = "";
                 const environments = Object.keys(cfg).sort((a, b) => a.localeCompare(b));
                 envSelector.add(new Option("Tous les environnements", "__ALL__"));
                 environments.forEach(env => envSelector.add(new Option(env, env)));
                 envSelector.value = (reload && cfg[prevEnv]) ? prevEnv : "__ALL__";
-                const editEnvList = document.getElementById('edit-env-list');
-                editEnvList.innerHTML = "";
-                environments.forEach(env => editEnvList.innerHTML += `<option value="${esc(env)}"></option>`);
-                if (reload) { loadModels(); renderCatalogue(); return; }
-                await updateDiskState(); loadModels(); renderCatalogue(); setInterval(loop, 2000); updateDiskWidget(); setInterval(updateDiskWidget, 30000);
+                $('edit-env-list').innerHTML = environments.map(env => `<option value="${esc(env)}"></option>`).join('');
+                if (reload) { loadModels(); renderCatalogue($('edit-file').value.trim()); return; }
+                populatePresets();
+                await updateDiskState(); loadModels(); renderCatalogue();
+                setInterval(loop, 2000); loop();
+                updateDiskWidget(); setInterval(updateDiskWidget, 30000);
                 setTimeout(async () => { await updateDiskState(); loadModels(); }, 3000);
-            } catch(e) { }
+            } catch(e) { addLog('Chargement impossible : ' + esc(e.message), true); }
         }
-
-        async function updateDiskState() { const r = await fetch('/scan-disk'); diskFiles = await r.json(); }
+        async function updateDiskState() { diskFiles = await (await fetch('/scan-disk')).json(); }
+        async function refreshAll() { await updateDiskState(); loadModels(); updateDiskWidget(); refreshWfPresence(); addLog('Disque rescanné'); }
 
         async function updateDiskWidget() {
             try {
                 const d = await (await fetch('/disk-usage')).json();
                 const fmt = v => v.toFixed(1) + ' Go';
-                if (d.workspace) {
-                    const ws = d.workspace, bar = document.getElementById('ws-bar');
-                    document.getElementById('ws-used').textContent = fmt(ws.used_gb);
-                    if (ws.total_gb !== null) {
-                        document.getElementById('ws-total').textContent = fmt(ws.total_gb);
-                        document.getElementById('ws-free').textContent = fmt(ws.free_gb);
-                        const kinds = {container: ['container', 'Container Disk : effacé au Stop et au Terminate'], volume: ['volume', 'Volume Disk : conservé au Stop, effacé au Terminate'], network: ['network', 'Network volume : conservé même au Terminate']};
-                        const k = kinds[ws.kind] || ['', ''];
-                        document.getElementById('ws-kind').textContent = k[0];
-                        document.getElementById('disk-widget').title = k[1];
-                        bar.style.width = ws.used_pct + '%';
-                        bar.className = ws.used_pct > 85 ? 'crit' : ws.used_pct > 65 ? 'warn' : '';
-                    } else {
-                        document.getElementById('ws-total').textContent = '?';
-                        document.getElementById('ws-free').textContent = '—';
-                        bar.style.width = '0%';
-                    }
+                if (!d.workspace) return;
+                const ws = d.workspace, bar = $('ws-bar');
+                $('ws-used').textContent = fmt(ws.used_gb);
+                if (ws.total_gb !== null) {
+                    $('ws-total').textContent = fmt(ws.total_gb);
+                    $('ws-free').textContent = fmt(ws.free_gb);
+                    const kinds = {container: ['container', 'Container Disk : effacé au Stop et au Terminate'], volume: ['volume', 'Volume Disk : conservé au Stop, effacé au Terminate'], network: ['network', 'Network volume : conservé même au Terminate']};
+                    const k = kinds[ws.kind] || ['', ''];
+                    $('ws-kind').textContent = k[0];
+                    $('disk-widget').title = k[1];
+                    bar.style.width = ws.used_pct + '%';
+                    bar.className = ws.used_pct > 85 ? 'crit' : ws.used_pct > 65 ? 'warn' : '';
+                } else {
+                    $('ws-total').textContent = '?'; $('ws-free').textContent = '…'; bar.style.width = '0%';
                 }
             } catch(e) {}
         }
 
+        // ── catalogue ──
         function loadModels(targetFilename = null) {
-            const m = document.getElementById('models-ui'); const env = document.getElementById('env-ui').value;
-            const type = document.getElementById('type-ui').value; const search = document.getElementById('search-ui').value.toLowerCase();
-            const savedScroll = m.scrollTop; const selectedValues = targetFilename ? [targetFilename] : Array.from(m.selectedOptions).map(o => o.value);
-            m.innerHTML = "";
-            if (env !== "__ALL__" && !cfg[env]) return;
-
-            let allModels = [];
-            const envsToScan = env === "__ALL__" ? Object.keys(cfg) : [env];
-            envsToScan.forEach(e => {
-                Object.keys(cfg[e]).forEach(cat => {
+            const env = $('env-ui').value, type = $('type-ui').value, search = $('search-ui').value.toLowerCase().trim();
+            let all = [];
+            if (env === "__ALL__" || cfg[env]) {
+                const envsToScan = env === "__ALL__" ? Object.keys(cfg) : [env];
+                envsToScan.forEach(e => Object.keys(cfg[e]).forEach(cat => {
                     let matchType = (type === 'all');
                     if (!matchType) {
                         if (type === 'clip') matchType = (cat.includes('clip') || cat.includes('text_encoders'));
                         else if (type === 'unet') matchType = (cat.includes('unet') || cat.includes('diffusion_models'));
                         else matchType = cat.toLowerCase().includes(type.toLowerCase());
                     }
-                    if (matchType) {
-                        cfg[e][cat].forEach(model => {
-                            if (model.filename.toLowerCase().includes(search)) allModels.push({ ...model, _env: e });
-                        });
-                    }
-                });
-            });
-
-            // Dossiers disque uniquement (prompt_generator, LLM)
-            const folderCategoryMap = { "prompt_generator": "Qwen", "LLM": "Qwen" };
-            ["prompt_generator", "LLM"].forEach(cat => {
-                const ownerEnv = folderCategoryMap[cat];
-                if (env !== "__ALL__" && env !== ownerEnv) return;
-                (diskFiles[cat] || []).forEach(entry => {
-                    if (!entry.is_folder) return;
-                    if (!entry.path.toLowerCase().includes(search)) return;
-                    allModels.push({ filename: entry.path, path: cat, category: cat, url: "", _env: "", _isFolder: true, _folderSize: entry.size || 0 });
-                });
-            });
-
-            allModels.forEach(model => {
-                if (model._isFolder) {
-                    model._diskSize = model._folderSize || 0;
-                    model._diskPath = model.filename;
-                } else {
-                    const diskCategoryFiles = diskFiles[model.path.split('/')[0]] || [];
-                    const modelFilename = model.filename.toLowerCase();
-                    const diskEntry = diskCategoryFiles.find(f => {
-                        const p = (f.path || f).toLowerCase();
-                        return p === modelFilename || p.endsWith('/' + modelFilename);
+                    if (matchType) cfg[e][cat].forEach(model => { if (model.filename.toLowerCase().includes(search)) all.push({ ...model, _env: e }); });
+                }));
+                // Dossiers disque uniquement (prompt_generator, LLM)
+                const folderCategoryMap = { "prompt_generator": "Qwen", "LLM": "Qwen" };
+                ["prompt_generator", "LLM"].forEach(cat => {
+                    if (env !== "__ALL__" && env !== folderCategoryMap[cat]) return;
+                    (diskFiles[cat] || []).forEach(entry => {
+                        if (!entry.is_folder || !entry.path.toLowerCase().includes(search)) return;
+                        all.push({ filename: entry.path, path: cat, category: cat, url: "", _env: "", _isFolder: true, _diskSize: entry.size || 0, _diskPath: entry.path });
                     });
-                    model._diskSize = diskEntry ? (diskEntry.size || 0) : 0;
-                    model._diskPath = diskEntry ? diskEntry.path : model.filename;
-                }
+                });
+            }
+            all.forEach(m => {
+                if (m._isFolder) return;
+                const lst = diskFiles[m.path.split('/')[0]] || [];
+                const fn = m.filename.toLowerCase();
+                const hit = lst.find(f => { const p = (f.path || f).toLowerCase(); return p === fn || p.endsWith('/' + fn); });
+                m._diskSize = hit ? (hit.size || 0) : 0;
+                m._diskPath = hit ? hit.path : m.filename;
             });
-
-            allModels.sort((a, b) => sortState.key === 'size'
+            if (activePreset) all = all.filter(m => inPreset(m));
+            const total = all.length, onDisk = all.filter(m => m._diskSize > 0).length;
+            if (presence === 'disk') all = all.filter(m => m._diskSize > 0);
+            else if (presence === 'missing') all = all.filter(m => !(m._diskSize > 0));
+            all.sort((a, b) => sortState.key === 'size'
                 ? ((a._diskSize || 0) - (b._diskSize || 0)) * sortState.dir
                 : a.filename.localeCompare(b.filename) * sortState.dir);
-
-            allModels.forEach(model => {
-                let o;
-                if (model._isFolder) {
-                    o = new Option("●  ▣ " + model.filename + "   " + formatSize(model._folderSize), model.filename);
-                    Object.assign(o.dataset, { url: "", cat: model.path, category: model.category, env: "", size: model._folderSize || 0, isFolder: "true", diskPath: model._diskPath });
-                    o.style.color = "#8fcf9b";
-                } else {
-                    const isPresent = model._diskSize > 0;
-                    o = new Option((isPresent ? "●  " : "○  ") + model.filename + (isPresent ? "   " + formatSize(model._diskSize) : ""), model.filename);
-                    Object.assign(o.dataset, { url: model.url, cat: model.path, category: model.category || model.path.split('/')[0], env: model._env || "", size: isPresent ? model._diskSize : 0, diskPath: model._diskPath });
-                    if (isPresent) o.style.color = "#8fcf9b";
-                }
-                if (selectedValues.includes(model.filename)) o.selected = true;
-                m.add(o);
-            });
+            all.forEach(m => m._key = keyOf(m));
+            rows = all;
 
             if (targetFilename) {
-                const i = Array.from(m.options).findIndex(o => o.selected);
-                m.scrollTop = Math.max(0, i * 26 - 80);
-            } else m.scrollTop = savedScroll;
-            checkStatus();
+                const t = rows.find(r => r.filename === targetFilename);
+                selected = new Set(t ? [t._key] : []);
+                focusKey = t ? t._key : null;
+                anchorIdx = t ? rows.indexOf(t) : null;
+            } else {
+                const vis = new Set(rows.map(r => r._key));
+                selected = new Set([...selected].filter(k => vis.has(k)));
+            }
+            $('list-count').textContent = `${rows.length}${rows.length !== total ? ' / ' + total : ''} · ${onDisk} sur le disque`;
+            renderList();
+            if (targetFilename) scrollToFocus();
         }
 
-        function checkStatus() {
-            const n = document.getElementById('models-ui').selectedOptions.length;
-            document.getElementById('delete-btn').disabled = n === 0;
-            document.getElementById('diode-ui').style.cssText = n ? 'background:var(--ok);' : '';
-            document.getElementById('status-text').textContent = n ? `${n} sélectionné(s)` : 'Sélection multiple prête';
+        function renderList() {
+            const list = $('models-list');
+            const q = $('search-ui').value.toLowerCase().trim();
+            if (!rows.length) { list.innerHTML = '<div class="empty">Aucun modèle ne correspond.</div>'; updateActionBar(); return; }
+            list.innerHTML = rows.map((m, i) => {
+                const on = m._diskSize > 0, sel = selected.has(m._key);
+                const name = (m._isFolder ? '▣ ' : '') + m.filename;
+                return `<div class="cols item${on ? ' on' : ''}${sel ? ' sel' : ''}${m._key === focusKey ? ' focus' : ''}" data-i="${i}">`
+                    + `<input type="checkbox" tabindex="-1"${sel ? ' checked' : ''}><span class="dot"></span>`
+                    + `<span class="fname" title="${esc(m.filename)}">${hl(name, q)}</span>`
+                    + `<span class="meta">${esc([m._env, m.path].filter(Boolean).join(' · '))}</span>`
+                    + `<span class="size">${on ? formatSize(m._diskSize) : ''}</span></div>`;
+            }).join('');
+            updateActionBar();
         }
+        function scrollToFocus() { $('models-list').querySelector('.item.focus')?.scrollIntoView({block: 'nearest'}); }
 
-        function syncToEditor() {
-            const s = Array.from(document.getElementById('models-ui').selectedOptions); if (s.length !== 1) return;
-            const o = s[0];
-            document.getElementById('edit-env').value = o.dataset.env || document.getElementById('env-ui').value;
-            setEditCat(o.dataset.category || o.dataset.cat.split('/')[0]);
-            document.getElementById('edit-path').value = BASE_PATH + o.dataset.cat;
-            document.getElementById('edit-url').value = o.dataset.url;
-            document.getElementById('edit-file').value = o.value;
-            renderCatalogue(o.value);
+        function updateActionBar() {
+            const sel = rows.filter(r => selected.has(r._key));
+            const present = sel.filter(r => r._diskSize > 0);
+            const missing = sel.length - present.length;
+            const presentSize = present.reduce((a, r) => a + (r._diskSize || 0), 0);
+            $('sel-info').innerHTML = sel.length
+                ? `${sel.length} sélectionné(s) <span>· ${present.length} sur le disque${presentSize ? ' (' + formatSize(presentSize) + ')' : ''}</span>`
+                : `<span>Clic pour ouvrir · <kbd>Ctrl</kbd> ou <kbd>⇧</kbd> pour sélection multiple · <kbd>↑</kbd><kbd>↓</kbd></span>`;
+            $('clear-btn').classList.toggle('hidden', !sel.length);
+            $('dl-btn').disabled = !sel.length;
+            $('dl-btn').querySelector('span').textContent = !sel.length ? 'Télécharger' : missing ? `Télécharger (${missing})` : 'Retélécharger';
+            $('delete-btn').disabled = !present.length;
+            $('delete-btn').querySelector('span').textContent = present.length ? `Supprimer (${present.length})` : 'Supprimer';
+            $('check-all').checked = rows.length > 0 && rows.every(r => selected.has(r._key));
         }
-        function setEditCat(cat) {
-            const sel = document.getElementById('edit-cat');
-            if (cat && !Array.from(sel.options).some(op => op.value === cat)) sel.add(new Option(cat, cat));
-            sel.value = cat;
+        function toggleAll(on) { selected = on ? new Set(rows.map(r => r._key)) : new Set(); renderList(); }
+        function clearSelection() { selected.clear(); renderList(); }
+
+        $('models-list').addEventListener('click', e => {
+            const it = e.target.closest('.item'); if (!it) return;
+            const i = +it.dataset.i, m = rows[i];
+            if (e.target.matches('input[type=checkbox]') || e.ctrlKey || e.metaKey) {
+                selected.has(m._key) ? selected.delete(m._key) : selected.add(m._key);
+                anchorIdx = i;
+            } else if (e.shiftKey && anchorIdx !== null) {
+                const a = Math.min(anchorIdx, i), b = Math.max(anchorIdx, i);
+                for (let k = a; k <= b; k++) selected.add(rows[k]._key);
+            } else {
+                selected = new Set([m._key]); anchorIdx = i;
+            }
+            focusKey = m._key; fillEditor(m); renderList();
+        });
+        $('models-list').addEventListener('keydown', e => {
+            if (!rows.length) return;
+            if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+                e.preventDefault();
+                let i = rows.findIndex(r => r._key === focusKey);
+                i = Math.max(0, Math.min(rows.length - 1, i + (e.key === 'ArrowDown' ? 1 : -1)));
+                const m = rows[i];
+                if (e.shiftKey) selected.add(m._key); else selected = new Set([m._key]);
+                anchorIdx = i; focusKey = m._key; fillEditor(m); renderList(); scrollToFocus();
+            } else if (e.key === 'Escape') { clearSelection(); }
+            else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'a') { e.preventDefault(); toggleAll(true); }
+        });
+        document.addEventListener('keydown', e => {
+            if (e.key === '/' && !['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) { e.preventDefault(); $('search-ui').focus(); }
+            if (e.key === 'Escape' && document.activeElement === $('search-ui') && $('search-ui').value) { $('search-ui').value = ''; loadModels(); }
+        });
+
+        function setPresence(p) {
+            presence = p;
+            document.querySelectorAll('#presence-seg button').forEach(b => b.classList.toggle('on', b.dataset.p === p));
+            loadModels();
+        }
+        function setSortAndReload(key) {
+            if (sortState.key === key) sortState.dir *= -1; else { sortState.key = key; sortState.dir = 1; }
+            const arrow = sortState.dir === 1 ? '↑' : '↓';
+            $('sort-name-icon').textContent = sortState.key === 'name' ? arrow : '↕';
+            $('sort-size-icon').textContent = sortState.key === 'size' ? arrow : '↕';
+            $('sort-name').classList.toggle('on', sortState.key === 'name');
+            $('sort-size').classList.toggle('on', sortState.key === 'size');
+            loadModels();
         }
 
         async function startSmartDownload() {
-            const s = Array.from(document.getElementById('models-ui').selectedOptions);
-            if (s.length === 0) {
-                const url = document.getElementById('edit-url').value;
-                const path = document.getElementById('edit-path').value.replace(BASE_PATH, "");
-                const file = document.getElementById('edit-file').value;
-                if (!url || !file) return;
-                await fetch('/download', { method:'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({url, path, filename: file}) });
-                addLog(`Lancement : ${esc(file)}`);
-            } else {
-                if (!confirm(`Lancer le téléchargement de ${s.length} fichier(s) ?`)) return;
-                for (let o of s) {
-                    await fetch('/download', { method:'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({url: o.dataset.url, path: o.dataset.cat, filename: o.value}) });
-                    addLog(`Ajout file d'attente : ${esc(o.value)}`);
-                }
+            const all = rows.filter(r => selected.has(r._key) && r.url);
+            if (!all.length) return;
+            // les fichiers deja presents sont ignores ; s'ils le sont tous, on propose de retelecharger
+            let sel = all.filter(r => !(r._diskSize > 0));
+            if (!sel.length) {
+                if (!confirm(`Les ${all.length} fichier(s) sont déjà sur le disque. Les retélécharger ?`)) return;
+                sel = all;
+            } else if (sel.length > 1 && !confirm(`Lancer le téléchargement de ${sel.length} fichier(s)` + (all.length > sel.length ? ` (${all.length - sel.length} déjà présent(s) ignoré(s))` : '') + ' ?')) return;
+            for (const m of sel) {
+                const r = await (await fetch('/download', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({url: m.url, path: m.path, filename: m.filename}) })).json();
+                addLog(r.status === 'ok' ? `File d'attente : ${esc(m.filename)}` : `Erreur ${esc(m.filename)} : ${esc(r.message)}`, r.status !== 'ok');
             }
+            dockTab('dl'); loop();
         }
-
         async function deleteFromDisk() {
-            const s = Array.from(document.getElementById('models-ui').selectedOptions);
-            if (s.length === 0) return;
-            if (!confirm(`Supprimer définitivement ${s.length} fichier(s) du disque ?`)) return;
-            for (let o of s) {
-                const diskPath = o.dataset.diskPath || o.value;
-                await fetch(`/delete?cat=${encodeURIComponent(o.dataset.cat)}&file=${encodeURIComponent(diskPath)}`, {method:'DELETE'});
-                addLog(`Supprimé : ${esc(diskPath)}`);
+            const sel = rows.filter(r => selected.has(r._key) && r._diskSize > 0);
+            if (!sel.length) return;
+            if (!confirm(`Supprimer définitivement ${sel.length} fichier(s) du disque ?`)) return;
+            for (const m of sel) {
+                await fetch(`/delete?cat=${encodeURIComponent(m.path)}&file=${encodeURIComponent(m._diskPath || m.filename)}`, {method: 'DELETE'});
+                addLog(`Supprimé : ${esc(m._diskPath || m.filename)}`);
             }
             await updateDiskState(); loadModels(); refreshWfPresence();
         }
 
-        function showGitHubToast() { const t = document.getElementById('github-toast'); t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3000); }
-        async function syncGithub() {
-            const d = await (await fetch('/sync-github', { method: 'POST' })).json();
-            if (d.status === 'ok') showGitHubToast();
-            else addLog('Sync GitHub échoué : ' + esc(d.message || ''), true);
+        // ── editeur ──
+        function fillEditor(m) {
+            if (!m) return;
+            $('edit-env').value = m._env || ($('env-ui').value !== '__ALL__' ? $('env-ui').value : '');
+            setEditCat(m.category || m.path.split('/')[0]);
+            $('edit-path').value = BASE_PATH + m.path;
+            $('edit-url').value = m.url || '';
+            $('edit-file').value = m.filename;
+            hidePathBrowser();
+            renderCatalogue(m.filename);
         }
-        function resetEditor() { ['edit-url','edit-file','edit-path'].forEach(id => document.getElementById(id).value = ""); hidePathBrowser(); renderCatalogue(); }
-        function updatePathByCategory() { document.getElementById('edit-path').value = BASE_PATH + document.getElementById('edit-cat').value; hidePathBrowser(); }
+        function setEditCat(cat) {
+            const sel = $('edit-cat');
+            if (cat && !Array.from(sel.options).some(op => op.value === cat)) sel.add(new Option(cat, cat));
+            sel.value = cat;
+        }
+        function resetEditor() { ['edit-url', 'edit-file', 'edit-path'].forEach(id => $(id).value = ""); hidePathBrowser(); renderCatalogue(); }
+        function updatePathByCategory() { $('edit-path').value = BASE_PATH + $('edit-cat').value; hidePathBrowser(); }
         async function togglePathBrowser() {
-            const browser = document.getElementById('path-browser');
+            const browser = $('path-browser');
             if (browser.style.display === "block") return hidePathBrowser();
-            const cat = document.getElementById('edit-cat').value;
+            const cat = $('edit-cat').value;
             const folders = await (await fetch(`/list-subfolders?category=${encodeURIComponent(cat)}`)).json();
             browser.innerHTML = folders.map(f => `<div class="path-item" onclick="setPath('${esc(cat)}', '${esc(f)}')">${f === "" ? '<i class="fas fa-level-up-alt"></i> Dossier racine' : '<i class="fas fa-folder"></i> ' + esc(f)}</div>`).join('');
             browser.style.display = "block";
         }
-        function hidePathBrowser() { document.getElementById('path-browser').style.display = "none"; }
-        function setPath(cat, sub) { const cleanSub = sub === "" ? "" : (sub.startsWith('/') ? sub : '/' + sub); document.getElementById('edit-path').value = BASE_PATH + cat + cleanSub; hidePathBrowser(); }
+        function hidePathBrowser() { $('path-browser').style.display = "none"; }
+        function setPath(cat, sub) { $('edit-path').value = BASE_PATH + cat + (sub ? '/' + sub.replace(/^\/+/, '') : ''); hidePathBrowser(); }
         async function autoFetchName(url) {
-            const fileInput = document.getElementById('edit-file'); if (!url) return;
-            fileInput.value = "…";
+            const fileInput = $('edit-file'); if (!url) return;
             if (url.includes('huggingface.co')) fileInput.value = decodeURIComponent(url.split('/').pop().split('?')[0]);
             else if (url.includes('civitai.com') || url.includes('civitai.red')) {
+                fileInput.value = "…";
                 const d = await (await fetch(`/fetch-civitai-name?url=${encodeURIComponent(url)}`)).json(); fileInput.value = d.filename || "";
-            } else fileInput.value = "";
+            } else return;
+            renderCatalogue(fileInput.value.trim());
         }
-
-        async function loop() {
-            try {
-                const tasks = await (await fetch('/progress')).json();
-                const completeCount = tasks.filter(t => t.status.includes('complete')).length;
-                if (completeCount !== lastCompleteCount) { lastCompleteCount = completeCount; await updateDiskState(); loadModels(); refreshWfPresence(); }
-                document.getElementById('tasks-ui').innerHTML = tasks.map(t => {
-                    const isError = t.status.includes('error') || t.status.includes('Erreur');
-                    const isDone = t.status === 'complete';
-                    const isActive = t.status === 'active';
-                    const isWaiting = isActive && t.progress === 0 && t.speed === '0 o/s';
-                    const pct = Math.round(t.progress || 0);
-                    const cls = isError ? 'err' : isDone ? 'done' : isWaiting ? 'wait' : '';
-                    const statusLabel = isError ? t.status : (isDone ? 'Terminé' : (isWaiting ? 'En attente' : (isActive ? 'En cours' : t.status)));
-                    const color = isError ? 'var(--err)' : isDone ? 'var(--ok)' : 'var(--ink-2)';
-                    return `<div class="task ${cls}">
-                        <div class="task-top"><span class="name">${esc(t.name)}</span><span style="color:${color};text-transform:uppercase;letter-spacing:.1em;font-size:10.5px">${esc(statusLabel)}</span></div>
-                        <div class="task-track"><div class="task-fill" style="width:${pct}%"></div></div>
-                        <div class="task-bottom"><span>${isActive && !isWaiting ? esc(t.speed) : ''}</span><span>${isWaiting ? '' : pct + '%' + (isActive && t.eta ? ' · ' + esc(t.eta) : '')}</span></div>
-                    </div>`;
-                }).join('');
-            } catch(e) {}
+        async function downloadFromEditor() {
+            const url = $('edit-url').value.trim(), file = $('edit-file').value.trim();
+            const path = $('edit-path').value.replace(BASE_PATH, "").replace(/^\/+/, "") || $('edit-cat').value;
+            if (!url || !file) { addLog('URL et nom de fichier nécessaires pour télécharger.', true); return; }
+            const r = await (await fetch('/download', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({url, path, filename: file}) })).json();
+            addLog(r.status === 'ok' ? `File d'attente : ${esc(file)}` : `Erreur ${esc(file)} : ${esc(r.message)}`, r.status !== 'ok');
+            dockTab('dl'); loop();
         }
 
         async function saveToCatalogue() {
-            const env = document.getElementById('edit-env').value.trim();
-            const cat = document.getElementById('edit-cat').value;
-            const fullPath = document.getElementById('edit-path').value;
-            const url = document.getElementById('edit-url').value;
-            const file = document.getElementById('edit-file').value;
-            if (!env || !cat || !file || !url) { addLog('Environnement, catégorie, fichier et URL sont obligatoires.', true); return; }
+            const env = $('edit-env').value.trim(), cat = $('edit-cat').value;
+            const url = $('edit-url').value.trim(), file = $('edit-file').value.trim();
+            if (!env || !cat || !file || !url) { addLog('Environnement, catégorie, fichier et URL sont obligatoires.', true); dockTab('log'); return; }
             const isNewEnv = !cfg[env];
-            const relPath = fullPath.replace(BASE_PATH, "").replace(/^\/+/, "") || cat;
-            const obj = { name: file, url: url, path: relPath, category: cat, filename: file };
+            const relPath = $('edit-path').value.replace(BASE_PATH, "").replace(/^\/+/, "") || cat;
+            const obj = { name: file, url, path: relPath, category: cat, filename: file };
             if (!cfg[env]) cfg[env] = {};
             if (!cfg[env][cat]) cfg[env][cat] = [];
             const idx = cfg[env][cat].findIndex(m => m.filename === file);
             if (idx > -1) cfg[env][cat][idx] = obj; else cfg[env][cat].push(obj);
-            const r = await fetch('/save-config', { method: 'POST', body: JSON.stringify(cfg) });
+            const r = await fetch('/save-config', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(cfg) });
             if ((await r.json()).github_sync === 'ok') showGitHubToast();
-            if (isNewEnv) {
-                addLog(`Nouvel environnement : ${esc(env)}`);
-                document.getElementById('env-ui').add(new Option(env, env));
-                document.getElementById('edit-env-list').innerHTML += `<option value="${esc(env)}"></option>`;
-            }
+            addLog(`${idx > -1 ? 'Mis à jour' : 'Ajouté'} : ${esc(file)} dans « ${esc(env)} »`);
+            if (isNewEnv) await start(true);
             wfRows.forEach(e => { if (e.filename === file) e.in_catalogue = true; });
             renderWorkflowRows();
             loadModels(file);
             renderCatalogue(file);
         }
 
-        function renderCatalogue(filterFile = null) {
-            const list = document.getElementById('catalogue-list');
+        function renderCatalogue(filterFile = '') {
+            const list = $('catalogue-list'), mode = $('ed-mode');
+            if (!filterFile) {
+                mode.className = 'badge'; mode.textContent = 'Vide';
+                list.innerHTML = '<div class="hint">Clique un modèle dans la liste pour le modifier, ou colle une URL ci-dessus pour en ajouter un nouveau.</div>';
+                return;
+            }
             let html = '';
             Object.keys(cfg).forEach(env => Object.keys(cfg[env]).forEach(cat => cfg[env][cat].forEach((m, idx) => {
-                if (filterFile && m.filename !== filterFile) return;
-                html += `<div class="cat-entry ${filterFile ? 'hl' : ''}"><div style="min-width:0;display:flex;flex-direction:column;gap:2px"><span class="env">${esc(env)} · ${esc(cat)}</span><span class="file" title="${esc(m.filename)}">${esc(m.filename)}</span></div><button class="icon-btn" title="Retirer du catalogue" onclick="removeFromCatalogue('${esc(env)}','${esc(cat)}',${idx})"><i class="fas fa-times"></i></button></div>`;
+                if (m.filename !== filterFile) return;
+                html += `<div class="cat-entry"><div style="min-width:0"><span class="env">${esc(env)} · ${esc(m.path || cat)}</span><span class="file" title="${esc(m.url)}">${esc(m.filename)}</span></div><button class="icon-btn del" title="Retirer du catalogue" onclick="removeFromCatalogue('${esc(env)}','${esc(cat)}',${idx})"><i class="fas fa-xmark"></i></button></div>`;
             })));
-            list.innerHTML = html || `<div class="muted" style="padding:10px">${filterFile ? 'Pas encore dans le catalogue : complète les champs et enregistre.' : 'Catalogue vide.'}</div>`;
+            mode.className = html ? 'badge in' : 'badge new';
+            mode.textContent = html ? 'Dans le catalogue' : 'Nouveau';
+            list.innerHTML = html || '<div class="hint">Pas encore dans models.json : complète les champs et enregistre.</div>';
         }
-        async function removeFromCatalogue(e, c, i) { if (confirm('Retirer ce modèle de models.json ?')) { cfg[e][c].splice(i, 1); await fetch('/save-config', { method: 'POST', body: JSON.stringify(cfg) }); renderCatalogue(); loadModels(); } }
-
-        function setSortAndReload(key) {
-            if (sortState.key === key) sortState.dir *= -1; else { sortState.key = key; sortState.dir = 1; }
-            const arrow = sortState.dir === 1 ? '↑' : '↓';
-            document.getElementById('sort-name-icon').textContent = sortState.key === 'name' ? arrow : '↕';
-            document.getElementById('sort-size-icon').textContent = sortState.key === 'size' ? arrow : '↕';
-            document.getElementById('sort-name').classList.toggle('on', sortState.key === 'name');
-            document.getElementById('sort-size').classList.toggle('on', sortState.key === 'size');
-            loadModels();
+        async function removeFromCatalogue(e, c, i) {
+            if (!confirm('Retirer ce modèle de models.json ?')) return;
+            const name = cfg[e][c][i].filename;
+            cfg[e][c].splice(i, 1);
+            await fetch('/save-config', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(cfg) });
+            addLog(`Retiré du catalogue : ${esc(name)} (${esc(e)})`);
+            renderCatalogue($('edit-file').value.trim()); loadModels();
         }
 
-        // ── 03 WORKFLOW : modeles manquants ──
+        function showGitHubToast() { const t = $('github-toast'); t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3000); }
+        async function syncGithub() {
+            const d = await (await fetch('/sync-github', { method: 'POST' })).json();
+            if (d.status === 'ok') showGitHubToast();
+            else addLog('Sync GitHub échoué : ' + esc(d.message || ''), true);
+        }
+
+        // ── telechargements ──
+        async function loop() {
+            try {
+                const tasks = await (await fetch('/progress')).json();
+                const completeCount = tasks.filter(t => t.status.includes('complete')).length;
+                if (completeCount !== lastCompleteCount) { lastCompleteCount = completeCount; await updateDiskState(); loadModels(); refreshWfPresence(); }
+                const active = tasks.filter(t => t.status === 'active' || t.status === 'waiting').length;
+                $('dl-count').textContent = active || '';
+                if (tasks.length > lastTaskCount && $('dock').classList.contains('collapsed')) dockTab('dl');
+                lastTaskCount = tasks.length;
+                $('tasks-ui').innerHTML = tasks.map(t => {
+                    const isError = t.status.includes('error') || t.status.includes('Erreur');
+                    const isDone = t.status === 'complete', isActive = t.status === 'active';
+                    const isWaiting = isActive && t.progress === 0 && t.speed === '0 o/s';
+                    const pct = Math.round(t.progress || 0);
+                    const cls = isError ? 'err' : isDone ? 'done' : isWaiting ? 'wait' : '';
+                    const label = isError ? t.status : (isDone ? 'Terminé' : (isWaiting ? 'En attente' : (isActive ? 'En cours' : t.status)));
+                    const color = isError ? 'var(--err)' : isDone ? 'var(--ok)' : 'var(--ink-2)';
+                    return `<div class="task ${cls}">
+                        <div class="task-top"><span class="name" title="${esc(t.name)}">${esc(t.name)}</span><span class="st" style="color:${color}">${esc(label)}</span></div>
+                        <div class="task-track"><div class="task-fill" style="width:${pct}%"></div></div>
+                        <div class="task-bottom"><span>${isActive && !isWaiting ? esc(t.speed) : ''}</span><span>${isWaiting ? '' : pct + '%' + (isActive && t.eta ? ' · ' + esc(t.eta) : '')}</span></div>
+                    </div>`;
+                }).join('') || '<div class="muted" style="padding:8px 4px">Aucun téléchargement.</div>';
+            } catch(e) {}
+        }
+
+        // ── workflows ──
         let wfRows = [], templates = [], wfSel = -1;
         const WF_FOLDERS = ["diffusion_models","loras","vae","text_encoders","clip_vision","checkpoints","upscale_models","controlnet","model_patches","latent_upscale_models","unet","embeddings"];
 
@@ -647,50 +900,46 @@
         async function loadWorkflowList() {
             try {
                 const list = await (await fetch('/workflows')).json();
-                const sel = document.getElementById('wf-select');
+                const sel = $('wf-select');
                 list.forEach(w => sel.add(new Option(w.replace(/\.json$/, ''), w)));
             } catch(e) {}
         }
         async function loadTemplates() {
-            const grid = document.getElementById('tpl-grid');
+            const grid = $('tpl-grid');
             grid.innerHTML = '<div class="muted">Chargement du catalogue…</div>';
             try {
                 const d = await (await fetch('/templates-index')).json();
                 if (d.error) { grid.innerHTML = `<div class="err-text">${esc(d.error)}</div>`; return; }
                 templates = d.templates;
-                const sel = document.getElementById('tpl-cat');
+                const sel = $('tpl-cat');
                 [...new Set(templates.map(t => t.category))].forEach(c => sel.add(new Option(c, c)));
                 renderTemplates();
             } catch(e) { grid.innerHTML = '<div class="err-text">Catalogue indisponible.</div>'; }
         }
         function renderTemplates() {
-            const q = document.getElementById('tpl-search').value.toLowerCase().trim();
-            const cat = document.getElementById('tpl-cat').value;
-            const api = document.getElementById('tpl-api').checked;
+            const q = $('tpl-search').value.toLowerCase().trim();
+            const cat = $('tpl-cat').value, api = $('tpl-api').checked;
             const list = templates.filter(t => (api || !t.api) && (!cat || t.category === cat) &&
                 (!q || q.split(/\s+/).every(w => [t.title, t.name, t.description, ...(t.models || []), ...(t.tags || [])].join(' ').toLowerCase().includes(w))));
             const shown = list.slice(0, 80);
-            document.getElementById('tpl-grid').innerHTML = shown.map(t => `
+            $('tpl-grid').innerHTML = shown.map(t => `
                 <div class="tpl" onclick="analyzeTemplate('${esc(t.name)}')" title="${esc(t.description)}">
                     <div class="tpl-img"><img loading="lazy" src="/template-thumb/${encodeURIComponent(t.name)}?ext=${esc(t.ext)}" onerror="this.remove()"></div>
-                    <div class="tpl-body">
-                        <div class="tpl-title">${esc(t.title)}</div>
-                        <div class="tpl-meta">${esc((t.models || []).join(', '))}${t.size ? ' · ' + formatSize(t.size) : ''}</div>
-                    </div>
+                    <div class="tpl-title">${esc(t.title)}</div>
+                    <div class="tpl-meta">${esc((t.models || []).join(', '))}${t.size ? ' · ' + formatSize(t.size) : ''}</div>
                 </div>`).join('') || '<div class="muted">Aucun résultat.</div>';
-            document.getElementById('tpl-info').textContent = `${list.length} workflow(s)` + (list.length > shown.length ? ` · ${shown.length} affichés, affine la recherche` : '');
+            $('tpl-info').textContent = `${list.length} workflow(s)` + (list.length > shown.length ? ` · ${shown.length} affichés, affine la recherche` : '');
         }
         function analyzeTemplate(name) {
             const t = templates.find(x => x.name === name);
-            const env = document.getElementById('wf-env');
-            if (t && !env.value) {   // propose l'environnement du catalogue qui correspond au modele du template
+            const env = $('wf-env');
+            if (t && !env.value) {
                 const envs = Object.keys(cfg);
                 const guess = (t.models || []).map(m => envs.find(e => e.toLowerCase() === m.toLowerCase()) || envs.find(e => m.toLowerCase().includes(e.toLowerCase()) || e.toLowerCase().includes(m.toLowerCase()))).find(Boolean);
                 env.value = guess || (t.models || [])[0] || '';
             }
             analyzeWorkflow({template: name}, t ? t.title : name);
         }
-        // Glisser-deposer : .json, ou PNG ComfyUI (le workflow est stocke dans le chunk texte "workflow")
         async function pngWorkflow(file) {
             const buf = new Uint8Array(await file.arrayBuffer());
             const dv = new DataView(buf.buffer); let pos = 8; const chunks = {};
@@ -721,39 +970,40 @@
         }
         (() => {
             let depth = 0;
-            const zone = () => document.getElementById('wf-drop');
             window.addEventListener('dragenter', e => { if ([...e.dataTransfer.types].includes('Files')) { depth++; document.body.classList.add('dragging'); } });
             window.addEventListener('dragleave', () => { if (--depth <= 0) { depth = 0; document.body.classList.remove('dragging'); } });
             window.addEventListener('dragover', e => e.preventDefault());
             window.addEventListener('drop', e => {
                 e.preventDefault(); depth = 0; document.body.classList.remove('dragging');
-                if (e.dataTransfer.files.length) { handleWfFiles(e.dataTransfer.files); zone()?.scrollIntoView({behavior: 'smooth', block: 'center'}); }
+                if (e.dataTransfer.files.length) { handleWfFiles(e.dataTransfer.files); $('wf-panel').scrollIntoView({behavior: 'smooth', block: 'start'}); }
             });
         })();
         function wfFile(input) {
             const f = input.files[0]; if (!f) return;
             const r = new FileReader();
-            r.onload = () => { document.getElementById('wf-text').value = r.result; analyzeWorkflow({text: r.result}, f.name.replace(/\.json$/, '')); };
+            r.onload = () => { $('wf-text').value = r.result; analyzeWorkflow({text: r.result}, f.name.replace(/\.json$/, '')); };
             r.readAsText(f); input.value = '';
         }
         async function analyzeWorkflow(body, title = '') {
             if (!body.workflow && !body.template && !(body.text || '').trim()) return;
-            const box = document.getElementById('wf-results');
-            const head = document.getElementById('wf-title');
-            head.textContent = title || (body.workflow || '').replace(/\.json$/, '') || 'Workflow collé';
-            head.classList.remove('hidden');
-            box.innerHTML = '<div class="muted">Analyse…</div>';
-            document.getElementById('wf-actions').classList.add('hidden');
+            const box = $('wf-results');
+            $('wf-title').textContent = title || (body.workflow || '').replace(/\.json$/, '') || 'Workflow collé';
+            $('wf-result').classList.remove('hidden');
+            box.innerHTML = '<div class="muted" style="padding:0 18px 16px">Analyse…</div>';
+            $('wf-actions').classList.add('hidden');
             wfSel = -1;
-            const d = await (await fetch('/analyze-workflow', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) })).json();
-            if (d.error) { box.innerHTML = `<div class="err-text">${esc(d.error)}</div>`; wfRows = []; return; }
+            const d = await (await fetch('/analyze-workflow', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body) })).json();
+            if (d.error) { box.innerHTML = `<div class="err-text" style="padding:0 18px 16px">${esc(d.error)}</div>`; wfRows = []; return; }
             wfRows = d;
             renderWorkflowRows();
-            head.scrollIntoView({behavior: 'smooth', block: 'start'});
+            $('wf-result').scrollIntoView({behavior: 'smooth', block: 'start'});
         }
         function renderWorkflowRows() {
-            const box = document.getElementById('wf-results');
-            if (!wfRows.length) { box.innerHTML = document.getElementById('wf-title').classList.contains('hidden') ? '' : '<div class="muted">Aucun modèle local dans ce workflow.</div>'; document.getElementById('wf-actions').classList.add('hidden'); return; }
+            const box = $('wf-results');
+            if (!wfRows.length) {
+                box.innerHTML = $('wf-result').classList.contains('hidden') ? '' : '<div class="muted" style="padding:0 18px 16px">Aucun modèle local dans ce workflow.</div>';
+                $('wf-actions').classList.add('hidden'); return;
+            }
             const style = {
                 "present":         ["●", "s-present", "présent"],
                 "manquant":        ["○", "s-manquant", ""],
@@ -766,41 +1016,39 @@
                 const canDl = e.status === "manquant" || e.status === "dossier inconnu";
                 const check = canDl ? `<input type="checkbox" class="wf-check" data-i="${i}" checked onclick="event.stopPropagation()" onchange="updateWfButton()">` : '<span></span>';
                 const where = e.status === "dossier inconnu"
-                    ? `<select style="padding:5px 28px 5px 9px;font-size:11px" onclick="event.stopPropagation()" onchange="wfRows[${i}].path=this.value; wfRows[${i}].status='manquant'; renderWorkflowRows()"><option value="">dossier ?</option>${WF_FOLDERS.map(f => `<option>${f}</option>`).join('')}</select>`
+                    ? `<select class="mini" onclick="event.stopPropagation()" onchange="wfRows[${i}].path=this.value; wfRows[${i}].status='manquant'; renderWorkflowRows()"><option value="">dossier ?</option>${WF_FOLDERS.map(f => `<option>${f}</option>`).join('')}</select>`
                     : `<span class="wf-path">${esc(e.status === 'present' ? (e.where || '') : e.path)}</span>`;
-                const chips = (e.ems ? `<span class="chip fixed" title="Nom interne du site de génération : ${esc(e.ems)}${e.civitai ? ' · Civitai : ' + esc(e.civitai) : ''}">${e.civitai ? 'identifié Civitai' : 'renommé'}</span>` : '') + (e.url_fixed ? '<span class="chip fixed" title="Le lien du workflow pointait vers un autre fichier : corrigé">lien corrigé</span>' : '')
+                const chips = (e.ems ? `<span class="chip fixed" title="Nom interne du site de génération : ${esc(e.ems)}${e.civitai ? ' · Civitai : ' + esc(e.civitai) : ''}">${e.civitai ? 'identifié Civitai' : 'renommé'}</span>` : '')
+                    + (e.url_fixed ? '<span class="chip fixed" title="Le lien du workflow pointait vers un autre fichier : corrigé">lien corrigé</span>' : '')
                     + ((!e.in_catalogue && (e.public_url || e.url)) ? '<span class="chip out">hors catalogue</span>' : '');
                 const info = [e.source && e.status !== 'present' ? `<span class="src">${esc(e.source)}</span>` : '', e.size ? formatSize(e.size) : '', note ? `<span class="${cls}">${note}</span>` : ''].filter(Boolean).join('<span style="opacity:.4">·</span>');
-                return `<div class="wf-row ${i === wfSel ? 'sel' : ''}" onclick="wfSelect(${i})" title="Cliquer pour l'ouvrir dans l'éditeur catalogue">${check}<span class="wf-icon ${cls}">${icon}</span><span class="wf-name ${cls}" title="${esc(e.value)}">${esc(e.filename)}</span><span style="display:flex;gap:6px">${chips}</span>${where}<span class="wf-info">${info}</span></div>`;
+                return `<div class="wf-row ${i === wfSel ? 'sel' : ''}" onclick="wfSelect(${i})" title="Ouvrir dans l'éditeur">${check}<span class="wf-icon ${cls}">${icon}</span><span class="wf-name ${cls}" title="${esc(e.value)}">${esc(e.filename)}</span><span style="display:flex;gap:6px">${chips}</span>${where}<span class="wf-info">${info}</span></div>`;
             }).join('');
             updateWfButton();
         }
-        // Clic sur un modele du workflow : selection synchronisee dans le catalogue et l'editeur
         function wfSelect(i) {
             const e = wfRows[i]; if (!e) return;
             wfSel = i; renderWorkflowRows();
             const inCat = Object.values(cfg).some(env => Object.values(env).some(l => l.some(m => m.filename === e.filename)));
             if (inCat) {
-                document.getElementById('env-ui').value = '__ALL__';
-                document.getElementById('type-ui').value = 'all';
-                document.getElementById('search-ui').value = '';
+                $('env-ui').value = '__ALL__'; $('type-ui').value = 'all'; $('search-ui').value = '';
+                presence = 'all'; document.querySelectorAll('#presence-seg button').forEach(b => b.classList.toggle('on', b.dataset.p === 'all'));
                 loadModels(e.filename);
-                syncToEditor();
-            } else {   // pas encore au catalogue : editeur pre-rempli, il n'y a plus qu'a enregistrer
-                Array.from(document.getElementById('models-ui').options).forEach(o => o.selected = false); checkStatus();
-                document.getElementById('edit-env').value = document.getElementById('wf-env').value;
+                fillEditor(rows.find(r => r._key === focusKey));
+            } else {
+                selected.clear(); focusKey = null; renderList();
+                $('edit-env').value = $('wf-env').value;
                 const folder = (e.path || '').split('/')[0];
                 if (folder) setEditCat(folder);
-                document.getElementById('edit-path').value = BASE_PATH + (e.path || folder);
-                document.getElementById('edit-url').value = e.public_url || e.url || '';
-                document.getElementById('edit-file').value = e.filename;
+                $('edit-path').value = BASE_PATH + (e.path || folder);
+                $('edit-url').value = e.public_url || e.url || '';
+                $('edit-file').value = e.filename;
                 renderCatalogue(e.filename);
             }
-            const ed = document.getElementById('editor');
+            const ed = $('editor');
             ed.classList.remove('flash'); void ed.offsetWidth; ed.classList.add('flash');
-            document.getElementById('editor-panel').scrollIntoView({behavior: 'smooth', block: 'nearest'});
+            $('workspace').scrollIntoView({behavior: 'smooth', block: 'start'});
         }
-        // Apres un telechargement : les modeles arrives sur le disque passent en "present"
         function refreshWfPresence() {
             if (!wfRows.length) return;
             const onDisk = new Set(Object.values(diskFiles).flat().map(f => (f.path || '').split('/').pop()));
@@ -814,42 +1062,41 @@
             const checked = wfChecked();
             const total = checked.reduce((a, e) => a + (e.size || 0), 0);
             const cand = wfCatalogueCandidates();
-            document.getElementById('wf-actions').classList.toggle('hidden', checked.length === 0 && cand.length === 0);
-            const dl = document.getElementById('wf-dl-btn');
+            $('wf-actions').classList.toggle('hidden', checked.length === 0 && cand.length === 0);
+            const dl = $('wf-dl-btn');
             dl.disabled = checked.length === 0;
             dl.textContent = `Télécharger ${checked.length} modèle(s)` + (total ? ` · ${formatSize(total)}${checked.some(e => !e.size) ? ' +' : ''}` : '');
-            const cb = document.getElementById('wf-cat-btn');
+            const cb = $('wf-cat-btn');
             cb.disabled = cand.length === 0;
             cb.textContent = `Ajouter ${cand.length} modèle(s) au catalogue`;
         }
-        async function addCatalogue(rows) {
-            const env = document.getElementById('wf-env').value.trim();
-            if (!rows.length) return true;
-            if (!env) { addLog('Indique un environnement pour les modèles hors catalogue.', true); document.getElementById('wf-env').focus(); return false; }
-            const items = rows.map(e => ({filename: e.filename, url: e.public_url || e.url, path: e.path}));
-            const r = await (await fetch('/add-to-catalogue', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({env, items}) })).json();
+        async function addCatalogue(list) {
+            const env = $('wf-env').value.trim();
+            if (!list.length) return true;
+            if (!env) { addLog('Indique un environnement pour les modèles hors catalogue.', true); $('wf-env').focus(); return false; }
+            const items = list.map(e => ({filename: e.filename, url: e.public_url || e.url, path: e.path}));
+            const r = await (await fetch('/add-to-catalogue', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({env, items}) })).json();
             if (r.status !== 'ok') { addLog('Catalogue : ' + esc(r.message || 'erreur'), true); return false; }
-            rows.forEach(e => { e.in_catalogue = true; e.url_fixed = false; });
+            list.forEach(e => { e.in_catalogue = true; e.url_fixed = false; });
             addLog(`${r.added} modèle(s) ajouté(s) à « ${esc(env)} »` + (r.github_sync === 'ok' ? ', GitHub synchronisé' : ', sync GitHub échouée'), r.github_sync !== 'ok');
             if (r.github_sync === 'ok') showGitHubToast();
             await start(true);
             return true;
         }
-        async function addWorkflowToCatalogue() {
-            if (await addCatalogue(wfCatalogueCandidates())) renderWorkflowRows();
-        }
+        async function addWorkflowToCatalogue() { if (await addCatalogue(wfCatalogueCandidates())) renderWorkflowRows(); }
         async function downloadWorkflowModels() {
-            const rows = wfChecked();
-            if (document.getElementById('wf-addcat').checked) {
-                const cand = wfCatalogueCandidates().filter(e => rows.includes(e));
+            const list = wfChecked();
+            if ($('wf-addcat').checked) {
+                const cand = wfCatalogueCandidates().filter(e => list.includes(e));
                 if (!(await addCatalogue(cand))) return;
             }
-            for (const e of rows) {
-                const r = await (await fetch('/download', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({url: e.url, path: e.path, filename: e.filename}) })).json();
-                addLog(r.status === 'ok' ? `Ajout file d'attente : ${esc(e.path)}/${esc(e.filename)}` : `Erreur ${esc(e.filename)} : ${esc(r.message)}`, r.status !== 'ok');
+            for (const e of list) {
+                const r = await (await fetch('/download', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({url: e.url, path: e.path, filename: e.filename}) })).json();
+                addLog(r.status === 'ok' ? `File d'attente : ${esc(e.path)}/${esc(e.filename)}` : `Erreur ${esc(e.filename)} : ${esc(r.message)}`, r.status !== 'ok');
                 if (r.status === 'ok') e.status = 'en cours';
             }
             renderWorkflowRows();
+            dockTab('dl'); loop();
         }
 
         start();
