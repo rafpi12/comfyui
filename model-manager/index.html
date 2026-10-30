@@ -447,118 +447,81 @@
         let rows = [], selected = new Set(), focusKey = null, anchorIdx = null;
         let activePreset = null;
 
-        // ── PRESETS : fichiers de base par environnement ──
-        // Format : [environnement de models.json, nom du fichier]
-        // ou [environnement, fichier, {url, path}] pour un fichier pas encore au catalogue :
-        // le bouton "Ajouter au catalogue" de la pastille l'inscrit alors dans models.json.
-        const HF_Q21 = "https://huggingface.co/Comfy-Org/Qwen-Image-2.1/resolve/main/";
-        const HF_ANIMA = "https://huggingface.co/circlestone-labs/Anima/resolve/main/split_files/";
-        const HF_FLUX3 = "https://huggingface.co/black-forest-labs/flux-3-image-klein-comfy/resolve/main/";
-        const PRESETS = [
-            { name: "Qwen Image 2.1", group: "Image", items: [
-                ["Qwen", "qwen_image_2.1_int8_convrot.safetensors", {url: HF_Q21 + "diffusion_models/qwen_image_2.1_int8_convrot.safetensors", path: "diffusion_models"}],
-                ["Qwen", "qwen3vl_8b_bf16.safetensors", {url: HF_Q21 + "text_encoders/qwen3vl_8b_bf16.safetensors", path: "text_encoders"}],
-                ["Qwen", "qwen_image_2.1_vae_bf16.safetensors", {url: HF_Q21 + "vae/qwen_image_2.1_vae_bf16.safetensors", path: "vae"}] ] },
-            { name: "Flux 3 Klein (distillé)", group: "Image", items: [
-                ["Flux", "flux3-image-klein-int8-convrot.safetensors", {url: HF_FLUX3 + "diffusion_models/flux3-image-klein-int8-convrot.safetensors", path: "diffusion_models"}],
-                ["Flux", "qwen3vl_4b_int8_convrot.safetensors"], ["Flux", "qwen3.5_9b_flux3_prompt_upsampler_w4a8.safetensors"],
-                ["Flux", "flux2-vae.safetensors"] ] },
-            { name: "Flux 3 Klein Base", group: "Image", items: [
-                ["Flux", "flux3-image-klein-base-int8-convrot.safetensors"], ["Flux", "qwen3vl_4b_int8_convrot.safetensors"],
-                ["Flux", "qwen3.5_9b_flux3_prompt_upsampler_w4a8.safetensors"], ["Flux", "flux2-vae.safetensors"] ] },
-            { name: "MOSS Image SFT", group: "Image", items: [
-                ["MOSS-Image", "moss_image_sft_int8_convrot.safetensors"], ["MOSS-Image", "qwen3.5_9b_w4a8_gptq.safetensors"],
-                ["MOSS-Image", "flux2-vae_small.safetensors"] ] },
-            { name: "MOSS Image Base (8 steps DMD)", group: "Image", items: [
-                ["MOSS-Image", "moss_image_base_int8_convrot.safetensors"], ["MOSS-Image", "qwen3.5_9b_w4a8_gptq.safetensors"],
-                ["MOSS-Image", "flux2-vae_small.safetensors"], ["MOSS-Image", "lora_dmd2.safetensors"] ] },
-            { name: "Kromoss", group: "Image", items: [
+        // ── PRESETS ──
+        // "Workflows ComfyUI" : les workflows open source les plus utilises du catalogue ComfyUI,
+        //   ranges par ordre alphabetique. Les modeles de chaque preset viennent du workflow lui-meme.
+        // "Perso" : combinaisons absentes du catalogue ComfyUI.
+        //   Format : [environnement de models.json, fichier] ou [environnement, fichier, {url, path}]
+        const PRESET_COUNT = 50;
+        // toujours presents, meme hors du top 50 (environnements de ton catalogue)
+        const PINNED_TEMPLATES = ["image_z_image", "audio_stable_audio_3_medium", "audio_ace_step1_5_xl_turbo",
+            "image_ernie_image_turbo", "image_ideogram4_t2i_int8", "audio_yue2_text2music"];
+        const PERSO_PRESETS = [
+            { name: "Kromoss", items: [
                 ["MOSS-Image", "kromoss_int8_convrot.safetensors"], ["MOSS-Image", "qwen3.5_9b_w4a8_gptq.safetensors"],
                 ["MOSS-Image", "flux2-vae_small.safetensors"] ] },
-            { name: "Anima Base v1.0", group: "Image", items: [
-                ["Anima", "anima-base-v1.0.safetensors", {url: HF_ANIMA + "diffusion_models/anima-base-v1.0.safetensors", path: "diffusion_models"}],
-                ["Anima", "qwen_3_06b_base.safetensors"],
-                ["Anima", "qwen_image_vae.safetensors", {url: HF_ANIMA + "vae/qwen_image_vae.safetensors", path: "vae"}] ] },
-            { name: "Anima Preview", group: "Image", items: [
-                ["Anima", "anima-preview.safetensors"], ["Anima", "qwen_3_06b_base.safetensors"],
-                ["Anima", "qwen_image_vae.safetensors", {url: HF_ANIMA + "vae/qwen_image_vae.safetensors", path: "vae"}] ] },
-            { name: "LTX 2.3 Dev FP8", group: "Vidéo", items: [
-                ["LTX", "ltx-2.3-22b-dev-fp8.safetensors"], ["LTX", "gemma_3_12B_it_fp8_scaled.safetensors"],
-                ["LTX", "ltx-2.3-spatial-upscaler-x2-1.0.safetensors"] ] },
-            { name: "LTX 2.3 Distilled GGUF Q4", group: "Vidéo", items: [
+            { name: "LTX 2.3 Distilled GGUF Q4", items: [
                 ["LTX", "LTX-2.3-distilled-Q4_K_M.gguf"], ["LTX", "gemma_3_12B_it_fp8_scaled.safetensors"],
                 ["LTX", "ltx-2.3_text_projection_bf16.safetensors"], ["LTX", "LTX23_video_vae_bf16.safetensors"],
                 ["LTX", "LTX23_audio_vae_bf16.safetensors"], ["LTX", "ltx-2.3-spatial-upscaler-x2-1.0.safetensors"] ] },
-            { name: "Minimax H3 FL2VA", group: "Vidéo", items: [
-                ["Minimax", "minimax_h3_fl2va_pruned_int8_convrot.safetensors"], ["Minimax", "qwen3vl_32b_minimax_h3_nvfp4_awq.safetensors"],
-                ["Minimax", "minimax_h3_video_vae_fp16.safetensors"], ["Minimax", "minimax_h3_audio_vae_fp32.safetensors"],
-                ["Minimax", "minimax_h3_turbo_v4_step600.safetensors"] ] },
-            { name: "SeedVR2 7B sharp FP8", group: "Upscale", items: [
+            { name: "SeedVR2 7B sharp FP8", items: [
                 ["SeedVR", "seedvr2_ema_7b_sharp_fp8_e4m3fn_mixed_block35_fp16.safetensors"], ["SeedVR", "ema_vae_fp16.safetensors"] ] },
-            { name: "SeedVR2 3B FP16", group: "Upscale", items: [
-                ["SeedVR", "seedvr2_ema_3b_fp16.safetensors"], ["SeedVR", "ema_vae_fp16.safetensors"] ] },
-            { name: "YuE2", group: "Audio", items: [
-                ["YuE2", "yue2_3b_int8_convrot.safetensors"], ["YuE2", "sheetsage2_bf16.safetensors"] ] },
-            { name: "Z-Image Turbo", group: "Image", items: [
-                ["Z-Image", "z_image_turbo_bf16.safetensors"], ["Z-Image", "qwen_3_4b.safetensors"], ["Z-Image", "ae.safetensors"] ] },
-            { name: "Z-Image Base", group: "Image", items: [
-                ["Z-Image", "z_image_bf16.safetensors"], ["Z-Image", "qwen_3_4b.safetensors"], ["Z-Image", "ae.safetensors"] ] },
-            { name: "Krea 2 Turbo", group: "Image", items: [
-                ["Krea 2", "krea2_turbo_fp8_scaled.safetensors"], ["Krea 2", "qwen3vl_4b_bf16.safetensors"], ["Krea 2", "qwen_image_vae.safetensors"] ] },
-            { name: "Krea 2 Raw", group: "Image", items: [
-                ["Krea 2", "krea2_raw_bf16.safetensors"], ["Krea 2", "qwen3vl_4b_bf16.safetensors"], ["Krea 2", "qwen_image_vae.safetensors"] ] },
-            { name: "Flux 2 Klein 9B", group: "Image", items: [
-                ["Flux", "flux-2-klein-9b-fp8.safetensors"], ["Flux", "qwen_3_8b_fp8mixed.safetensors"], ["Flux", "flux2-vae.safetensors"] ] },
-            { name: "Qwen Image Edit 2511", group: "Image", items: [
-                ["Qwen", "qwen_image_edit_2511_fp8_e4m3fn.safetensors"], ["Qwen", "qwen_2.5_vl_7b_fp8_scaled.safetensors"],
-                ["Qwen", "qwen_image_vae.safetensors"], ["Qwen", "Qwen-Image-Edit-2511-Lightning-4steps-V1.0-bf16.safetensors"] ] },
-            { name: "Wan 2.2 T2V (4 steps)", group: "Vidéo", items: [
-                ["Wan", "wan2.2_t2v_high_noise_14B_fp8_scaled.safetensors"], ["Wan", "wan2.2_t2v_low_noise_14B_fp8_scaled.safetensors"],
-                ["Wan", "umt5_xxl_fp8_e4m3fn_scaled.safetensors"], ["Wan", "wan_2.1_vae.safetensors"],
-                ["Wan", "wan2.2_t2v_lightx2v_4steps_lora_v1.1_high_noise.safetensors"], ["Wan", "wan2.2_t2v_lightx2v_4steps_lora_v1.1_low_noise.safetensors"] ] },
-            { name: "Minimax H3 Ref2VA", group: "Vidéo", items: [
-                ["Minimax", "minimax_h3_ref2va_pruned_int8_convrot.safetensors"], ["Minimax", "qwen3vl_32b_minimax_h3_nvfp4_awq.safetensors"],
-                ["Minimax", "minimax_h3_video_vae_fp16.safetensors"], ["Minimax", "minimax_h3_audio_vae_fp32.safetensors"],
-                ["Minimax", "minimax_h3_ref2v_turbo_4step_v0.1_comfyui_bf16.safetensors"] ] },
-            { name: "Minimax Music 3", group: "Audio", items: [
-                ["Minimax Music", "minimax_music3_dit_fp16.safetensors"], ["Minimax Music", "minimax_music3_text_encoder_pruned_int8_convrot.safetensors"],
-                ["Minimax Music", "minimax_music3_dav.safetensors"] ] },
-            { name: "ACE-Step 1.5 Turbo", group: "Audio", items: [
-                ["ACE-Step", "ace_step_1.5_turbo_aio.safetensors"] ] },
-            { name: "Stable Audio 3", group: "Audio", items: [
-                ["Stable Audio", "stable_audio_3_medium.safetensors"], ["Stable Audio", "t5gemma_b_b_ul2.safetensors"] ] },
-        ];
+        ].sort((a, b) => a.name.localeCompare(b.name, 'fr'));
+        let templatePresets = [];
 
         function populatePresets() {
-            const sel = $('preset-ui');
+            templatePresets = templates.map((t, i) => ({t, i})).filter(x => !x.t.api)
+                .sort((a, b) => (b.t.usage || 0) - (a.t.usage || 0) || a.i - b.i)
+                .filter((x, rank) => rank < PRESET_COUNT || PINNED_TEMPLATES.includes(x.t.name)).map(x => x.t)
+                .sort((a, b) => a.title.localeCompare(b.title, 'fr'));
+            const sel = $('preset-ui'), cur = sel.value;
             sel.innerHTML = '<option value="">Preset…</option>';
-            [...new Set(PRESETS.map(p => p.group))].forEach(g => {
-                const og = document.createElement('optgroup'); og.label = g;
-                PRESETS.forEach((p, i) => { if (p.group === g) og.appendChild(new Option(p.name, i)); });
+            const group = (label, list, prefix, title) => {
+                if (!list.length) return;
+                const og = document.createElement('optgroup'); og.label = label;
+                list.forEach((p, i) => og.appendChild(new Option(title(p), prefix + i)));
                 sel.appendChild(og);
-            });
+            };
+            group('Workflows ComfyUI', templatePresets, 't', t => t.title);
+            group('Perso', PERSO_PRESETS, 'p', p => p.name);
+            sel.value = cur;
         }
-        function inPreset(m) { return activePreset && activePreset.items.some(([e, f]) => e === m._env && f === m.filename); }
-        function presetUnknown() {
-            return activePreset.items.filter(([e, f]) => !(cfg[e] && Object.values(cfg[e]).some(l => l.some(m => m.filename === f))));
+        function guessEnv(models) {
+            const envs = Object.keys(cfg);
+            return (models || []).map(m => envs.find(e => e.toLowerCase() === m.toLowerCase())
+                || envs.find(e => m.toLowerCase().includes(e.toLowerCase()) || e.toLowerCase().includes(m.toLowerCase()))).find(Boolean)
+                || (models || [])[0] || '';
         }
-        async function addPresetToCatalogue() {
-            const byEnv = {};
-            presetUnknown().filter(it => it[2]).forEach(([e, f, x]) => (byEnv[e] = byEnv[e] || []).push({filename: f, url: x.url, path: x.path}));
-            let ok = true;
-            for (const [env, items] of Object.entries(byEnv)) {
-                const r = await (await fetch('/add-to-catalogue', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({env, items}) })).json();
-                if (r.status !== 'ok') { ok = false; addLog('Catalogue : ' + esc(r.message || 'erreur'), true); continue; }
-                addLog(`${r.added} fichier(s) ajouté(s) à « ${esc(env)} »` + (r.github_sync === 'ok' ? ', GitHub synchronisé' : ', sync GitHub échouée'), r.github_sync !== 'ok');
+        function inPreset(m) { return activePreset && activePreset.files.some(f => f.filename === m.filename && (!f.env || f.env === m._env)); }
+        function inCfg(f) {
+            const envs = f.env ? [f.env] : Object.keys(cfg);
+            return envs.some(e => cfg[e] && Object.values(cfg[e]).some(l => l.some(m => m.filename === f.filename)));
+        }
+        function presetUnknown() { return activePreset.files.filter(f => !inCfg(f)); }
+
+        async function applyPreset(val) {
+            if (val === '') return clearPreset();
+            const chip = $('preset-chip');
+            if (val[0] === 't') {
+                const t = templatePresets[+val.slice(1)];
+                chip.innerHTML = `Preset <b>${esc(t.title)}</b> · analyse du workflow…`;
+                chip.classList.remove('hidden');
+                let res;
+                try {
+                    res = await (await fetch('/analyze-workflow', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({template: t.name}) })).json();
+                } catch(e) { res = {error: e.message}; }
+                if ($('preset-ui').value !== val) return;          // autre preset choisi entre-temps
+                if (!Array.isArray(res)) { addLog(`Preset ${esc(t.title)} : ${esc(res.error || 'analyse impossible')}`, true); clearPreset(); return; }
+                activePreset = { name: t.title, env: guessEnv(t.models),
+                    files: res.map(r => ({filename: r.filename, url: r.public_url || r.url || '', path: r.path || '', status: r.status})) };
+            } else {
+                const p = PERSO_PRESETS[+val.slice(1)];
+                activePreset = { name: p.name, env: '',
+                    files: p.items.map(([env, f, x]) => ({env, filename: f, url: (x && x.url) || '', path: (x && x.path) || ''})) };
             }
-            if (ok) showGitHubToast();
-            const idx = $('preset-ui').value;
-            await start(true);
-            applyPreset(idx);
+            showPreset();
         }
-        function applyPreset(idx) {
-            if (idx === '') return clearPreset();
-            activePreset = PRESETS[+idx];
+        function showPreset() {
             // filtres remis a zero : la liste montre exactement le contenu du preset
             $('env-ui').value = '__ALL__'; $('type-ui').value = 'all'; $('search-ui').value = '';
             presence = 'all'; document.querySelectorAll('#presence-seg button').forEach(b => b.classList.toggle('on', b.dataset.p === 'all'));
@@ -567,14 +530,36 @@
             selected = new Set(rows.map(r => r._key));
             renderList();
             const unknown = presetUnknown();
-            const addable = unknown.filter(it => it[2]).length;
-            const missing = rows.filter(r => !(r._diskSize > 0)).length + unknown.length;
-            $('preset-chip').innerHTML = `Preset <b>${esc(activePreset.name)}</b> · ${missing ? missing + ' à télécharger' : 'complet'}`
-                + (unknown.length ? ` · <span class="warn" title="${esc(unknown.map(u => u[0] + ' / ' + u[1]).join('\n'))}">${unknown.length} hors catalogue</span>` : '')
-                + (addable ? ` <button onclick="addPresetToCatalogue()" title="Inscrire ces fichiers dans models.json" style="width:auto;padding:0 8px;border-radius:999px;font:500 12px var(--sans)">Ajouter au catalogue</button>` : '')
+            const addable = unknown.filter(f => f.url && f.path);
+            const lost = unknown.filter(f => !f.url || !f.path);
+            const missing = rows.filter(r => !(r._diskSize > 0)).length + unknown.filter(f => f.status !== 'present').length;
+            const chip = $('preset-chip');
+            chip.innerHTML = `Preset <b>${esc(activePreset.name)}</b> · `
+                + (!activePreset.files.length ? 'aucun modèle local' : missing ? missing + ' à télécharger' : 'complet')
+                + (unknown.length ? ` · <span class="warn" title="${esc(unknown.map(f => f.filename).join('\n'))}">${unknown.length} hors catalogue</span>` : '')
+                + (addable.length ? ` <button onclick="addPresetToCatalogue()" title="Inscrire ces fichiers dans models.json" style="width:auto;padding:0 8px;border-radius:999px;font:500 12px var(--sans)">Ajouter au catalogue</button>` : '')
                 + `<button onclick="clearPreset()" title="Quitter le preset"><i class="fas fa-xmark"></i></button>`;
-            $('preset-chip').classList.remove('hidden');
-            unknown.filter(it => !it[2]).forEach(([e, f]) => addLog(`Preset ${esc(activePreset.name)} : ${esc(f)} absent de « ${esc(e)} » dans models.json, sans lien de secours`, true));
+            chip.classList.remove('hidden');
+            lost.forEach(f => addLog(`Preset ${esc(activePreset.name)} : ${esc(f.filename)} sans lien ou sans dossier, à compléter dans l'éditeur`, true));
+        }
+        async function addPresetToCatalogue() {
+            let fallback = activePreset.env;
+            const byEnv = {};
+            for (const f of presetUnknown().filter(f => f.url && f.path)) {
+                let env = f.env || fallback;
+                if (!env) { env = fallback = (prompt('Environnement de models.json pour ces modèles ?', '') || '').trim(); if (!env) return; }
+                (byEnv[env] = byEnv[env] || []).push({filename: f.filename, url: f.url, path: f.path});
+            }
+            let synced = true;
+            for (const [env, items] of Object.entries(byEnv)) {
+                const r = await (await fetch('/add-to-catalogue', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({env, items}) })).json();
+                if (r.status !== 'ok') { synced = false; addLog('Catalogue : ' + esc(r.message || 'erreur'), true); continue; }
+                if (r.github_sync !== 'ok') synced = false;
+                addLog(`${r.added} fichier(s) ajouté(s) à « ${esc(env)} »` + (r.github_sync === 'ok' ? ', GitHub synchronisé' : ', sync GitHub échouée'), r.github_sync !== 'ok');
+            }
+            if (synced) showGitHubToast();
+            await start(true);
+            showPreset();
         }
         function clearPreset() {
             activePreset = null;
@@ -699,7 +684,7 @@
                 m._diskSize = hit ? (hit.size || 0) : 0;
                 m._diskPath = hit ? hit.path : m.filename;
             });
-            if (activePreset) all = all.filter(m => inPreset(m));
+            if (activePreset) { const seen = new Set(); all = all.filter(m => inPreset(m) && !seen.has(m.filename) && seen.add(m.filename)); }
             const total = all.length, onDisk = all.filter(m => m._diskSize > 0).length;
             if (presence === 'disk') all = all.filter(m => m._diskSize > 0);
             else if (presence === 'missing') all = all.filter(m => !(m._diskSize > 0));
@@ -972,7 +957,9 @@
                 list.forEach(w => sel.add(new Option(w.replace(/\.json$/, ''), w)));
             } catch(e) {}
         }
-        async function loadTemplates() {
+        let tplLoading = null;
+        function loadTemplates() { return tplLoading || (tplLoading = loadTemplatesNow()); }
+        async function loadTemplatesNow() {
             const grid = $('tpl-grid');
             grid.innerHTML = '<div class="muted">Chargement du catalogue…</div>';
             try {
@@ -982,6 +969,7 @@
                 const sel = $('tpl-cat');
                 [...new Set(templates.map(t => t.category))].forEach(c => sel.add(new Option(c, c)));
                 renderTemplates();
+                populatePresets();
             } catch(e) { grid.innerHTML = '<div class="err-text">Catalogue indisponible.</div>'; }
         }
         function renderTemplates() {
@@ -1167,7 +1155,7 @@
             dockTab('dl'); loop();
         }
 
-        start();
+        start().then(loadTemplates);
         loadWorkflowList();
         wfTab('mine');
     </script>
