@@ -2979,13 +2979,6 @@
                 "filename": "Krea2Olivia_000002600.safetensors"
             },
             {
-                "name": "Krea2Olivia_000002800.safetensors",
-                "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/backup/models/loras/Krea%202/Krea2Olivia_000002800.safetensors?download=true",
-                "path": "loras/Krea 2",
-                "category": "loras/Krea 2",
-                "filename": "Krea2Olivia_000002800.safetensors"
-            },
-            {
                 "name": "Krea2Olivia_000003000.safetensors",
                 "url": "https://huggingface.co/rafatribe/Personnal_Loras/resolve/main/backup/models/loras/Krea%202/Krea2Olivia_000003000.safetensors?download=true",
                 "path": "loras/Krea 2",
