@@ -448,80 +448,171 @@
         let activePreset = null;
 
         // ── PRESETS ──
-        // "Workflows ComfyUI" : les workflows open source les plus utilises du catalogue ComfyUI,
-        //   ranges par ordre alphabetique. Les modeles de chaque preset viennent du workflow lui-meme.
-        // "Perso" : combinaisons absentes du catalogue ComfyUI.
-        //   Format : [environnement de models.json, fichier] ou [environnement, fichier, {url, path}]
-        const PRESET_COUNT = 50;
-        // toujours presents, meme hors du top 50 (environnements de ton catalogue)
-        const PINNED_TEMPLATES = ["image_z_image", "audio_stable_audio_3_medium", "audio_ace_step1_5_xl_turbo",
-            "image_ernie_image_turbo", "image_ideogram4_t2i_int8", "audio_yue2_text2music"];
-        const PERSO_PRESETS = [
-            { name: "Kromoss", items: [
-                ["MOSS-Image", "kromoss_int8_convrot.safetensors"], ["MOSS-Image", "qwen3.5_9b_w4a8_gptq.safetensors"],
-                ["MOSS-Image", "flux2-vae_small.safetensors"] ] },
-            { name: "LTX 2.3 Distilled GGUF Q4", items: [
-                ["LTX", "LTX-2.3-distilled-Q4_K_M.gguf"], ["LTX", "gemma_3_12B_it_fp8_scaled.safetensors"],
-                ["LTX", "ltx-2.3_text_projection_bf16.safetensors"], ["LTX", "LTX23_video_vae_bf16.safetensors"],
-                ["LTX", "LTX23_audio_vae_bf16.safetensors"], ["LTX", "ltx-2.3-spatial-upscaler-x2-1.0.safetensors"] ] },
-            { name: "SeedVR2 7B sharp FP8", items: [
-                ["SeedVR", "seedvr2_ema_7b_sharp_fp8_e4m3fn_mixed_block35_fp16.safetensors"], ["SeedVR", "ema_vae_fp16.safetensors"] ] },
-        ].sort((a, b) => a.name.localeCompare(b.name, 'fr'));
-        let templatePresets = [];
+        // Ordre alphabetique, un preset = les fichiers de base d'un workflow.
+        // Fichier deja dans models.json : "nom.safetensors"
+        // Fichier absent du catalogue : ["nom.safetensors", "url", "dossier"] -> bouton "Ajouter au catalogue"
+        // env = environnement de models.json ou ces fichiers sont ajoutes.
+        const PRESETS = [
+            { name: "ACE-Step 1.5 Turbo AIO", env: "ACE-Step", files: [
+                "ace_step_1.5_turbo_aio.safetensors" ] },
+            { name: "ACE-Step 1.5 XL Turbo", env: "ACE-Step", files: [
+                "acestep_v1.5_xl_turbo_bf16.safetensors",
+                "qwen_0.6b_ace15.safetensors",
+                "qwen_4b_ace15.safetensors",
+                "ace_1.5_vae.safetensors" ] },
+            { name: "Anima Base v1.0", env: "Anima", files: [
+                ["anima-base-v1.0.safetensors", "https://huggingface.co/circlestone-labs/Anima/resolve/main/split_files/diffusion_models/anima-base-v1.0.safetensors", "diffusion_models"],
+                "qwen_3_06b_base.safetensors",
+                "qwen_image_vae.safetensors",
+                ["anima-turbo-lora-v0.2.safetensors", "https://huggingface.co/circlestone-labs/Anima-Official-LoRAs/resolve/main/anima-turbo-lora-v0.2.safetensors", "loras"] ] },
+            { name: "Anima Preview", env: "Anima", files: [
+                "anima-preview.safetensors",
+                "qwen_3_06b_base.safetensors",
+                "qwen_image_vae.safetensors" ] },
+            { name: "Flux 1 Krea Dev", env: "Flux", files: [
+                "flux1-krea-dev_fp8_scaled.safetensors",
+                "clip_l.safetensors",
+                "t5xxl_fp8_e4m3fn.safetensors",
+                "ae.safetensors" ] },
+            { name: "Flux 2 Klein 9B", env: "Flux", files: [
+                "flux-2-klein-9b-fp8.safetensors",
+                "qwen_3_8b_fp8mixed.safetensors",
+                "flux2-vae.safetensors" ] },
+            { name: "Flux 2 Klein 9B Base", env: "Flux", files: [
+                "flux-2-klein-base-9b-fp8.safetensors",
+                "qwen_3_8b_fp8mixed.safetensors",
+                "full_encoder_small_decoder.safetensors" ] },
+            { name: "Flux 3 Klein", env: "Flux", files: [
+                "flux3-image-klein-base-int8-convrot.safetensors",
+                "qwen3vl_4b_int8_convrot.safetensors",
+                "qwen3.5_9b_flux3_prompt_upsampler_w4a8.safetensors",
+                "flux2-vae.safetensors" ] },
+            { name: "Flux 3 Klein Distillé", env: "Flux", files: [
+                ["flux3-image-klein-int8-convrot.safetensors", "https://huggingface.co/black-forest-labs/flux-3-image-klein-comfy/resolve/main/diffusion_models/flux3-image-klein-int8-convrot.safetensors", "diffusion_models"],
+                "qwen3vl_4b_int8_convrot.safetensors",
+                "qwen3.5_9b_flux3_prompt_upsampler_w4a8.safetensors",
+                "flux2-vae.safetensors" ] },
+            { name: "Krea 2 Raw", env: "Krea 2", files: [
+                "krea2_raw_bf16.safetensors",
+                "qwen3vl_4b_fp8_scaled.safetensors",
+                "qwen_image_vae.safetensors" ] },
+            { name: "Krea 2 Turbo", env: "Krea 2", files: [
+                "krea2_turbo_fp8_scaled.safetensors",
+                "qwen3vl_4b_fp8_scaled.safetensors",
+                "qwen_image_vae.safetensors" ] },
+            { name: "LTX 2.3", env: "LTX", files: [
+                "ltx-2.3-22b-dev-fp8.safetensors",
+                ["ltx_2.3_22b_distilled_1.1_lora_dynamic_fro09_avg_rank_111_bf16.safetensors", "https://huggingface.co/Comfy-Org/ltx-2.3/resolve/main/split_files/loras/ltx_2.3_22b_distilled_1.1_lora_dynamic_fro09_avg_rank_111_bf16.safetensors", "loras"],
+                ["gemma_3_12B_it_fp4_mixed.safetensors", "https://huggingface.co/Comfy-Org/ltx-2/resolve/main/split_files/text_encoders/gemma_3_12B_it_fp4_mixed.safetensors", "text_encoders"],
+                ["ltx-2.3-spatial-upscaler-x2-1.1.safetensors", "https://huggingface.co/Lightricks/LTX-2.3/resolve/main/ltx-2.3-spatial-upscaler-x2-1.1.safetensors", "latent_upscale_models"] ] },
+            { name: "LTX 2.3 Distilled GGUF Q4", env: "LTX", files: [
+                "LTX-2.3-distilled-Q4_K_M.gguf",
+                "gemma_3_12B_it_fp8_scaled.safetensors",
+                "ltx-2.3_text_projection_bf16.safetensors",
+                "LTX23_video_vae_bf16.safetensors",
+                "LTX23_audio_vae_bf16.safetensors",
+                "ltx-2.3-spatial-upscaler-x2-1.0.safetensors" ] },
+            { name: "Minimax H3 I2V / T2V", env: "Minimax", files: [
+                "minimax_h3_fl2va_pruned_int8_convrot.safetensors",
+                "qwen3vl_32b_minimax_h3_nvfp4_awq.safetensors",
+                "minimax_h3_video_vae_int8_convrot.safetensors",
+                "minimax_h3_audio_vae_fp32.safetensors",
+                ["minimax_h3_fl2v_turbo_8step_v1.0_comfyui_bf16.safetensors", "https://huggingface.co/lightx2v/Minimax-h3-Turbo/resolve/main/minimax_h3_fl2v_turbo_8step_v1.0_comfyui_bf16.safetensors", "loras"] ] },
+            { name: "Minimax H3 Ref2V", env: "Minimax", files: [
+                "minimax_h3_ref2va_pruned_int8_convrot.safetensors",
+                "qwen3vl_32b_minimax_h3_nvfp4_awq.safetensors",
+                "minimax_h3_video_vae_int8_convrot.safetensors",
+                "minimax_h3_audio_vae_fp32.safetensors",
+                "minimax_h3_ref2v_turbo_4step_v0.1_comfyui_bf16.safetensors" ] },
+            { name: "Minimax Music 3", env: "Minimax Music", files: [
+                "minimax_music3_dit_fp16.safetensors",
+                "minimax_music3_text_encoder_pruned_int8_convrot.safetensors",
+                "minimax_music3_dav.safetensors" ] },
+            { name: "MOSS Image", env: "MOSS-Image", files: [
+                "moss_image_sft_int8_convrot.safetensors",
+                "qwen3.5_9b_w4a8_gptq.safetensors",
+                "flux2-vae_small.safetensors" ] },
+            { name: "MOSS Image Base", env: "MOSS-Image", files: [
+                "moss_image_base_int8_convrot.safetensors",
+                "qwen3.5_9b_w4a8_gptq.safetensors",
+                "flux2-vae_small.safetensors" ] },
+            { name: "MOSS Kromoss", env: "MOSS-Image", files: [
+                "kromoss_int8_convrot.safetensors",
+                "qwen3.5_9b_w4a8_gptq.safetensors",
+                "flux2-vae_small.safetensors" ] },
+            { name: "Qwen Image 2.1", env: "Qwen", files: [
+                ["qwen_image_2.1_int8_convrot.safetensors", "https://huggingface.co/Comfy-Org/Qwen-Image-2.1/resolve/main/diffusion_models/qwen_image_2.1_int8_convrot.safetensors", "diffusion_models"],
+                ["qwen3vl_8b_int8_convrot.safetensors", "https://huggingface.co/Comfy-Org/Qwen-Image-2.1/resolve/main/text_encoders/qwen3vl_8b_int8_convrot.safetensors", "text_encoders"],
+                ["qwen_image_2.1_vae_bf16.safetensors", "https://huggingface.co/Comfy-Org/Qwen-Image-2.1/resolve/main/vae/qwen_image_2.1_vae_bf16.safetensors", "vae"],
+                ["qwen3.5_9b_qwen_image_2.1_pe_t2i.int8_convrot.safetensors", "https://huggingface.co/Comfy-Org/Qwen-Image-2.1/resolve/main/text_encoders/qwen3.5_9b_qwen_image_2.1_pe_t2i.int8_convrot.safetensors", "text_encoders"] ] },
+            { name: "Qwen Image 2.1 Edit", env: "Qwen", files: [
+                ["qwen_image_2.1_int8_convrot.safetensors", "https://huggingface.co/Comfy-Org/Qwen-Image-2.1/resolve/main/diffusion_models/qwen_image_2.1_int8_convrot.safetensors", "diffusion_models"],
+                ["qwen3vl_8b_int8_convrot.safetensors", "https://huggingface.co/Comfy-Org/Qwen-Image-2.1/resolve/main/text_encoders/qwen3vl_8b_int8_convrot.safetensors", "text_encoders"],
+                ["qwen_image_2.1_vae_bf16.safetensors", "https://huggingface.co/Comfy-Org/Qwen-Image-2.1/resolve/main/vae/qwen_image_2.1_vae_bf16.safetensors", "vae"],
+                ["qwen3.5_9b_qwen_image_2.1_pe_i2i.int8_convrot.safetensors", "https://huggingface.co/Comfy-Org/Qwen-Image-2.1/resolve/main/text_encoders/qwen3.5_9b_qwen_image_2.1_pe_i2i.int8_convrot.safetensors", "text_encoders"] ] },
+            { name: "Qwen Image Edit 2511", env: "Qwen", files: [
+                "qwen_image_edit_2511_fp8_e4m3fn.safetensors",
+                "qwen_2.5_vl_7b_fp8_scaled.safetensors",
+                "qwen_image_vae.safetensors",
+                "Qwen-Image-Edit-2511-Lightning-4steps-V1.0-bf16.safetensors" ] },
+            { name: "SD 1.5 Juggernaut Reborn", env: "SD 1.5", files: [
+                "juggernaut_reborn.safetensors",
+                "vae-ft-mse-840000-ema-pruned.safetensors" ] },
+            { name: "SD 1.5 Realistic Vision 6", env: "SD 1.5", files: [
+                "realisticVisionV60B1_v51VAE.safetensors",
+                "vae-ft-mse-840000-ema-pruned.safetensors" ] },
+            { name: "SDXL Base + Refiner", env: "SDXL", files: [
+                "sd_xl_base_1.0.safetensors",
+                "sd_xl_refiner_1.0.safetensors",
+                "sdxl_vae.safetensors" ] },
+            { name: "SDXL Base 1.0", env: "SDXL", files: [
+                "sd_xl_base_1.0.safetensors",
+                "sdxl_vae.safetensors" ] },
+            { name: "Stable Audio 3 Medium", env: "Stable Audio", files: [
+                "stable_audio_3_medium.safetensors",
+                "t5gemma_b_b_ul2.safetensors",
+                "qwen3.5_2b_bf16.safetensors" ] },
+            { name: "Stable Audio 3 Medium Base", env: "Stable Audio", files: [
+                "stable_audio_3_medium_base.safetensors",
+                "t5gemma_b_b_ul2.safetensors",
+                "qwen3.5_2b_bf16.safetensors" ] },
+            { name: "Wan 2.2 I2V (4 steps)", env: "Wan", files: [
+                ["wan2.2_i2v_high_noise_14B_fp8_scaled.safetensors", "https://huggingface.co/Comfy-Org/Wan_2.2_ComfyUI_Repackaged/resolve/main/split_files/diffusion_models/wan2.2_i2v_high_noise_14B_fp8_scaled.safetensors", "diffusion_models"],
+                ["wan2.2_i2v_low_noise_14B_fp8_scaled.safetensors", "https://huggingface.co/Comfy-Org/Wan_2.2_ComfyUI_Repackaged/resolve/main/split_files/diffusion_models/wan2.2_i2v_low_noise_14B_fp8_scaled.safetensors", "diffusion_models"],
+                "umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+                "wan_2.1_vae.safetensors",
+                ["wan2.2_i2v_lightx2v_4steps_lora_v1_high_noise.safetensors", "https://huggingface.co/Comfy-Org/Wan_2.2_ComfyUI_Repackaged/resolve/main/split_files/loras/wan2.2_i2v_lightx2v_4steps_lora_v1_high_noise.safetensors", "loras"],
+                ["wan2.2_i2v_lightx2v_4steps_lora_v1_low_noise.safetensors", "https://huggingface.co/Comfy-Org/Wan_2.2_ComfyUI_Repackaged/resolve/main/split_files/loras/wan2.2_i2v_lightx2v_4steps_lora_v1_low_noise.safetensors", "loras"] ] },
+            { name: "Wan 2.2 T2V (4 steps)", env: "Wan", files: [
+                "wan2.2_t2v_high_noise_14B_fp8_scaled.safetensors",
+                "wan2.2_t2v_low_noise_14B_fp8_scaled.safetensors",
+                "umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+                "wan_2.1_vae.safetensors",
+                "wan2.2_t2v_lightx2v_4steps_lora_v1.1_high_noise.safetensors",
+                "wan2.2_t2v_lightx2v_4steps_lora_v1.1_low_noise.safetensors" ] },
+            { name: "Z-Image Base", env: "Z-Image", files: [
+                "z_image_bf16.safetensors",
+                "qwen_3_4b.safetensors",
+                "ae.safetensors" ] },
+            { name: "Z-Image Turbo", env: "Z-Image", files: [
+                "z_image_turbo_bf16.safetensors",
+                "qwen_3_4b.safetensors",
+                "ae.safetensors" ] },
+        ];
 
         function populatePresets() {
-            templatePresets = templates.map((t, i) => ({t, i})).filter(x => !x.t.api)
-                .sort((a, b) => (b.t.usage || 0) - (a.t.usage || 0) || a.i - b.i)
-                .filter((x, rank) => rank < PRESET_COUNT || PINNED_TEMPLATES.includes(x.t.name)).map(x => x.t)
-                .sort((a, b) => a.title.localeCompare(b.title, 'fr'));
-            const sel = $('preset-ui'), cur = sel.value;
+            const sel = $('preset-ui');
             sel.innerHTML = '<option value="">Preset…</option>';
-            const group = (label, list, prefix, title) => {
-                if (!list.length) return;
-                const og = document.createElement('optgroup'); og.label = label;
-                list.forEach((p, i) => og.appendChild(new Option(title(p), prefix + i)));
-                sel.appendChild(og);
-            };
-            group('Workflows ComfyUI', templatePresets, 't', t => t.title);
-            group('Perso', PERSO_PRESETS, 'p', p => p.name);
-            sel.value = cur;
+            PRESETS.forEach((p, i) => sel.add(new Option(p.name, i)));
         }
-        function guessEnv(models) {
-            const envs = Object.keys(cfg);
-            return (models || []).map(m => envs.find(e => e.toLowerCase() === m.toLowerCase())
-                || envs.find(e => m.toLowerCase().includes(e.toLowerCase()) || e.toLowerCase().includes(m.toLowerCase()))).find(Boolean)
-                || (models || [])[0] || '';
+        const presetFiles = p => p.files.map(f => Array.isArray(f) ? {filename: f[0], url: f[1], path: f[2]} : {filename: f});
+        function inPreset(m) { return activePreset && presetFiles(activePreset).some(f => f.filename === m.filename); }
+        function presetUnknown() {
+            return presetFiles(activePreset).filter(f => !Object.values(cfg).some(env => Object.values(env).some(l => l.some(m => m.filename === f.filename))));
         }
-        function inPreset(m) { return activePreset && activePreset.files.some(f => f.filename === m.filename && (!f.env || f.env === m._env)); }
-        function inCfg(f) {
-            const envs = f.env ? [f.env] : Object.keys(cfg);
-            return envs.some(e => cfg[e] && Object.values(cfg[e]).some(l => l.some(m => m.filename === f.filename)));
-        }
-        function presetUnknown() { return activePreset.files.filter(f => !inCfg(f)); }
-
-        async function applyPreset(val) {
-            if (val === '') return clearPreset();
-            const chip = $('preset-chip');
-            if (val[0] === 't') {
-                const t = templatePresets[+val.slice(1)];
-                chip.innerHTML = `Preset <b>${esc(t.title)}</b> · analyse du workflow…`;
-                chip.classList.remove('hidden');
-                let res;
-                try {
-                    res = await (await fetch('/analyze-workflow', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({template: t.name}) })).json();
-                } catch(e) { res = {error: e.message}; }
-                if ($('preset-ui').value !== val) return;          // autre preset choisi entre-temps
-                if (!Array.isArray(res)) { addLog(`Preset ${esc(t.title)} : ${esc(res.error || 'analyse impossible')}`, true); clearPreset(); return; }
-                activePreset = { name: t.title, env: guessEnv(t.models),
-                    files: res.map(r => ({filename: r.filename, url: r.public_url || r.url || '', path: r.path || '', status: r.status})) };
-            } else {
-                const p = PERSO_PRESETS[+val.slice(1)];
-                activePreset = { name: p.name, env: '',
-                    files: p.items.map(([env, f, x]) => ({env, filename: f, url: (x && x.url) || '', path: (x && x.path) || ''})) };
-            }
-            showPreset();
-        }
-        function showPreset() {
+        function applyPreset(idx) {
+            if (idx === '') return clearPreset();
+            activePreset = PRESETS[+idx];
             // filtres remis a zero : la liste montre exactement le contenu du preset
             $('env-ui').value = '__ALL__'; $('type-ui').value = 'all'; $('search-ui').value = '';
             presence = 'all'; document.querySelectorAll('#presence-seg button').forEach(b => b.classList.toggle('on', b.dataset.p === 'all'));
@@ -530,36 +621,23 @@
             selected = new Set(rows.map(r => r._key));
             renderList();
             const unknown = presetUnknown();
-            const addable = unknown.filter(f => f.url && f.path);
-            const lost = unknown.filter(f => !f.url || !f.path);
-            const missing = rows.filter(r => !(r._diskSize > 0)).length + unknown.filter(f => f.status !== 'present').length;
-            const chip = $('preset-chip');
-            chip.innerHTML = `Preset <b>${esc(activePreset.name)}</b> · `
-                + (!activePreset.files.length ? 'aucun modèle local' : missing ? missing + ' à télécharger' : 'complet')
-                + (unknown.length ? ` · <span class="warn" title="${esc(unknown.map(f => f.filename).join('\n'))}">${unknown.length} hors catalogue</span>` : '')
-                + (addable.length ? ` <button onclick="addPresetToCatalogue()" title="Inscrire ces fichiers dans models.json" style="width:auto;padding:0 8px;border-radius:999px;font:500 12px var(--sans)">Ajouter au catalogue</button>` : '')
+            const missing = rows.filter(r => !(r._diskSize > 0)).length + unknown.length;
+            $('preset-chip').innerHTML = `Preset <b>${esc(activePreset.name)}</b> · ${missing ? missing + ' à télécharger' : 'complet'}`
+                + (unknown.length ? ` · <span class="warn" title="${esc(unknown.map(f => f.filename).join('\n'))}">${unknown.length} hors catalogue</span>`
+                    + ` <button onclick="addPresetToCatalogue()" title="Inscrire ces fichiers dans models.json" style="width:auto;padding:0 8px;border-radius:999px;font:500 12px var(--sans)">Ajouter au catalogue</button>` : '')
                 + `<button onclick="clearPreset()" title="Quitter le preset"><i class="fas fa-xmark"></i></button>`;
-            chip.classList.remove('hidden');
-            lost.forEach(f => addLog(`Preset ${esc(activePreset.name)} : ${esc(f.filename)} sans lien ou sans dossier, à compléter dans l'éditeur`, true));
+            $('preset-chip').classList.remove('hidden');
         }
         async function addPresetToCatalogue() {
-            let fallback = activePreset.env;
-            const byEnv = {};
-            for (const f of presetUnknown().filter(f => f.url && f.path)) {
-                let env = f.env || fallback;
-                if (!env) { env = fallback = (prompt('Environnement de models.json pour ces modèles ?', '') || '').trim(); if (!env) return; }
-                (byEnv[env] = byEnv[env] || []).push({filename: f.filename, url: f.url, path: f.path});
-            }
-            let synced = true;
-            for (const [env, items] of Object.entries(byEnv)) {
-                const r = await (await fetch('/add-to-catalogue', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({env, items}) })).json();
-                if (r.status !== 'ok') { synced = false; addLog('Catalogue : ' + esc(r.message || 'erreur'), true); continue; }
-                if (r.github_sync !== 'ok') synced = false;
-                addLog(`${r.added} fichier(s) ajouté(s) à « ${esc(env)} »` + (r.github_sync === 'ok' ? ', GitHub synchronisé' : ', sync GitHub échouée'), r.github_sync !== 'ok');
-            }
-            if (synced) showGitHubToast();
+            const env = activePreset.env;
+            const items = presetUnknown().map(f => ({filename: f.filename, url: f.url, path: f.path}));
+            const r = await (await fetch('/add-to-catalogue', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({env, items}) })).json();
+            if (r.status !== 'ok') { addLog('Catalogue : ' + esc(r.message || 'erreur'), true); return; }
+            addLog(`${r.added} fichier(s) ajouté(s) à « ${esc(env)} »` + (r.github_sync === 'ok' ? ', GitHub synchronisé' : ', sync GitHub échouée'), r.github_sync !== 'ok');
+            if (r.github_sync === 'ok') showGitHubToast();
+            const idx = $('preset-ui').value;
             await start(true);
-            showPreset();
+            applyPreset(idx);
         }
         function clearPreset() {
             activePreset = null;
@@ -957,9 +1035,7 @@
                 list.forEach(w => sel.add(new Option(w.replace(/\.json$/, ''), w)));
             } catch(e) {}
         }
-        let tplLoading = null;
-        function loadTemplates() { return tplLoading || (tplLoading = loadTemplatesNow()); }
-        async function loadTemplatesNow() {
+        async function loadTemplates() {
             const grid = $('tpl-grid');
             grid.innerHTML = '<div class="muted">Chargement du catalogue…</div>';
             try {
@@ -969,7 +1045,6 @@
                 const sel = $('tpl-cat');
                 [...new Set(templates.map(t => t.category))].forEach(c => sel.add(new Option(c, c)));
                 renderTemplates();
-                populatePresets();
             } catch(e) { grid.innerHTML = '<div class="err-text">Catalogue indisponible.</div>'; }
         }
         function renderTemplates() {
@@ -1155,7 +1230,7 @@
             dockTab('dl'); loop();
         }
 
-        start().then(loadTemplates);
+        start();
         loadWorkflowList();
         wfTab('mine');
     </script>
