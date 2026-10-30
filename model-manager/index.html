@@ -447,9 +447,58 @@
         let rows = [], selected = new Set(), focusKey = null, anchorIdx = null;
         let activePreset = null;
 
-        // ── PRESETS : fichiers de base par environnement, [environnement du catalogue, nom du fichier] ──
-        // A completer librement : le nom d'environnement doit correspondre a celui de models.json.
+        // ── PRESETS : fichiers de base par environnement ──
+        // Format : [environnement de models.json, nom du fichier]
+        // ou [environnement, fichier, {url, path}] pour un fichier pas encore au catalogue :
+        // le bouton "Ajouter au catalogue" de la pastille l'inscrit alors dans models.json.
+        const HF_Q21 = "https://huggingface.co/Comfy-Org/Qwen-Image-2.1/resolve/main/";
+        const HF_ANIMA = "https://huggingface.co/circlestone-labs/Anima/resolve/main/split_files/";
+        const HF_FLUX3 = "https://huggingface.co/black-forest-labs/flux-3-image-klein-comfy/resolve/main/";
         const PRESETS = [
+            { name: "Qwen Image 2.1", group: "Image", items: [
+                ["Qwen", "qwen_image_2.1_int8_convrot.safetensors", {url: HF_Q21 + "diffusion_models/qwen_image_2.1_int8_convrot.safetensors", path: "diffusion_models"}],
+                ["Qwen", "qwen3vl_8b_bf16.safetensors", {url: HF_Q21 + "text_encoders/qwen3vl_8b_bf16.safetensors", path: "text_encoders"}],
+                ["Qwen", "qwen_image_2.1_vae_bf16.safetensors", {url: HF_Q21 + "vae/qwen_image_2.1_vae_bf16.safetensors", path: "vae"}] ] },
+            { name: "Flux 3 Klein (distillé)", group: "Image", items: [
+                ["Flux", "flux3-image-klein-int8-convrot.safetensors", {url: HF_FLUX3 + "diffusion_models/flux3-image-klein-int8-convrot.safetensors", path: "diffusion_models"}],
+                ["Flux", "qwen3vl_4b_int8_convrot.safetensors"], ["Flux", "qwen3.5_9b_flux3_prompt_upsampler_w4a8.safetensors"],
+                ["Flux", "flux2-vae.safetensors"] ] },
+            { name: "Flux 3 Klein Base", group: "Image", items: [
+                ["Flux", "flux3-image-klein-base-int8-convrot.safetensors"], ["Flux", "qwen3vl_4b_int8_convrot.safetensors"],
+                ["Flux", "qwen3.5_9b_flux3_prompt_upsampler_w4a8.safetensors"], ["Flux", "flux2-vae.safetensors"] ] },
+            { name: "MOSS Image SFT", group: "Image", items: [
+                ["MOSS-Image", "moss_image_sft_int8_convrot.safetensors"], ["MOSS-Image", "qwen3.5_9b_w4a8_gptq.safetensors"],
+                ["MOSS-Image", "flux2-vae_small.safetensors"] ] },
+            { name: "MOSS Image Base (8 steps DMD)", group: "Image", items: [
+                ["MOSS-Image", "moss_image_base_int8_convrot.safetensors"], ["MOSS-Image", "qwen3.5_9b_w4a8_gptq.safetensors"],
+                ["MOSS-Image", "flux2-vae_small.safetensors"], ["MOSS-Image", "lora_dmd2.safetensors"] ] },
+            { name: "Kromoss", group: "Image", items: [
+                ["MOSS-Image", "kromoss_int8_convrot.safetensors"], ["MOSS-Image", "qwen3.5_9b_w4a8_gptq.safetensors"],
+                ["MOSS-Image", "flux2-vae_small.safetensors"] ] },
+            { name: "Anima Base v1.0", group: "Image", items: [
+                ["Anima", "anima-base-v1.0.safetensors", {url: HF_ANIMA + "diffusion_models/anima-base-v1.0.safetensors", path: "diffusion_models"}],
+                ["Anima", "qwen_3_06b_base.safetensors"],
+                ["Anima", "qwen_image_vae.safetensors", {url: HF_ANIMA + "vae/qwen_image_vae.safetensors", path: "vae"}] ] },
+            { name: "Anima Preview", group: "Image", items: [
+                ["Anima", "anima-preview.safetensors"], ["Anima", "qwen_3_06b_base.safetensors"],
+                ["Anima", "qwen_image_vae.safetensors", {url: HF_ANIMA + "vae/qwen_image_vae.safetensors", path: "vae"}] ] },
+            { name: "LTX 2.3 Dev FP8", group: "Vidéo", items: [
+                ["LTX", "ltx-2.3-22b-dev-fp8.safetensors"], ["LTX", "gemma_3_12B_it_fp8_scaled.safetensors"],
+                ["LTX", "ltx-2.3-spatial-upscaler-x2-1.0.safetensors"] ] },
+            { name: "LTX 2.3 Distilled GGUF Q4", group: "Vidéo", items: [
+                ["LTX", "LTX-2.3-distilled-Q4_K_M.gguf"], ["LTX", "gemma_3_12B_it_fp8_scaled.safetensors"],
+                ["LTX", "ltx-2.3_text_projection_bf16.safetensors"], ["LTX", "LTX23_video_vae_bf16.safetensors"],
+                ["LTX", "LTX23_audio_vae_bf16.safetensors"], ["LTX", "ltx-2.3-spatial-upscaler-x2-1.0.safetensors"] ] },
+            { name: "Minimax H3 FL2VA", group: "Vidéo", items: [
+                ["Minimax", "minimax_h3_fl2va_pruned_int8_convrot.safetensors"], ["Minimax", "qwen3vl_32b_minimax_h3_nvfp4_awq.safetensors"],
+                ["Minimax", "minimax_h3_video_vae_fp16.safetensors"], ["Minimax", "minimax_h3_audio_vae_fp32.safetensors"],
+                ["Minimax", "minimax_h3_turbo_v4_step600.safetensors"] ] },
+            { name: "SeedVR2 7B sharp FP8", group: "Upscale", items: [
+                ["SeedVR", "seedvr2_ema_7b_sharp_fp8_e4m3fn_mixed_block35_fp16.safetensors"], ["SeedVR", "ema_vae_fp16.safetensors"] ] },
+            { name: "SeedVR2 3B FP16", group: "Upscale", items: [
+                ["SeedVR", "seedvr2_ema_3b_fp16.safetensors"], ["SeedVR", "ema_vae_fp16.safetensors"] ] },
+            { name: "YuE2", group: "Audio", items: [
+                ["YuE2", "yue2_3b_int8_convrot.safetensors"], ["YuE2", "sheetsage2_bf16.safetensors"] ] },
             { name: "Z-Image Turbo", group: "Image", items: [
                 ["Z-Image", "z_image_turbo_bf16.safetensors"], ["Z-Image", "qwen_3_4b.safetensors"], ["Z-Image", "ae.safetensors"] ] },
             { name: "Z-Image Base", group: "Image", items: [
@@ -490,6 +539,23 @@
             });
         }
         function inPreset(m) { return activePreset && activePreset.items.some(([e, f]) => e === m._env && f === m.filename); }
+        function presetUnknown() {
+            return activePreset.items.filter(([e, f]) => !(cfg[e] && Object.values(cfg[e]).some(l => l.some(m => m.filename === f))));
+        }
+        async function addPresetToCatalogue() {
+            const byEnv = {};
+            presetUnknown().filter(it => it[2]).forEach(([e, f, x]) => (byEnv[e] = byEnv[e] || []).push({filename: f, url: x.url, path: x.path}));
+            let ok = true;
+            for (const [env, items] of Object.entries(byEnv)) {
+                const r = await (await fetch('/add-to-catalogue', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({env, items}) })).json();
+                if (r.status !== 'ok') { ok = false; addLog('Catalogue : ' + esc(r.message || 'erreur'), true); continue; }
+                addLog(`${r.added} fichier(s) ajouté(s) à « ${esc(env)} »` + (r.github_sync === 'ok' ? ', GitHub synchronisé' : ', sync GitHub échouée'), r.github_sync !== 'ok');
+            }
+            if (ok) showGitHubToast();
+            const idx = $('preset-ui').value;
+            await start(true);
+            applyPreset(idx);
+        }
         function applyPreset(idx) {
             if (idx === '') return clearPreset();
             activePreset = PRESETS[+idx];
@@ -500,13 +566,15 @@
             loadModels();
             selected = new Set(rows.map(r => r._key));
             renderList();
-            const unknown = activePreset.items.filter(([e, f]) => !(cfg[e] && Object.values(cfg[e]).some(l => l.some(m => m.filename === f))));
-            const missing = rows.filter(r => !(r._diskSize > 0)).length;
+            const unknown = presetUnknown();
+            const addable = unknown.filter(it => it[2]).length;
+            const missing = rows.filter(r => !(r._diskSize > 0)).length + unknown.length;
             $('preset-chip').innerHTML = `Preset <b>${esc(activePreset.name)}</b> · ${missing ? missing + ' à télécharger' : 'complet'}`
-                + (unknown.length ? ` · <span class="warn" title="${esc(unknown.map(u => u.join(' / ')).join('\n'))}">${unknown.length} hors catalogue</span>` : '')
+                + (unknown.length ? ` · <span class="warn" title="${esc(unknown.map(u => u[0] + ' / ' + u[1]).join('\n'))}">${unknown.length} hors catalogue</span>` : '')
+                + (addable ? ` <button onclick="addPresetToCatalogue()" title="Inscrire ces fichiers dans models.json" style="width:auto;padding:0 8px;border-radius:999px;font:500 12px var(--sans)">Ajouter au catalogue</button>` : '')
                 + `<button onclick="clearPreset()" title="Quitter le preset"><i class="fas fa-xmark"></i></button>`;
             $('preset-chip').classList.remove('hidden');
-            unknown.forEach(([e, f]) => addLog(`Preset ${esc(activePreset.name)} : ${esc(f)} absent de « ${esc(e)} » dans models.json`, true));
+            unknown.filter(it => !it[2]).forEach(([e, f]) => addLog(`Preset ${esc(activePreset.name)} : ${esc(f)} absent de « ${esc(e)} » dans models.json, sans lien de secours`, true));
         }
         function clearPreset() {
             activePreset = null;
